@@ -1,8 +1,10 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FlexLayoutModule } from '@angular/flex-layout';
 
 //Módulos propios
 import { LugaresRoutingModule } from './lugares-routing.module';
+import { MaterialModule } from '../material/material.module';
 
 //Componentes
 import { AgregarComponent } from './pages/agregar/agregar.component';
@@ -23,6 +25,8 @@ import { ListadoComponent } from './pages/listado/listado.component';
   ],
   imports: [
     CommonModule,
+    FlexLayoutModule,
+    MaterialModule,
     LugaresRoutingModule
   ]
 })

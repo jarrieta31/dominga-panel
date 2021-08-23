@@ -2,3 +2,8 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+/*genera el espacio del boton de logout en el navbar*/
+.spacer {
+    flex: 1 1 auto;
+}
