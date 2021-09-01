@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "panel-admin-dominga": {
+      "hosting": {
+        "dominga-panel": [
+          "panel-admin-dominga"
+        ]
+      }
+    }
+  }
+}

@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { LugaresService } from '../../services/lugares.service';
+import { Lugar } from '../../interfaces/lugar.interface';
+import { Item } from '../../interfaces/item.interface';
 
 @Component({
   selector: 'app-listado',
@@ -7,9 +10,17 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ListadoComponent implements OnInit {
 
-  constructor() { }
+  lugares: Lugar[] = [];
+  items: any[] = [];
+
+  constructor(private lugaresService: LugaresService ) { }
 
   ngOnInit(): void {
+    console.log("hola desde listado");
+    
+    this.lugaresService.getLugares()
+      .subscribe( lugares =>  this.items = lugares );
+    
   }
 
 }

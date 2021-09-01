@@ -25,6 +25,7 @@
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
-    "strictTemplates": true
+    "strictTemplates": true, //Estaba en true
+    "skipLibCheck": true //la agregue yo para solucionar que compile: Error: node_modules/@firebase/app-compat/dist/src/firebaseApp.d.ts:19:10
   }
 }

@@ -3,8 +3,17 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
-};
+  production: false,
+  firebase: {
+    apiKey: "AIzaSyBFwoAaOWBiR4h7T3gSV5_LGnN74471bRY",
+    authDomain: "admin-panel-dominga.firebaseapp.com",
+    projectId: "admin-panel-dominga",
+    storageBucket: "admin-panel-dominga.appspot.com",
+    messagingSenderId: "951200554128",
+    appId: "1:951200554128:web:3b3f8ab3a9d368863dcc15",
+    measurementId: "G-GYMXHKYJJ3"
+  }
+}
 
 /*
  * For easier debugging in development mode, you can import the following file

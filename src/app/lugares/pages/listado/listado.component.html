@@ -1,1 +1,9 @@
 <p>listado works!</p>
+
+
+<ul>
+    <li *ngFor="let item of items ">
+      {{ item.payload.doc.data().nombre }}
+    </li>
+  </ul>
+
