@@ -1,1 +1,47 @@
-<p>lugar works!</p>
+<!-- Si el lugar no existe muestra el espiner -->
+<mat-grid-list cols="1" *ngIf="!lugar; else divLugar">
+    <mat-grid-tile>
+        <mat-spinner></mat-spinner>
+    </mat-grid-tile>
+</mat-grid-list>
+
+
+<ng-template #divLugar> 
+
+    <div>
+        <h1>{{ lugar.nombre }} </h1>
+        <mat-divider></mat-divider>
+    </div>
+
+    <div fxLayout="row"
+         fxLayout.xs="column"
+         fxLayoutGap="30px">
+
+        <div fxFlex="50">
+            <h2>Imagen Home</h2>
+            <img [src]="lugar.imagenHome" >
+            <mat-list>
+                <mat-list-item>Tipo de lugar: {{lugar.tipo}} </mat-list-item>
+                <mat-list-item>facebook: &nbsp;<a href="{{lugar.facebook}}">{{lugar.facebook}}</a></mat-list-item>
+                <mat-list-item>whatsapp: {{lugar.whatsapp}} </mat-list-item>
+                <mat-list-item>instagram: &nbsp; <a href="{{lugar.instagram}}">{{ lugar.instagram }}</a> </mat-list-item>
+            </mat-list>
+
+            
+
+            <br>
+            <button mat-button 
+                    color="warn"
+                    (click)="regresar()" >
+                Regresar
+            </button>
+        </div>
+
+        <div fxFlex="50">
+
+
+        </div>
+
+    </div>
+
+</ng-template>

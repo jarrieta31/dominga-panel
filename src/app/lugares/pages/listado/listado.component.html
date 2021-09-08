@@ -1,9 +1,21 @@
-<p>listado works!</p>
+<h1>Listado de Lugares</h1>
+<mat-divider></mat-divider>
+<br>
 
 
-<ul>
-    <li *ngFor="let item of items ">
-      {{ item.payload.doc.data().nombre }}
-    </li>
-  </ul>
+<div fxLayout="row wrap"
+     fxLayout.xs="column"
+     fxLayoutAlign="center"
+     fxLayoutGap="20px">
 
+  <div fxFlex="20"
+       fxFlex.lg="15"
+       fxFlex.sm="30"
+       *ngFor="let lugar of lugares$ | async" >
+
+    <app-lugar-tarjeta [lugar]="lugar"></app-lugar-tarjeta>
+
+  </div>
+  
+
+</div>

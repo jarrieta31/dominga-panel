@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { LugaresService } from '../../services/lugares.service';
 import { Lugar } from '../../interfaces/lugar.interface';
 import { Item } from '../../interfaces/item.interface';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-listado',
@@ -10,17 +11,19 @@ import { Item } from '../../interfaces/item.interface';
 })
 export class ListadoComponent implements OnInit {
 
-  lugares: Lugar[] = [];
-  items: any[] = [];
+  lugares$: Observable<Array<Lugar>> = this.lugaresService.lugares$;
 
   constructor(private lugaresService: LugaresService ) { }
 
   ngOnInit(): void {
-    console.log("hola desde listado");
-    
+
+    /**Descomentar la siguiente linea para cargar todos los lugares a firestore */
+    //this.lugaresService.cargarLugares();
+
+/*
     this.lugaresService.getLugares()
       .subscribe( lugares =>  this.items = lugares );
-    
+*/    
   }
 
 }
