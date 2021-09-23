@@ -4,6 +4,7 @@
 
 export const environment = {
   production: false,
+  mapbox: "pk.eyJ1IjoiY2FzYWRvbWluZ2EiLCJhIjoiY2s3NTlzajFoMDVzZTNlcGduMWh0aml3aSJ9.JcZFoGdIQnz3hSg2p4FGkA",
   firebase: {
     apiKey: "AIzaSyDhM4nqR6sQ9bDVZjc2zSSnRGoPKCJRFcM",
     authDomain: "appdominga.firebaseapp.com",
@@ -13,7 +14,8 @@ export const environment = {
     messagingSenderId: "99878739465",
     appId: "1:99878739465:web:9a0a46908b5b66685be2d8",
     measurementId: "G-2KC4PEEC0N"
-  }
+  },
+  baseUrl: 'https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/'
 }
 
 /*

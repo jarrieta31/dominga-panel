@@ -1,0 +1,33 @@
+<div class="contenedor">
+    <div class="contenedor_formulario">
+        <h3>{{tituloUploader}}</h3>
+        <p>Subir archivos a Cloud Storage</p>
+    <!--
+        <p class="download" *ngIf="finalizado">
+            URL de descarga: <a href="{{ URLPublica }}" target="_blank">Descargar</a>
+        </p>
+    -->
+        <form [formGroup]="archivoForm" (ngSubmit)="subirArchivo()">
+
+            <div>
+                <input class="botonFile" 
+                       type="file" 
+                       formControlName="archivo"
+                       multiple="false"
+                       accept=".jpg"
+                       (change)="cambioArchivo($event)">
+            </div>
+            <br>
+            <div>
+                <mat-progress-bar  class="barra-progreso" mode="determinate" value="{{porcentaje}}"></mat-progress-bar>
+            </div>
+            <br>
+
+            <button mat-raised-button color="primary">
+                <mat-icon>file_upload</mat-icon>
+                Subir imágen
+            </button>
+        </form>
+    </div>
+
+</div>

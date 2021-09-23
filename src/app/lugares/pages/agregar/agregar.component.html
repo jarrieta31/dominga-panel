@@ -1,1 +1,185 @@
-<p>agregar works!</p>
+<div class="mat-typography">
+    <h1>Nuevo Lugar</h1>
+</div>
+
+<form [formGroup]="lugarForm">
+
+    <div fxLayout="row" fxLayoutAlign="space-between stretch" fxLayoutGap="40px">
+
+        <!-- ============================== Columna izquierda ==================================== -->
+        <div class="main-column" fxFlex="50" fxLayout="column" fxLayoutGap="20px">
+
+            <div fxLayout="row" fxLayoutGap="40px">
+
+                <mat-form-field fxFlex="50%">
+                    <mat-label>Nombre del Lugar</mat-label>
+                    <input matInput type="text" formControlName="nombre">
+                    <!-- La expresion "nombre" representa "lugarForm.get('nombre')" pero gracias al geter solo escribimos nombre -->
+                    <ng-container *ngIf="!nombre.valid && nombre.touched">
+                        <mat-error *ngIf="nombre.errors.required">El campo nombre es obligatorio.</mat-error>
+                        <mat-error *ngIf="nombre.errors.minlength">El nombre de tener un mínimo de 2 caracteres.
+                        </mat-error>
+                    </ng-container>
+                </mat-form-field>
+
+                <div fxFlex="50%">
+                    Debes activar este lugar para que sea visible en la app: &nbsp; &nbsp;
+                    <mat-slide-toggle formControlName="publicado">Publicado </mat-slide-toggle>
+                </div>
+
+            </div>
+
+            <div fxLayout="row">
+                <mat-form-field id="camp-principal" fxFlex="50%">
+                    <mat-label>Selecciona el Departamento</mat-label>
+                    <mat-select formControlName="departamento" (selectionChange)="setImagenPrincipal()">
+                        <mat-option *ngFor="let departamento of departamentos" [value]="departamento">{{ departamento }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <div fxLayout="row" fxLayoutGap="40px">
+                <div fxFlex="15%">
+                    <mat-label>Se puede llegar en: </mat-label>
+                </div>
+                <div fxFlex="15%">
+                    <mat-checkbox formControlName="auto">Auto</mat-checkbox>
+                </div>
+                <div fxFlex="15%">
+                    <mat-checkbox formControlName="bicicleta">Bicicleta</mat-checkbox>
+                </div>
+                <div fxFlex="15%">
+                    <mat-checkbox formControlName="caminar">Caminando</mat-checkbox>
+                </div>
+                <mat-form-field fxFlex="40">
+                    <mat-label>Tipo: </mat-label>
+                    <mat-select formControlName="tipo">
+                        <mat-option *ngFor="let item of lugaresTipo" [value]="item.tipo">{{ item.tipo }}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <div fxLayout="row">
+                <!-- 
+                <app-upload-files></app-upload-files>
+                -->
+                <mat-form-field class="area">
+                    <mat-label>Descripción del lugar</mat-label>
+                    <textarea class="descripcion" formControlName="descripcion" matInput
+                        placeholder="Escribe una descripción ..." matAutosizeMinRows="30"></textarea>
+                </mat-form-field>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <div fxLayout="column" formArrayName="telefonos">
+                <div>
+                    <button mat-raised-button color="primary" (click)="agregarNuevoTelefonoAlFormulario()">
+                        <mat-icon>add</mat-icon>
+                        Agregar teléfono
+                    </button>
+                </div>
+                <br>
+                <div fxLayout="row" fxLayoutAlign="center center"
+                    *ngFor="let telefono of telefonos.controls;let i=index" [formGroupName]="i">
+                    <div fxFlex="20%"></div>
+                    <div fxFlex="10%">
+                        Teléfono {{i + 1}}:
+                    </div>
+                    <mat-form-field fxFlex="40%">
+                        <input matInput type="text" formControlName="numero">
+                        <mat-label>Teléfono: </mat-label>
+                    </mat-form-field>
+                    <div fxFlex></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================== Columna derecha ==================================== -->
+        <div class="main-column" fxFlex="50%" fxLayout="column" fxLayoutAlign="start stretch" fxLayoutGap="10">
+
+            <div fxFlex fxLayout="row wrapDirection" fxLayoutAlign="space-around start"
+                class="container container-home">
+                <div fxFlex="100%" class="home">
+                    <h2 style="text-align: center;">Imágen Home</h2>
+                </div>
+                <div fxFlex="50%" class="home" fxLayout="column" fxLayoutAlign="space-around center">
+                    <mat-card class="container-img">
+                        <img mat-card-image [src]="lugarForm.value.imagenHome.url" class="imagen-home">
+                        <mat-card-actions *ngIf="imagenHome.value.name != 'imagen-default'">
+                            <button mat-raised-button color="warn" (click)="setImagenHome('')">
+                                <mat-icon>delete</mat-icon> Eliminar
+                            </button>
+                        </mat-card-actions>
+                    </mat-card>
+                    <p>Tamaño de imágen: 600 x 353 px</p>
+                </div>
+                <div fxFlex="50%" class="home">
+                    <app-upload-files [tituloUploader]="tituloUploaderHome" [DirectorioUploader]="directorioHomeStorage"
+                        (imagenSubidaUploader)="setImagenHome($event)">
+                    </app-upload-files>
+                </div>
+            </div>
+
+            <div fxFlex class="container" fxLayout="column" fxLayoutAling="space-around start">
+                <div fxFlex fxLayout="row wrapDirection" fxLayoutAling='space-around center'>
+                    <div fxFlex="100%">
+                        <h2 style="text-align: center;">Galería de Imágenes e Imágen Principal</h2>
+                    </div>
+                    <div fxFlex="50%" class="container-img" fxLayout="column" fxLayoutAlign="space-around center">
+                        <mat-card>
+                            <img mat-card-image [src]="lugarForm.value.imagenPrincipal.url" class="imagen-principal"
+                                alt="">
+                            <mat-card-footer>
+                                Tamaño de imágen: 600 x 450 px
+                            </mat-card-footer>
+                        </mat-card>
+                    </div>
+
+                    <div fxFlex="50%" fxLayout="column" fxFlexAlign="space-around center">
+                        <!-- Módulo para subir archivos -->
+                        <app-upload-files fxFlex="60%" [tituloUploader]="tituloUploaderGaleria"
+                            [DirectorioUploader]="directorioLugaresStorage"
+                            (imagenSubidaUploader)="agregarImagenSubida($event)">
+                        </app-upload-files>
+                        <h4 fxFlex="5%">Imágen Principal</h4>
+                        <mat-form-field id="camp-principal" fxFlex="20%">
+                            <mat-label>Selecciona una imágen de la galería para usar como imágen principal: </mat-label>
+                            <mat-select formControlName="imagenPrincipal" (selectionChange)="setImagenPrincipal()">
+                                <mat-option *ngFor="let imagen of galeria" [value]="imagen">{{ imagen.name }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+
+                </div>
+                <div fxFlex="5%">
+                    <h2>Galería de imágenes</h2>
+                </div>
+                <div class="contenedor_galeria" fxFlex fxLayout="row wrapDirection" fxLayoutAlign="space-around start"
+                    fxLayoutGap="10px" *ngIf="galeria.length > 0">
+                    <!-- Módulo para mostrar las imagenes de la galeria -->
+                    <app-imagen *ngFor="let foto of galeria" [imagen]="foto"
+                        (imagenABorrar)="eliminarImagenGaleria($event)">
+                    </app-imagen>
+                </div>
+            </div>
+            <!-- 
+            <div fxFlex>
+                <pre>{{ this.imagenes | json }}</pre>
+            </div>
+-->
+            <div style="overflow: scroll; width: 100%;height: 200px;">
+                <span>Valores</span>
+                <pre>{{ this.lugarForm.value | json }}</pre>
+            </div>
+        </div>
+
+    </div>
+
+</form>

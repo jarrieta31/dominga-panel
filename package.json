@@ -10,6 +10,7 @@
   },
   "private": true,
   "dependencies": {
+    "@angular-material-components/file-input": "^6.0.0",
     "@angular/animations": "~12.1.0",
     "@angular/cdk": "^12.2.2",
     "@angular/common": "~12.1.0",
@@ -23,6 +24,7 @@
     "@angular/platform-browser-dynamic": "~12.1.0",
     "@angular/router": "~12.1.0",
     "firebase": "^9.0.0",
+    "mapbox-gl": "^2.4.1",
     "rxfire": "^6.0.0",
     "rxjs": "~6.6.0",
     "tslib": "^2.2.0",
@@ -34,6 +36,7 @@
     "@angular/cli": "^12.2.3",
     "@angular/compiler-cli": "~12.1.0",
     "@types/jasmine": "~3.8.0",
+    "@types/mapbox-gl": "^2.4.2",
     "@types/node": "^12.11.1",
     "firebase-tools": "^9.0.0",
     "fuzzy": "^0.1.3",

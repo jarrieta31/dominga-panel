@@ -1,7 +1,6 @@
 import { ComponentFactoryResolver, Injectable } from '@angular/core';
 import { Lugar } from '../interfaces/lugar.interface';
 import { AngularFirestore, AngularFirestoreCollection, DocumentReference } from '@angular/fire/compat/firestore';
-import { Item } from '../interfaces/item.interface';
 import { from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { LugarComponent } from '../pages/lugar/lugar.component';
@@ -58,7 +57,7 @@ export class LugaresService {
 
     const datos = [
       {
-        "activo": true,
+        "publicado": true,
         "auto": true,
         "bicicleta": false,
         "caminar": false,
@@ -71,7 +70,7 @@ export class LugaresService {
         "longitud": -56.9549075,
         "nombre": "Finca Piedra",
         "tipo": "Rural",
-        "url": [{
+        "imagenes": [{
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Ffincapiedra-01.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
         }, {
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Ffincapiedra-02.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
@@ -92,11 +91,11 @@ export class LugaresService {
         }, {
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Ffincapiedra-10.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
         }],
-        "valoracion": [],
+        "valoraciones": [],
         "web": "http://www.fincapiedra.com/",
         "whatsapp": "https://api.whatsapp.com/send?phone=59892860054"
       }, {
-        "activo": true,
+        "publicado": true,
         "auto": true,
         "bicicleta": false,
         "caminar": false,
@@ -108,7 +107,7 @@ export class LugaresService {
         "longitud": -56.952087,
         "nombre": "Mal Abrigo",
         "tipo": "Rural",
-        "url": [{
+        "imagenes": [{
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fmalabrigo-01.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
         }, {
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fmalabrigo-02.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
@@ -137,10 +136,10 @@ export class LugaresService {
         }, {
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fmalabrigo-14.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
         }],
-        "valoracion": [],
+        "valoraciones": [],
         "whatsapp": "https://api.whatsapp.com/send?phone=59894479401"
       }, {
-        "activo": true,
+        "publicado": true,
         "auto": true,
         "bicicleta": true,
         "caminar": true,
@@ -153,7 +152,7 @@ export class LugaresService {
         "longitud": -56.88552,
         "nombre": "Barras de Mahoma",
         "tipo": "Rural",
-        "url": [{
+        "imagenes": [{
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fbarrademahoma-01.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
         }, {
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fbarrademahoma-02.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
@@ -184,11 +183,11 @@ export class LugaresService {
         }, {
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fbarrademahoma-16.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
         }],
-        "valoracion": [],
+        "valoraciones": [],
         "web": "http://barrasdemahoma.com.uy",
         "whatsapp": "https://api.whatsapp.com/send?phone=59899340481"
       }, {
-        "activo": true,
+        "publicado": true,
         "auto": true,
         "bicicleta": true,
         "caminar": true,
@@ -202,7 +201,7 @@ export class LugaresService {
         "nombre": "Museo San José",
         "phone": "43423672",
         "tipo": "Urbano",
-        "url": [{
+        "imagenes": [{
           "nombre": "museo-1",
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fmuseo-1.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
         }, {
@@ -224,10 +223,10 @@ export class LugaresService {
           "nombre": "museo-7",
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fmuseo-7.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
         }],
-        "valoracion": [],
+        "valoraciones": [],
         "web": "https://www.sanjose.gub.uy/departamento/turismo/museo-san-jose/"
       }, {
-        "activo": true,
+        "publicado": true,
         "auto": true,
         "bicicleta": true,
         "caminar": true,
@@ -238,7 +237,7 @@ export class LugaresService {
         "longitud": -56.730451,
         "nombre": "Parque Rodó",
         "tipo": "Urbano",
-        "url": [{
+        "imagenes": [{
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fparque-1.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
         }, {
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fparque-2.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
@@ -269,10 +268,10 @@ export class LugaresService {
         }, {
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fparque-15.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
         }],
-        "valoracion": [],
+        "valoraciones": [],
         "web": "https://www.sanjose.gub.uy/departamento/turismo/parque-rodo/"
       }, {
-        "activo": true,
+        "publicado": true,
         "auto": true,
         "bicicleta": true,
         "caminar": true,
@@ -283,7 +282,7 @@ export class LugaresService {
         "longitud": -56.713478,
         "nombre": "Basílica Catedral",
         "tipo": "Urbano",
-        "url": [{
+        "imagenes": [{
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2FCatedral-01.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
         }, {
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2FCatedral-02.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
@@ -304,10 +303,10 @@ export class LugaresService {
         }, {
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2FCatedral-11.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
         }],
-        "valoracion": [],
+        "valoraciones": [],
         "web": "https://www.sanjose.gub.uy/departamento/turismo/basilica-catedral/"
       }, {
-        "activo": true,
+        "publicado": true,
         "auto": true,
         "bicicleta": true,
         "caminar": true,
@@ -320,7 +319,7 @@ export class LugaresService {
         "nombre": "Club San José",
         "phone": "43426344",
         "tipo": "Urbano",
-        "url": [{
+        "imagenes": [{
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fclub-san-jose-1.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
         }, {
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fclub-san-jose-2.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
@@ -335,9 +334,9 @@ export class LugaresService {
         }, {
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fclub-san-jose-9.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
         }],
-        "valoracion": []
+        "valoraciones": []
       }, {
-        "activo": true,
+        "publicado": true,
         "auto": true,
         "bicicleta": true,
         "caminar": true,
@@ -351,7 +350,7 @@ export class LugaresService {
         "nombre": "AFE / ECIE",
         "phone": "43434659",
         "tipo": "Urbano",
-        "url": [{
+        "imagenes": [{
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fafe-1.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
         }, {
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fafe-2.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
@@ -368,11 +367,11 @@ export class LugaresService {
         }, {
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fafe-8.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
         }],
-        "valoracion": [],
+        "valoraciones": [],
         "web": "http://www.ecie.com.uy/",
         "whatsapp": "https://api.whatsapp.com/send?phone=59898779524"
       }, {
-        "activo": true,
+        "publicado": true,
         "auto": true,
         "bicicleta": true,
         "caminar": true,
@@ -383,7 +382,7 @@ export class LugaresService {
         "longitud": -56.708497,
         "nombre": "Picada Varela",
         "tipo": "Urbano",
-        "url": [{
+        "imagenes": [{
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fpicada-varela-1.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
         }, {
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fpicada-varela-2.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
@@ -396,10 +395,10 @@ export class LugaresService {
         }, {
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fpicada-varela-6.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
         }],
-        "valoracion": [],
+        "valoraciones": [],
         "web": "https://www.sanjose.gub.uy/departamento/turismo/picada-varela/"
       }, {
-        "activo": true,
+        "publicado": true,
         "auto": true,
         "bicicleta": true,
         "caminar": true,
@@ -412,7 +411,7 @@ export class LugaresService {
         "longitud": -56.7145,
         "nombre": "Casa Dominga",
         "tipo": "Urbano",
-        "url": [{
+        "imagenes": [{
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fcasadominga.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
         }, {
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fcasadominga-1.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
@@ -433,7 +432,7 @@ export class LugaresService {
         }, {
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fcasadominga-9.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
         }],
-        "valoracion": [ {
+        "valoraciones": [ {
           "usuario": "0WuWuehqBFTNHWgBAxBNU8fwWHO2", 
           "valor": 5 
         }, { 
@@ -455,7 +454,7 @@ export class LugaresService {
         "web": "https://casadominga.com.uy/",
         "whatsapp": "https://api.whatsapp.com/send?phone=59899468473"
       }, {
-        "activo": true,
+        "publicado": true,
         "auto": true,
         "bicicleta": true,
         "caminar": true,
@@ -466,7 +465,7 @@ export class LugaresService {
         "longitud": -56.710933,
         "nombre": "Capilla del Huerto",
         "tipo": "Urbano",
-        "url": [{
+        "imagenes": [{
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fhuerto-1.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
         }, {
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fhuerto-2.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
@@ -475,12 +474,12 @@ export class LugaresService {
         }, {
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fhuerto-5.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
         }],
-        "valoracion": [
+        "valoraciones": [
           { "user": 0 }
         ],
         "web": "https://www.sanjose.gub.uy/departamento/turismo/capilla-nuestra-senora-del-huerto/"
       }, {
-        "activo": true,
+        "publicado": true,
         "auto": true,
         "bicicleta": true,
         "caminar": true,
@@ -494,18 +493,18 @@ export class LugaresService {
         "nombre": "ICE",
         "phone": "43441081",
         "tipo": "Urbano",
-        "url": [{
+        "imagenes": [{
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fespa%C3%B1ola-1.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
         }, {
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fespa%C3%B1ola-2.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
         }, {
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fespa%C3%B1ola-3.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
         }],
-        "valoracion": [
+        "valoraciones": [
           { "user": 0 }
         ]
       }, {
-        "activo": true,
+        "publicado": true,
         "auto": true,
         "bicicleta": true,
         "caminar": true,
@@ -517,7 +516,7 @@ export class LugaresService {
         "nombre": "Quinta del Horno",
         "phone": "43431314",
         "tipo": "Urbano",
-        "url": [{
+        "imagenes": [{
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fquintadelhorno-01.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
         }, {
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fquintadelhorno-02.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
@@ -526,12 +525,12 @@ export class LugaresService {
         }, {
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fquintadelhorno-04.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
         }],
-        "valoracion": [
+        "valoraciones": [
           { "user": 0 }
         ],
         "web": "https://www.sanjose.gub.uy/departamento/turismo/quinta-del-horno/"
       }, {
-        "activo": true,
+        "publicado": true,
         "auto": true,
         "bicicleta": true,
         "caminar": true,
@@ -542,7 +541,7 @@ export class LugaresService {
         "longitud": -56.714027,
         "nombre": "UTEC",
         "tipo": "Urbano",
-        "url": [{
+        "imagenes": [{
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Futec-1.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
         }, {
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Futec-2.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
@@ -557,12 +556,12 @@ export class LugaresService {
         }, {
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Futec-7.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
         }],
-        "valoracion": {
+        "valoraciones": {
           "user": 0
         },
         "web": "https://utec.edu.uy/itr-centrosur/un-edificio-con-pasado-y-futuro/"
       }, {
-        "activo": true,
+        "publicado": true,
         "auto": true,
         "bicicleta": false,
         "caminar": false,
@@ -574,7 +573,7 @@ export class LugaresService {
         "longitud": -56.959684,
         "nombre": "Sierra de Mahoma",
         "tipo": "Rural",
-        "url": [{
+        "imagenes": [{
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2FSierraMahoma-01.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
         }, {
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2FSierraMahoma-02.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
@@ -595,12 +594,12 @@ export class LugaresService {
         }, {
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2FSierraMahoma-10.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
         }],
-        "valoracion": [
+        "valoraciones": [
           { "user": 0 }
         ],
         "whatsapp": "https://api.whatsapp.com/send?phone=59899342220"
       }, {
-        "activo": true,
+        "publicado": true,
         "auto": true,
         "bicicleta": false,
         "caminar": false,
@@ -612,7 +611,7 @@ export class LugaresService {
         "nombre": "Boliche de Campaña",
         "phone": "43401558",
         "tipo": "Rural",
-        "url": [{
+        "imagenes": [{
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fbolichedecampa%C3%B1a-01.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
         }, {
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fbolichedecampa%C3%B1a-02.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
@@ -623,14 +622,14 @@ export class LugaresService {
         }, {
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fbolichedecampa%C3%B1a-05.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
         }],
-        "valoracion": [
+        "valoraciones": [
           { "user": 0 }
         ],
         "videos": [
           { "video": "https://www.youtube.com/embed/WEn3eSV-hvw" }
         ]
       }, {
-        "activo": true,
+        "publicado": true,
         "auto": true,
         "bicicleta": true,
         "caminar": true,
@@ -642,7 +641,7 @@ export class LugaresService {
         "nombre": "Teatro Maccio",
         "phone": "43422723",
         "tipo": "Urbano",
-        "url": [{
+        "imagenes": [{
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fteatro-1.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
         }, {
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fteatro-2.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
@@ -661,11 +660,11 @@ export class LugaresService {
         }, {
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fteatro-9.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
         }],
-        "valoracion": [
+        "valoraciones": [
         ],
         "web": "https://www.sanjose.gub.uy/departamento/turismo/teatro-maccio/"
       }, {
-        "activo": true,
+        "publicado": true,
         "auto": true,
         "bicicleta": true,
         "caminar": true,
@@ -677,7 +676,7 @@ export class LugaresService {
         "nombre": "Intendencia Municipal",
         "phone": "43429000",
         "tipo": "Urbano",
-        "url": [{
+        "imagenes": [{
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fintendencia-1.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
         }, {
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fintendencia-2.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
@@ -692,11 +691,11 @@ export class LugaresService {
         }, {
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fintendencia-7.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
         }],
-        "valoracion": [
+        "valoraciones": [
         ],
         "web": "https://www.sanjose.gub.uy/"
       }, {
-        "activo": true,
+        "publicado": true,
         "auto": true,
         "bicicleta": true,
         "caminar": true,
@@ -707,17 +706,17 @@ export class LugaresService {
         "longitud": -56.709908,
         "nombre": "Mercado Municipal",
         "tipo": "Urbano",
-        "url": [{
+        "imagenes": [{
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fferia-1.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
         }, {
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fferia-2.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
         }, {
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fferia-3.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
         }],
-        "valoracion": [
+        "valoraciones": [
         ]
       }, {
-        "activo": true,
+        "publicado": true,
         "auto": true,
         "bicicleta": true,
         "caminar": true,
@@ -729,7 +728,7 @@ export class LugaresService {
         "longitud": -56.713891,
         "nombre": "Club Madreselvas",
         "tipo": "Urbano",
-        "url": [{
+        "imagenes": [{
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fmadreselva-1.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
         }, {
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fmadreselva-2.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
@@ -746,11 +745,11 @@ export class LugaresService {
         }, {
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fmadreselva-8.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
         }],
-        "valoracion": [
+        "valoraciones": [
         ],
         "whatsapp": "https://api.whatsapp.com/send?phone=59898524797"
       }, {
-        "activo": true,
+        "publicado": true,
         "auto": true,
         "bicicleta": true,
         "caminar": true,
@@ -761,18 +760,18 @@ export class LugaresService {
         "latitud": -34.338884,
         "longitud": -56.715883,
         "nombre": "Club Fraternidad",
-        "phone": "43431702",
+        "telefonos": "43431702",
         "tipo": "Urbano",
-        "url": [{
+        "imagenes": [{
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Ffraternidad-1.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
         }, {
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Ffraternidad-2.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
         }],
-        "valoracion": [
+        "valoraciones": [
         ],
         "whatsapp": "https://api.whatsapp.com/send?phone=59899191099"
       }, {
-        "activo": true,
+        "publicado": true,
         "auto": true,
         "bicicleta": true,
         "caminar": true,
@@ -783,12 +782,12 @@ export class LugaresService {
         "longitud": -56.71336,
         "nombre": "Sociedad Italiana",
         "tipo": "Urbano",
-        "url": [{
+        "imagenes": [{
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fitaliana-1.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
         }, {
           "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fitaliana-2.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
         }],
-        "valoracion": []
+        "valoracioneses": []
       }];
 
     for(let i=0; i < datos.length; i ++ ){

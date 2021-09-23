@@ -1,0 +1,84 @@
+.descripcion{
+    width: 100%;
+    height: 10rem;
+}
+
+mat-divider{
+    margin-bottom: 40px;
+}
+
+.div-descripcion {
+/*
+    border: rgba(0, 0, 0, 0.12) solid 1px;
+    border-radius: 5px;
+    */
+}
+
+.area {
+    /*
+    background-color: aquamarine;
+    */
+    padding: 10px;
+    width: 100%;
+    min-height: 10rem;
+    border: rgba(0, 0, 0, 0.12) solid 1px;
+    border-radius: 5px;
+}
+
+.main-column{
+    min-height: 900px;
+}
+
+.container-img {
+    /*width: 300px;*/
+/*    display: flex;
+    flex-direction: column;
+    align-items: center;
+    */
+}
+
+.imagen-home {
+    /*width: 280px;*/
+    height: 217px;
+}
+
+.imagen-principal {
+    height: 277px;
+}
+
+.imagen {
+    height: 280px;
+}
+
+
+.app-upload {
+    /*
+    height: 100px;
+    
+    background-color: gold;
+    */
+}
+
+.container {
+    border: rgba(0, 0, 0, 0.12) solid 1px;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 2px;
+/*    height: 800px; */
+ /*   background-color: gold;  */
+}
+
+.container-home {
+    min-height: 350px;
+}
+
+.home {
+    /*border: red solid 1px;*/
+}
+
+#camp-principal {
+    width: 100%;
+    /*
+    background-color: aquamarine;
+    */
+}

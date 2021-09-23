@@ -1,5 +1,6 @@
 export const environment = {
   production: true,
+  mapbox: "pk.eyJ1IjoiY2FzYWRvbWluZ2EiLCJhIjoiY2s3NTlzajFoMDVzZTNlcGduMWh0aml3aSJ9.JcZFoGdIQnz3hSg2p4FGkA",
   firebase: {
     apiKey: "AIzaSyDhM4nqR6sQ9bDVZjc2zSSnRGoPKCJRFcM",
     authDomain: "appdominga.firebaseapp.com",

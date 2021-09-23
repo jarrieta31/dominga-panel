@@ -1,11 +1,12 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FlexLayoutModule } from '@angular/flex-layout';
-import { FormsModule } from '@angular/forms';
+import { FormsModule , ReactiveFormsModule } from '@angular/forms';
 
 //Módulos propios
 import { LugaresRoutingModule } from './lugares-routing.module';
 import { MaterialModule } from '../material/material.module';
+import { SharedModule } from '../shared/shared.module';
 
 //Componentes
 import { AgregarComponent } from './pages/agregar/agregar.component';
@@ -30,14 +31,16 @@ import { RecortarParrafoPipe } from './pipes/recortar-parrafo.pipe';
     LugarTarjetaComponent,
     ImagenPipe,
     DeleteHtmlPipe,
-    RecortarParrafoPipe
+    RecortarParrafoPipe,
   ],
   imports: [
     CommonModule,
     FlexLayoutModule,
-    FormsModule,
     MaterialModule,
-    LugaresRoutingModule
+    FormsModule,
+    ReactiveFormsModule,
+    LugaresRoutingModule,
+    SharedModule
   ]
 })
 export class LugaresModule { }

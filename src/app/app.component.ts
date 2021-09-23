@@ -1,7 +1,6 @@
-import { Component } from '@angular/core';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { Observable } from 'rxjs';
-import { Item } from './lugares/interfaces/item.interface';
+import { Component, OnInit } from '@angular/core';
+import * as mapboxgl from 'mapbox-gl';
+import { environment } from '../environments/environment';
 
 
 @Component({
@@ -9,9 +8,12 @@ import { Item } from './lugares/interfaces/item.interface';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'dominga-panel';
 
+  ngOnInit(): void {
+    (mapboxgl as any).accessToken = environment.mapbox;
+  }
 
   constructor() { }
 }

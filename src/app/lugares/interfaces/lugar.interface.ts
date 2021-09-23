@@ -1,9 +1,12 @@
 export interface Lugar {
     id?: string;
-    activo: boolean;
+    publicado: boolean;
+    departamento: Departamento;
     auto?: boolean;
     bicicleta?: boolean;
     caminar?: boolean;
+    patrimonial?: boolean;
+    accesibilidad?: boolean;
     descripcion?: string;
     imagenHome?: string;
     facebook?: string;
@@ -12,26 +15,53 @@ export interface Lugar {
     latitud: number;
     longitud: number;
     nombre: string;
-    tipo: string;
-    url?: Url[];
-    valoracion?: Valoracion[];
+    tipo: LugarTipo;
+    imagenes?: Imagen[];
+    valoraciones?: Valoracion[];
     videos?: Video[];
     web?: string;
     whatsapp?: string;
-    distancia?: string;
-    distanciaNumber?: number;
-    phone?: string;    
+    telefonos?: string[];
 }
 
-interface Url {
+export interface Imagen {
+    name: string;
     url: string;
 }
 
-interface Valoracion{
+export interface Valoracion {
     usuario: string;
     valor: number;
 }
 
-interface Video{
+export interface Video {
+    name: string;
     url: string;
+}
+
+export enum LugarTipo {
+    urbano = 'Urbano',
+    rural = 'Rural',
+}
+
+export enum Departamento {
+    artigas = "Artigas",
+    canelones = "Canelones",
+    cerroLargo = "Cerro Largo",
+    colonia = "Colonia",
+    durazno = "Durazno",
+    flores = "Flores",
+    florida = "Florida",
+    lavalleja = "Lavalleja",
+    maldonado = "Maldonado",
+    montevideo = "Montevideo",
+    paysandu = "Paysandú",
+    rioNegro = "Río Negro",
+    rivera = "Rivera",
+    rocha = "Rocha",
+    salto = "Salto",
+    sanJose = "San José",
+    soriano = "Soriano",
+    tacuarembo = "Tacuarembó",
+    treintaYTres = "Treinta y Tres"
 }

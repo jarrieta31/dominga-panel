@@ -1,18 +1,32 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ErrorPageComponent } from './error-page/error-page.component';
-
+import { UploadFilesComponent } from './components/upload-files/upload-files.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { ImagenComponent } from './components/imagen/imagen.component';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { FlexLayoutModule } from '@angular/flex-layout';
+import { MaterialModule } from '../material/material.module';
+import { MiniMapaComponent } from './components/mini-mapa/mini-mapa.component';
 
 
 @NgModule({
   declarations: [
-    ErrorPageComponent
+    ErrorPageComponent,
+    UploadFilesComponent,
+    ImagenComponent,
+    MiniMapaComponent
   ],
   exports:[
-    ErrorPageComponent
+    ErrorPageComponent,
+    UploadFilesComponent,
+    ImagenComponent
   ],
   imports: [
-    CommonModule
+    CommonModule,
+    ReactiveFormsModule,
+    FlexLayoutModule,
+    MaterialModule
   ]
 })
 export class SharedModule { }

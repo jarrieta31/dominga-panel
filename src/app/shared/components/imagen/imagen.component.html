@@ -1,0 +1,11 @@
+    <mat-card class="card-imagen">
+        <mat-card-header>
+            <mat-card-title>{{ imagen.name }}</mat-card-title>
+        </mat-card-header>
+        <img mat-card-image [src]="imagen.url">
+        <mat-card-actions>
+            <button mat-raised-button color="warn" (click)="removerImagen(imagen.name)">
+                <mat-icon>delete</mat-icon> Eliminar
+            </button>
+        </mat-card-actions>
+    </mat-card>

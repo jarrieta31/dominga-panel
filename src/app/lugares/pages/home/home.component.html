@@ -13,12 +13,16 @@
         </mat-toolbar>
 
         <mat-nav-list>
-            <a routerLink="./listado" 
-                mat-list-item
-                (click)=sidenav.toggle()>
-                <mat-icon mat-list-icon>label</mat-icon>
-                <span>Listado de Lugares</span>
-            </a>
+                    <a routerLink="./listado" mat-list-item (click)=sidenav.toggle()>
+                        <mat-icon mat-list-icon>label</mat-icon>
+                        <span>Listado de Lugares</span>
+                    </a>
+        <!--
+            <mat-tree>
+                <mat-tree-node>
+                </mat-tree-node>
+            </mat-tree>
+        -->            
             
             <a routerLink="./agregar" 
                 mat-list-item
@@ -43,8 +47,9 @@
             (click)=sidenav.toggle()>
             <mat-icon>menu</mat-icon>
         </button>
+        <span> Panel de Administración</span>
         <span class="spacer"></span>
-        <button mat-button>Logout</button>
+        <button mat-button>Salir</button>
     </mat-toolbar>
 
     <div class="container">

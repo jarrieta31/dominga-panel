@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { LugaresService } from '../../services/lugares.service';
 import { Lugar } from '../../interfaces/lugar.interface';
-import { Item } from '../../interfaces/item.interface';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -23,7 +22,9 @@ export class ListadoComponent implements OnInit {
 /*
     this.lugaresService.getLugares()
       .subscribe( lugares =>  this.items = lugares );
+
 */    
+
   }
 
 }

@@ -1,0 +1,39 @@
+
+.contenedor {
+    /*
+    border: rgba(0, 0, 0, 0.12) solid 1px;
+    border-radius: 5px;
+    padding: 15px 40px;
+    /*
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    */
+    /*background-color: aquamarine; */
+    min-height: 173px;
+    margin-bottom: 20px;
+}
+
+.contenedor_formulario {
+    width: 100%;
+}
+  
+.contenedor > .download {
+    background: #1081ff;
+    color: #FFFFFF;
+    padding: 10px 20px;
+    /*
+    margin-bottom: 20px;
+    */
+}
+
+.download a {
+    text-decoration: underline;
+    color: #FFFFFF;
+}
+
+
+.botonFile {
+    color: #1081ff;
+}
