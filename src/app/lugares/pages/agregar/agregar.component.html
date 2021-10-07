@@ -75,7 +75,24 @@
                 </mat-form-field>
             </div>
 
-            <mat-divider></mat-divider>
+            <div fxLayout="row">
+                <div fxLayout="column">
+                    <h2>Ubicación del Lugar</h2>
+                    <div>
+                        <p>Abra el mapa y creé un marcador en la ubicación del lugar para obtener sus coordenadas</p>
+                    </div>
+
+                <div>
+                    <button mat-raised-button color="primary" (click)="openDialog()">
+                        <mat-icon>map</mat-icon>
+                        Abrir Mapa
+                    </button>
+                </div>
+                </div>
+                <div fxLayout="column">
+                    <app-mini-mapa></app-mini-mapa>
+                </div>
+            </div>
 
             <div fxLayout="column" formArrayName="telefonos">
                 <div>

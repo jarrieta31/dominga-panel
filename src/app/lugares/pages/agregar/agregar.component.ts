@@ -4,6 +4,9 @@ import { FormBuilder, Validators, FormGroup, FormControl, FormArray } from '@ang
 import { StorageService } from '../../../shared/services/storage.service';
 import { zip } from 'rxjs';
 import { map, filter, tap } from 'rxjs/operators';
+import { DialogMapaComponent } from '../../../shared/components/dialog-mapa/dialog-mapa.component';
+import { MatDialog } from '@angular/material/dialog';
+import { MapaService } from '../../../shared/services/mapa.service';
 
 
 @Component({
@@ -33,12 +36,11 @@ export class AgregarComponent implements OnInit {
         patrimonial: [false],
         accesibilidad: [false],
         descripcion: [''],
-        imagenHome: [ this.imagenHomeDefault ],
+        imagenHome: [this.imagenHomeDefault],
         facebook: [''],
-        imagenPrincipal: [ this.imagenPrincipalDefault ],
+        imagenPrincipal: [this.imagenPrincipalDefault],
         instagram: [''],
-        latitud: [0.0],
-        longitud: [0.0],
+        ubicacion: [0],
         nombre: ['', [Validators.required, Validators.minLength(2)]],
         tipo: [LugarTipo.urbano],
         imagenes: this.fb.array([
@@ -66,8 +68,32 @@ export class AgregarComponent implements OnInit {
 
     constructor(
         public fb: FormBuilder,
-        private fbStorage: StorageService
-    ) { }
+        private fbStorage: StorageService,
+        public dialog: MatDialog,
+        private mapaService: MapaService
+    ) {
+        /** Observable que se dispara al cambiar el valor del minimapa.
+         *  Los datos del formulario cambian en funcion del valor del mimimapa
+         */
+        const sourceMapa = this.mapaService.miniMapaSubject$.subscribe(res => {
+            if (res !== undefined && res.marcador == true) {
+                this.ubicacion.setValue(res.centro);
+            }
+            else{
+                this.ubicacion.setValue(0);
+            }
+            /** Aca hay que chequearlo bien porque iria el caso en que el formulrio bien con los datos
+            if (this.ubicacion.value !== 0 ) {
+                this.mapaService.dMiniMapa = this.ubicacion.value();
+            }
+            */
+        });
+
+        console.log("ubicacion vale: " + this.ubicacion.value);
+        if (this.ubicacion.value !== 0) {
+            this.mapaService.dMiniMapa = this.ubicacion.value();
+        }
+    }
 
     ngOnInit(): void {
         const lugarGuardado = localStorage.getItem('lugar');
@@ -129,7 +155,7 @@ export class AgregarComponent implements OnInit {
         } else {
             // Si $event viene vacío se borra la imagen del storage y se asigna la imagen por defecto
             this.fbStorage.borrarArchivoStorage(this.directorioHomeStorage, this.imagenHome.value.name);
-            this.lugarForm.controls['imagenHome'].setValue( this.imagenHomeDefault );
+            this.lugarForm.controls['imagenHome'].setValue(this.imagenHomeDefault);
         }
     }
 
@@ -146,6 +172,20 @@ export class AgregarComponent implements OnInit {
                 url: ['', Validators.required]
             })
         )
+    }
+
+
+    openDialog() {
+        const dialogRef = this.dialog.open(DialogMapaComponent, {
+            width: "60%",
+            height: "800px",
+            data: 0
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            console.log(`Dialog result: ${result}`);
+            //this.mapaService.emitirDataMap(this.mapaService.dataTemporal);
+        });
     }
 
 
@@ -172,6 +212,11 @@ export class AgregarComponent implements OnInit {
     /** Getter que retorna el FormControl del campo imagenHome */
     get imagenHome() {
         return this.lugarForm.get('imagenHome');
+    }
+
+    /** Getter que retorna el FormControl del campo ubicacion */
+    get ubicacion() {
+        return this.lugarForm.get('ubicacion');
     }
 
 }

@@ -8,6 +8,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MaterialModule } from '../material/material.module';
 import { MiniMapaComponent } from './components/mini-mapa/mini-mapa.component';
+import { MapaComponent } from './components/mapa/mapa.component';
+import { DialogMapaComponent } from './components/dialog-mapa/dialog-mapa.component';
 
 
 @NgModule({
@@ -15,12 +17,16 @@ import { MiniMapaComponent } from './components/mini-mapa/mini-mapa.component';
     ErrorPageComponent,
     UploadFilesComponent,
     ImagenComponent,
-    MiniMapaComponent
+    MiniMapaComponent,
+    MapaComponent,
+    DialogMapaComponent
   ],
   exports:[
     ErrorPageComponent,
     UploadFilesComponent,
-    ImagenComponent
+    ImagenComponent,
+    MiniMapaComponent,
+    MapaComponent
   ],
   imports: [
     CommonModule,

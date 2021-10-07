@@ -1,3 +1,6 @@
+import { Posicion } from '../../shared/interfaces/datosMapa.interface';
+
+
 export interface Lugar {
     id?: string;
     publicado: boolean;
@@ -12,8 +15,7 @@ export interface Lugar {
     facebook?: string;
     imagenPrincipal?: string;
     instagram?: string;
-    latitud: number;
-    longitud: number;
+    ubicacion: Posicion;
     nombre: string;
     tipo: LugarTipo;
     imagenes?: Imagen[];

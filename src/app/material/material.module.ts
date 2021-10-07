@@ -18,6 +18,7 @@ import {MatSelectModule} from '@angular/material/select';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
 import { NgxMatFileInputModule } from '@angular-material-components/file-input';
+import { MatDialogModule } from '@angular/material/dialog';
 
 
 
@@ -44,7 +45,8 @@ import { NgxMatFileInputModule } from '@angular-material-components/file-input';
     MatSelectModule,
     MatCheckboxModule,
     MatProgressBarModule,
-    NgxMatFileInputModule
+    NgxMatFileInputModule,
+    MatDialogModule
   ]
 })
 export class MaterialModule { }
