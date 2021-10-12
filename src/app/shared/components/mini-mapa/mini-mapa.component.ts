@@ -33,15 +33,19 @@ export class MiniMapaComponent implements OnInit, AfterViewInit {
     });
 
     const sourceMiniMapa = this.mapaService.miniMapaSubject$.subscribe(res => {
-        if(res !== undefined && res.marcador == true)  {
-          //revisar todas las funciones porque las copie de mapa
-          // aca hay que llamar las funcion para crear el marcador
-          console.log("afterViewInit del minimapa")
+
+      if (res !== undefined && res.marcador == true ) {
+        // Si el marcador no existe lo crea, de lo contrario cambia su ubicacion
+        if (this.marcador === undefined) {
           this.addMarker();
-          this.flyToMarker()
-        } else {
-          this.deleteMarker();
+        }else{
+          this.marcador.setLngLat(res.centro)
         }
+        console.log("afterViewInit del minimapa")
+        this.flyToMarker()
+      } else {
+        this.deleteMarker();
+      }
     });
   }
 

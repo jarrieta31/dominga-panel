@@ -7,6 +7,8 @@ import { map, filter, tap } from 'rxjs/operators';
 import { DialogMapaComponent } from '../../../shared/components/dialog-mapa/dialog-mapa.component';
 import { MatDialog } from '@angular/material/dialog';
 import { MapaService } from '../../../shared/services/mapa.service';
+import { Localidad } from '../../../shared/interfaces/localidad.interface';
+import { LocalidadesService } from '../../../shared/services/localidades.service';
 
 
 @Component({
@@ -26,6 +28,8 @@ export class AgregarComponent implements OnInit {
     public departamentos = Object.values(Departamento);
     private imagenHomeDefault = { name: "imagen-default", url: "assets/default-home.jpg" };
     private imagenPrincipalDefault = { name: "imagen-default", url: "assets/default-lugar-galeria.jpg" };
+    localidades: Localidad[] = [];
+    localidad: Localidad[] = [];
 
     public lugarForm: FormGroup = this.fb.group({
         publicado: [false, Validators.required],
@@ -70,24 +74,54 @@ export class AgregarComponent implements OnInit {
         public fb: FormBuilder,
         private fbStorage: StorageService,
         public dialog: MatDialog,
-        private mapaService: MapaService
+        private mapaService: MapaService,
+        private localidadesService: LocalidadesService       
     ) {
-        /** Observable que se dispara al cambiar el valor del minimapa.
+            //este metodo solo se usa para cargar la base de datos una vez
+           //this.localidadesService.cargarLocalidades(); 
+
+
+            this.localidadesService.getAllLocalidades().pipe(
+                tap( res => {
+                 res.forEach(res => {
+                    // Obtiene todos las localidades y las guarda en el array localidades
+                    const loc = res.payload.doc.data();
+                    this.localidades.push(loc);
+                 });
+                 
+            })
+            ).subscribe();
+
+            console.log(this.localidades.length) 
+
+            for (let i = 0; i < this.localidades.length; i++) {
+                if( this.localidades[i].departamento == "San José" ){
+                    console.log(this.localidades[i].nombre)
+                    this.localidad.push(this.localidades[i]);
+                }
+                
+            }
+
+            this.localidad.forEach(loc => {console.log( loc.nombre )});
+
+
+            /** Observable que se dispara al cambiar el valor del minimapa.
          *  Los datos del formulario cambian en funcion del valor del mimimapa
          */
         const sourceMapa = this.mapaService.miniMapaSubject$.subscribe(res => {
+            //si los datos del minimapa son validos y tiene marcado en true
             if (res !== undefined && res.marcador == true) {
                 this.ubicacion.setValue(res.centro);
             }
             else{
                 this.ubicacion.setValue(0);
             }
-            /** Aca hay que chequearlo bien porque iria el caso en que el formulrio bien con los datos
+            /** Aca hay que chequearlo bien porque iria el caso en que el formulrio biene con los datos
             if (this.ubicacion.value !== 0 ) {
                 this.mapaService.dMiniMapa = this.ubicacion.value();
             }
             */
-        });
+        });    
 
         console.log("ubicacion vale: " + this.ubicacion.value);
         if (this.ubicacion.value !== 0) {
@@ -110,6 +144,10 @@ export class AgregarComponent implements OnInit {
         ).subscribe(formValue => {
             localStorage.setItem('lugar', JSON.stringify(formValue));
         })
+
+        if (this.ubicacion.value !== 0 ){
+            
+        }
     }
 
     agregarImagenSubida($event) {

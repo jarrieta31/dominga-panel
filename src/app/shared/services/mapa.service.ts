@@ -8,7 +8,6 @@ import { DatosMapa, Posicion } from '../interfaces/datosMapa.interface';
 export class MapaService {
 
   dMapa: DatosMapa;
-  //dataTemporal: DatosMapa;
   dMiniMapa: DatosMapa;
   mapaSubject$: Subject<Posicion>;
   miniMapaSubject$: Subject<DatosMapa>
@@ -29,14 +28,9 @@ export class MapaService {
     this.dMiniMapa = { centro: { lng: -56.43721973207522, lat: -32.824680163553545 }, zoom: 5, marcador: false };
   }
 
- // resetDataTemporal() {
- //   this.dataTemporal = { centro: { lng: -56.43721973207522, lat: -32.824680163553545 }, zoom: 5, marcador: false };
- // }
-
   /**Emite el nuevo valor de dataMap a todos los subscriptores y
    * setea el valor de dataMapa
    */
-  
   emitirDataMap(posicion:Posicion){
     this.mapaSubject$.next(posicion);
     this.dMiniMapa.centro = posicion;
@@ -46,7 +40,6 @@ export class MapaService {
 
 
   emitirMiniMapa(){
-    
     this.miniMapaSubject$.next(this.dMiniMapa);
   }
 

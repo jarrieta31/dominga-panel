@@ -36,7 +36,7 @@ export class LugaresService {
   }
 
   getLugares() {
-    return this.angularFirestore.collection('usuarios').snapshotChanges();
+    return this.angularFirestore.collection('lugares').snapshotChanges();
   }
   
   getLugarId(id: string):Observable<any> {
@@ -791,11 +791,7 @@ export class LugaresService {
       }];
 
     for(let i=0; i < datos.length; i ++ ){
-
-        //this.lugaresCollection.add( datos[i] );
         this.angularFirestore.collection('lugares').add(datos[i]);
-        //console.log(datos[i]);
-      
     }
     //this.angularFirestore.collection('lugares').add(datos)
   }
