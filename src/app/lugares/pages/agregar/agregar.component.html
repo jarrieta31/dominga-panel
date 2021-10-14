@@ -32,8 +32,15 @@
             <div fxLayout="row">
                 <mat-form-field id="camp-principal" fxFlex="50%">
                     <mat-label>Selecciona el Departamento</mat-label>
-                    <mat-select formControlName="departamento" (selectionChange)="setImagenPrincipal()">
+                    <mat-select formControlName="departamento" (selectionChange)="getLocalidadesPorDepartamento()">
                         <mat-option *ngFor="let departamento of departamentos" [value]="departamento">{{ departamento }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field id="camp-principal2" fxFlex="50%">
+                    <mat-label>Selecciona la Localidad</mat-label>
+                    <mat-select formControlName="localidad" (selectionChange)="setImagenPrincipal()">
+                        <mat-option *ngFor="let localidad of localidades" [value]="localidad">{{ localidad.nombre }}
                         </mat-option>
                     </mat-select>
                 </mat-form-field>

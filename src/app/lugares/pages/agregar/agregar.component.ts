@@ -28,13 +28,14 @@ export class AgregarComponent implements OnInit {
     public departamentos = Object.values(Departamento);
     private imagenHomeDefault = { name: "imagen-default", url: "assets/default-home.jpg" };
     private imagenPrincipalDefault = { name: "imagen-default", url: "assets/default-lugar-galeria.jpg" };
-    localidades: Localidad[] = [];
-    localidad: Localidad[] = [];
+    localidades?: Localidad[] = [];
+    //    localidad: Localidad[] = [];
 
     public lugarForm: FormGroup = this.fb.group({
         publicado: [false, Validators.required],
         auto: [false],
-        departamento: [Departamento.sanJose, Validators.required],
+        departamento: ['', Validators.required],
+        localidad: ['', Validators.required],
         bicicleta: [false],
         caminar: [false],
         patrimonial: [false],
@@ -75,45 +76,19 @@ export class AgregarComponent implements OnInit {
         private fbStorage: StorageService,
         public dialog: MatDialog,
         private mapaService: MapaService,
-        private localidadesService: LocalidadesService       
-    ) {
-            //este metodo solo se usa para cargar la base de datos una vez
-           //this.localidadesService.cargarLocalidades(); 
+        private localidadesService: LocalidadesService) {
+        //este metodo solo se usa para cargar la base de datos una vez
+        //this.localidadesService.cargarLocalidades(); 
 
-
-            this.localidadesService.getAllLocalidades().pipe(
-                tap( res => {
-                 res.forEach(res => {
-                    // Obtiene todos las localidades y las guarda en el array localidades
-                    const loc = res.payload.doc.data();
-                    this.localidades.push(loc);
-                 });
-                 
-            })
-            ).subscribe();
-
-            console.log(this.localidades.length) 
-
-            for (let i = 0; i < this.localidades.length; i++) {
-                if( this.localidades[i].departamento == "San José" ){
-                    console.log(this.localidades[i].nombre)
-                    this.localidad.push(this.localidades[i]);
-                }
-                
-            }
-
-            this.localidad.forEach(loc => {console.log( loc.nombre )});
-
-
-            /** Observable que se dispara al cambiar el valor del minimapa.
-         *  Los datos del formulario cambian en funcion del valor del mimimapa
-         */
+        /** Observable que se dispara al cambiar el valor del minimapa.
+     *  Los datos del formulario cambian en funcion del valor del mimimapa
+     */
         const sourceMapa = this.mapaService.miniMapaSubject$.subscribe(res => {
             //si los datos del minimapa son validos y tiene marcado en true
             if (res !== undefined && res.marcador == true) {
                 this.ubicacion.setValue(res.centro);
             }
-            else{
+            else {
                 this.ubicacion.setValue(0);
             }
             /** Aca hay que chequearlo bien porque iria el caso en que el formulrio biene con los datos
@@ -121,7 +96,7 @@ export class AgregarComponent implements OnInit {
                 this.mapaService.dMiniMapa = this.ubicacion.value();
             }
             */
-        });    
+        });
 
         console.log("ubicacion vale: " + this.ubicacion.value);
         if (this.ubicacion.value !== 0) {
@@ -145,9 +120,28 @@ export class AgregarComponent implements OnInit {
             localStorage.setItem('lugar', JSON.stringify(formValue));
         })
 
-        if (this.ubicacion.value !== 0 ){
-            
+        if (this.ubicacion.value !== 0) {
+
         }
+
+        this.getAllLocalidades();
+
+        console.log(this.localidades.length);
+
+    }
+
+    /** Funciona pero no se usa es solo para pruebas: Método que trae 
+     * todas las localidades existentes */
+    getAllLocalidades(): void {
+        this.localidadesService.getAll().snapshotChanges().pipe(
+            map(changes =>
+                changes.map(c =>
+                    ({ id: c.payload.doc.id, ...c.payload.doc.data() })
+                )
+            )
+        ).subscribe(data => {
+            this.localidades = data;
+        });
     }
 
     agregarImagenSubida($event) {
@@ -200,6 +194,18 @@ export class AgregarComponent implements OnInit {
     /** Se dispara al seleccionar la imagen Principal desde la galeria, pero por ahora no hace nada */
     setImagenPrincipal() {
         console.log("estas en setImagenPrincipal ")
+    }
+
+    /** Este método es llamado cada vez que se lecciona un departamento  */
+    getLocalidadesPorDepartamento() {
+        this.localidadesService.getLoadidadesDepartamento(this.departamento.value)
+            .then(res => {
+                this.localidades = [];
+                res.docs.forEach(item => {
+                    //cada item contiene el id y la data por separados
+                    this.localidades.push({ id: item.id, ...item.data() })
+                })
+            })
     }
 
     agregarNuevoVideoAlFormulario() {
@@ -255,6 +261,10 @@ export class AgregarComponent implements OnInit {
     /** Getter que retorna el FormControl del campo ubicacion */
     get ubicacion() {
         return this.lugarForm.get('ubicacion');
+    }
+
+    get departamento() {
+        return this.lugarForm.get('departamento');
     }
 
 }

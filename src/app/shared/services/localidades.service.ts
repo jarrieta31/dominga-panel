@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollection, DocumentChangeAction, DocumentReference, DocumentData } from '@angular/fire/compat/firestore';
 import { Localidad } from '../interfaces/localidad.interface';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -9,20 +10,44 @@ import { Observable } from 'rxjs';
 export class LocalidadesService {
 
   private localidadesCollection: AngularFirestoreCollection<Localidad>;
-  localidades$: Observable<Localidad>;
+  localidades$: Observable<Localidad[]>;
+  localidadesRef: AngularFirestoreCollection<Localidad>;
 
-  constructor( 
-    private angularFirestore: AngularFirestore ) {
-    this.localidadesCollection = this.angularFirestore.collection<Localidad>('localidades');
+  constructor(
+    private db: AngularFirestore) {
+    this.localidadesCollection = this.db.collection<Localidad>('localidades');
+    this.localidadesRef = db.collection('localidades');
+
+    //Por ahora no se esta usando pero es otra manera de obtener todos las localidades
+    this.localidades$ = this.db.collection<Localidad>('localidades')
+      .snapshotChanges().pipe(
+        map(actions => actions.map(a => {
+          const data = a.payload.doc.data() as Localidad;
+          const id = a.payload.doc.id;
+          return { id, ...data };
+        }))
+      );
   }
 
-  getAllLocalidades():Observable<DocumentChangeAction<Localidad>[]>{
-    return this.localidadesCollection.snapshotChanges();
-
+  /**OK Obtiene la colección completa de localidades */
+  getAll(): AngularFirestoreCollection<Localidad> {
+    return this.localidadesRef;
   }
 
-  getLocalidadesPorDepartamento(nameDep:string){
-   // return this.localidadesCollection.get
+  getLoadidadesDepartamento(departamento: string) {
+    return this.localidadesRef.ref.where('departamento', '==', departamento).get();
+  }
+
+  create(localidad: Localidad): any {
+    return this.localidadesRef.add(localidad);
+  }
+
+  update(id: string, data: any): Promise<void> {
+    return this.localidadesRef.doc(id).update(data);
+  }
+
+  delete(id: string): Promise<void> {
+    return this.localidadesRef.doc(id).delete();
   }
 
   /** Método para llenar la base de datos con las localidades de todo el país */
@@ -2492,7 +2517,7 @@ export class LocalidadesService {
     ];
 
     datos.forEach(localidad => {
-      this.angularFirestore.collection('localidades').add(localidad);
+      this.db.collection('localidades').add(localidad);
     });
   }
 

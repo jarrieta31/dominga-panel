@@ -1,10 +1,12 @@
 import { Posicion } from '../../shared/interfaces/datosMapa.interface';
+import { Localidad } from '../../shared/interfaces/localidad.interface';
 
 
 export interface Lugar {
     id?: string;
     publicado: boolean;
     departamento: Departamento;
+    localidad: Localidad;
     auto?: boolean;
     bicicleta?: boolean;
     caminar?: boolean;
