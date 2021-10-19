@@ -100,7 +100,7 @@
                     <app-mini-mapa></app-mini-mapa>
                 </div>
             </div>
-
+<!--
             <div fxLayout="column" formArrayName="telefonos">
                 <div>
                     <button mat-raised-button color="primary" (click)="agregarNuevoTelefonoAlFormulario()">
@@ -122,7 +122,72 @@
                     <div fxFlex></div>
                 </div>
             </div>
+        -->
+
+            <!-- ============================== Telefonos ==================================== -->
+            <div fxLayout="column" class="container">
+                <div fxFlex="100%">
+                    <h2 class="subtitulo">Teléfonos</h2>
+                </div>
+                <div fxLayout="row" formArrayName="telefonos">
+                    <div style="width: 50%;">
+                        <mat-form-field fxLayout="column" fxLayoutAlign="space-between none"
+                            *ngFor="let telefono of telefonos.controls; let i=index" [formGroupName]="i"
+                            style="width: 300px;">
+                            <input matInput type="tel" formControlName="numero" placeholder="43401234 o 099123456">
+                            <mat-icon matSuffix>phone</mat-icon>
+                            <mat-label>Inserte el teléfono {{ i + 1}}</mat-label>
+                        </mat-form-field>
+                    </div>
+                    <div fxLayout="row" fxLayoutAlign="center center" style=" width: 50%; ">
+                        <button mat-raised-button color="primary" (click)="agregarNuevoTelefonoAlFormulario()">
+                            <mat-icon>add</mat-icon>
+                            Agregar otro teléfono
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- ============================== Sitio Web Y Redes Sociales ==================================== -->
+            <div fxLayout="column" class="container">
+                <div fxFlex="100%">
+                    <h2 class="subtitulo">Sitio Web y Redes Sociales</h2>
+                </div>
+                <div fxLayout="row" fxLayoutGap="10px">
+                    <div fxLayout="column" fxFlex.gt-lg="50%">
+                        <mat-form-field class="example-full-width" appearance="fill">
+                            <mat-label>Sitio Web</mat-label>
+                            <input type="url" matInput formControlName="web" placeholder="http://www.fincapiedra.com/">
+                            <mat-icon matSuffix>insert_link</mat-icon>
+                        </mat-form-field>
+                        <mat-form-field class="example-full-width" appearance="fill">
+                            <mat-label>Whatsapp</mat-label>
+                            <input type="url" matInput formControlName="whatsapp"
+                                placeholder="http://www.fincapiedra.com/">
+                            <mat-icon matSuffix>insert_link</mat-icon>
+                        </mat-form-field>
+                    </div>
+                    <div fxLayout="column" fxFlex.gt-lg="50%">
+                        <mat-form-field class="example-full-width" appearance="fill">
+                            <mat-label>Facebook</mat-label>
+                            <input type="url" matInput formControlName="facebook"
+                                placeholder="http://www.fincapiedra.com/">
+                            <mat-icon matSuffix>insert_link</mat-icon>
+                        </mat-form-field>
+                        <mat-form-field class="example-full-width" appearance="fill">
+                            <mat-label>Instagram</mat-label>
+                            <input type="url" matInput formControlName="instagram"
+                                placeholder="http://www.fincapiedra.com/">
+                            <mat-icon matSuffix>insert_link</mat-icon>
+                        </mat-form-field>
+                    </div>
+                </div>
+
+            </div>
         </div>
+
+        
 
         <!-- ============================== Columna derecha ==================================== -->
         <div class="main-column" fxFlex="50%" fxLayout="column" fxLayoutAlign="start stretch" fxLayoutGap="10">

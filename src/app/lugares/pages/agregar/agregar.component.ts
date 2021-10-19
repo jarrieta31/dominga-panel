@@ -65,7 +65,7 @@ export class AgregarComponent implements OnInit {
         whatsapp: [''],
         telefonos: this.fb.array([
             this.fb.group({
-                numero: ['20307361', [Validators.minLength(8)]]
+                numero: ['', [Validators.minLength(8), Validators.maxLength(9)]]
             })
         ])
     });
@@ -171,7 +171,7 @@ export class AgregarComponent implements OnInit {
         const telefonosControl = this.lugarForm.get('telefonos') as FormArray;
         telefonosControl.push(
             this.fb.group({
-                numero: [, [Validators.required, Validators.minLength(8)]]
+                numero: ['', [Validators.minLength(8), Validators.maxLength(9)]]
             })
         )
     }
