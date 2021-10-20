@@ -147,7 +147,28 @@
                     </div>
                 </div>
             </div>
-
+            <!-- ============================== Videos ==================================== -->
+            <div fxLayout="column" class="container">
+                <div fxFlex="100%">
+                    <h2 class="subtitulo">Videos en Youtube</h2>
+                </div>
+                <div fxLayout="row" formArrayName="videos">
+                    <div style="width: 50%;">
+                        <mat-form-field fxLayout="column" fxLayoutAlign="space-between none"
+                            *ngFor="let video of videos.controls;let j=index" [formGroupName]="j" style="width: 400px;">
+                            <input matInput type="url" formControlName="url" placeholder="https://www.youtube">
+                            <mat-icon matSuffix>add_link</mat-icon>
+                            <mat-label>Inserte la url del video </mat-label>
+                        </mat-form-field>
+                    </div>
+                    <div fxLayout="row" fxLayoutAlign="center center" style=" width: 50%; ">
+                        <button mat-raised-button color="primary" (click)="agregarNuevoVideoAlFormulario()">
+                            <mat-icon>add</mat-icon>
+                            Agregar otro video
+                        </button>
+                    </div>
+                </div>
+            </div>
 
             <!-- ============================== Sitio Web Y Redes Sociales ==================================== -->
             <div fxLayout="column" class="container">

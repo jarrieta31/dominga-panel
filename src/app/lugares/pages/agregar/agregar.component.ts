@@ -57,8 +57,7 @@ export class AgregarComponent implements OnInit {
         //valoraciones?: Valoracion[];
         videos: this.fb.array([
             this.fb.group({
-                name: ['', Validators.required],
-                url: ['', Validators.required]
+                url: ['']
             })
         ]),
         web: [''],
@@ -176,6 +175,15 @@ export class AgregarComponent implements OnInit {
         )
     }
 
+    agregarNuevoVideoAlFormulario() {
+        const videosControl = this.lugarForm.get('videos') as FormArray;
+        videosControl.push(
+            this.fb.group({
+                url: ['']
+            })
+        )
+    }
+
     /**
      * Asigna el valor recibido al campo imagenHome del formulario.
      * @param $event - Contiene los datos de la imágen subida para lugaresHome.
@@ -208,15 +216,6 @@ export class AgregarComponent implements OnInit {
             })
     }
 
-    agregarNuevoVideoAlFormulario() {
-        const videosControl = this.lugarForm.get('videos') as FormArray;
-        videosControl.push(
-            this.fb.group({
-                name: ['', Validators.required],
-                url: ['', Validators.required]
-            })
-        )
-    }
 
 
     openDialog() {

@@ -22,7 +22,7 @@ export interface Lugar {
     tipo: LugarTipo;
     imagenes?: Imagen[];
     valoraciones?: Valoracion[];
-    videos?: Video[];
+    videos?: string[];
     web?: string;
     whatsapp?: string;
     telefonos?: string[];
