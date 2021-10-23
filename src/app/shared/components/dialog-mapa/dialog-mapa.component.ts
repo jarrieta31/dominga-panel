@@ -21,14 +21,13 @@ export class DialogMapaComponent implements OnInit {
   }
 
   confirmarMapa() {
-    console.log("msj desde dialog confirmar");
     if (this.mapaService.dMapa.marcador == true) {
       this.mapaService.dMiniMapa.centro = this.mapaService.dMapa.centro;
       this.mapaService.dMiniMapa.marcador = true;
       this.mapaService.dMiniMapa.zoom = 15;
       this.mapaService.emitirMiniMapa();
     }
-    else{
+    else {
       //si no hay marcador resetea los datos del minimapa
       this.mapaService.resetDataMiniMapa();
       this.mapaService.emitirMiniMapa()
@@ -39,9 +38,7 @@ export class DialogMapaComponent implements OnInit {
   }
 
   closeDialog() {
-    //this.mapaService.dMapa = this.mapaService.dMiniMapa;
     this.mapaService.resetDataMapa();
-    console.log("dMapa marcador: " + this.mapaService.dMapa.marcador);
     this.dialogRef.close();
   }
 

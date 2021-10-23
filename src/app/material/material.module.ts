@@ -13,13 +13,13 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTreeModule } from '@angular/material/tree'; 
-import {MatSlideToggleModule} from '@angular/material/slide-toggle'; 
-import {MatSelectModule} from '@angular/material/select'; 
-import {MatCheckboxModule} from '@angular/material/checkbox';
-import {MatProgressBarModule} from '@angular/material/progress-bar';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle'; 
+import { MatSelectModule } from '@angular/material/select'; 
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { NgxMatFileInputModule } from '@angular-material-components/file-input';
 import { MatDialogModule } from '@angular/material/dialog';
-
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 
 
@@ -46,7 +46,8 @@ import { MatDialogModule } from '@angular/material/dialog';
     MatCheckboxModule,
     MatProgressBarModule,
     NgxMatFileInputModule,
-    MatDialogModule
+    MatDialogModule,
+    MatSnackBarModule
   ]
 })
 export class MaterialModule { }

@@ -22,7 +22,6 @@ export class MapaComponent implements OnInit {
     ) { }
 
   ngOnInit(): void {
-    console.log("onInit minimapa.marcador: " + this.mapaService.dMiniMapa.marcador)
   }
 
   ngOnDestroy(): void {
@@ -79,7 +78,7 @@ export class MapaComponent implements OnInit {
         color: "red",
         draggable: true
       })
-        .setLngLat(this.mapaService.dMapa.centro)
+        .setLngLat(this.mapa.getCenter())
         .addTo(this.mapa);
       this.mapaService.dMapa.marcador = true;
       this.mapaService.dMapa.zoom = 15;

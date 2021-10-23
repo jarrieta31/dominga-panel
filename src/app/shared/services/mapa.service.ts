@@ -17,7 +17,6 @@ export class MapaService {
     this.miniMapaSubject$ = new Subject();
     this.dMapa = { centro: { lng: -56.43721973207522, lat: -32.824680163553545 }, zoom: 6, marcador: false };
     this.dMiniMapa = { centro: { lng: -56.43721973207522, lat: -32.824680163553545 }, zoom: 5, marcador: false };
-   // this.dataTemporal = this.dataMapa;
   }
 
   resetDataMapa() {

@@ -31,10 +31,11 @@ mat-divider{
 
 .container-img {
     /*width: 300px;*/
-/*    display: flex;
+    /*display: flex;
     flex-direction: column;
     align-items: center;
     */
+    
 }
 
 .imagen-home {
@@ -69,11 +70,20 @@ mat-divider{
 }
 
 .container-home {
-    height: 420px;
+    height: 402px;
+    padding-right: 40px;
 }
 
-.home {
+.container-galeria {
     /*border: red solid 1px;*/
+    /*background-color: darkgoldenrod;*/
+    padding-right: 40px;
+    min-height: 920px;
+}
+
+.contenedor_galeria {
+    background-color: red;
+    min-height: 615px;
 }
 
 #camp-principal {

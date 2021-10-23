@@ -9,6 +9,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { MapaService } from '../../../shared/services/mapa.service';
 import { Localidad } from '../../../shared/interfaces/localidad.interface';
 import { LocalidadesService } from '../../../shared/services/localidades.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { LugaresService } from '../../services/lugares.service';
 
 
 @Component({
@@ -25,6 +27,7 @@ export class AgregarComponent implements OnInit {
     galeria: Imagen[] = [];
     imagenSubidaAgregar: Imagen;
     lugaresTipo = [{ tipo: "Urbano" }, { tipo: "Rural" }];
+    opsPatrimonial = [{ texto: "Sí", valor: true }, { texto: "No", valor: false }];
     public departamentos = Object.values(Departamento);
     private imagenHomeDefault = { name: "imagen-default", url: "assets/default-home.jpg" };
     private imagenPrincipalDefault = { name: "imagen-default", url: "assets/default-lugar-galeria.jpg" };
@@ -40,7 +43,7 @@ export class AgregarComponent implements OnInit {
         caminar: [false],
         patrimonial: [false],
         accesibilidad: [false],
-        descripcion: [''],
+        descripcion: ['', [Validators.minLength(15), Validators.maxLength(50)]],
         imagenHome: [this.imagenHomeDefault],
         facebook: [''],
         imagenPrincipal: [this.imagenPrincipalDefault],
@@ -71,11 +74,13 @@ export class AgregarComponent implements OnInit {
 
 
     constructor(
+        public lugaresService: LugaresService,
         public fb: FormBuilder,
         private fbStorage: StorageService,
         public dialog: MatDialog,
         private mapaService: MapaService,
-        private localidadesService: LocalidadesService) {
+        private localidadesService: LocalidadesService,
+        private _snackBar: MatSnackBar) {
         //este metodo solo se usa para cargar la base de datos una vez
         //this.localidadesService.cargarLocalidades(); 
 
@@ -97,7 +102,6 @@ export class AgregarComponent implements OnInit {
             */
         });
 
-        console.log("ubicacion vale: " + this.ubicacion.value);
         if (this.ubicacion.value !== 0) {
             this.mapaService.dMiniMapa = this.ubicacion.value();
         }
@@ -107,7 +111,8 @@ export class AgregarComponent implements OnInit {
         const lugarGuardado = localStorage.getItem('lugar');
         //si lugarGuardado no esta vacio lo asigna al formulario
         if (lugarGuardado) {
-            this.lugarForm.setValue(JSON.parse(lugarGuardado));
+            //descomentar cuando este enviando bien los datos
+            //    this.lugarForm.setValue(JSON.parse(lugarGuardado));
         }
 
         /**Si el formuario es válido lo guarda en el storage local */
@@ -125,7 +130,7 @@ export class AgregarComponent implements OnInit {
 
         this.getAllLocalidades();
 
-        console.log(this.localidades.length);
+        //console.log(this.localidades.length);
 
     }
 
@@ -184,6 +189,17 @@ export class AgregarComponent implements OnInit {
         )
     }
 
+    /**Función para prevenir la publicación de un lugar sin los datos indispensables
+     * para la app
+     */
+    openSnackBar() {
+        let message = "Mensaje de error al publicar el lugar"
+        this._snackBar.open(message, "Aceptar", {
+            horizontalPosition: 'center',
+            verticalPosition: 'top',
+        });
+    }
+
     /**
      * Asigna el valor recibido al campo imagenHome del formulario.
      * @param $event - Contiene los datos de la imágen subida para lugaresHome.
@@ -204,7 +220,7 @@ export class AgregarComponent implements OnInit {
         console.log("estas en setImagenPrincipal ")
     }
 
-    /** Este método es llamado cada vez que se lecciona un departamento  */
+    /** Este método es llamado cada vez que se selecciona un departamento  */
     getLocalidadesPorDepartamento() {
         this.localidadesService.getLoadidadesDepartamento(this.departamento.value)
             .then(res => {
@@ -216,19 +232,36 @@ export class AgregarComponent implements OnInit {
             })
     }
 
-
-
+    /** Abre el dialog con para el mapa */
     openDialog() {
-        const dialogRef = this.dialog.open(DialogMapaComponent, {
-            width: "60%",
-            height: "800px",
-            data: 0
-        });
+        try {
+            let dialogRef = this.dialog.open(DialogMapaComponent, {
+                width: "60%",
+                height: "800px",
+                data: 0
+            });
 
-        dialogRef.afterClosed().subscribe(result => {
-            console.log(`Dialog result: ${result}`);
-            //this.mapaService.emitirDataMap(this.mapaService.dataTemporal);
-        });
+            dialogRef.afterClosed().subscribe(result => {
+                console.log(`Dialog result: ${result}`);
+                //this.mapaService.emitirDataMap(this.mapaService.dataTemporal);
+            });
+        } catch (error) {
+            console.log("Error:" + error)
+        }
+    }
+
+    /** Enviar en formulario a firebase */
+    agregarLugar() {
+        if (this.lugarForm.valid) {
+
+            //envia el formulario
+            this.lugaresService.addLugar(this.lugarForm.value);
+            //limpia el formulario
+            this.lugarForm.reset({
+                imagenHome: [this.imagenHome],
+                imagenPrincipal: [this.imagenPrincipalDefault]
+            });
+        }
     }
 
 
