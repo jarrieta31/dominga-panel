@@ -13,9 +13,9 @@ export interface Lugar {
     patrimonial?: boolean;
     accesibilidad?: boolean;
     descripcion?: string;
-    imagenHome?: string;
+    imagenHome?: Imagen;
     facebook?: string;
-    imagenPrincipal?: string;
+    imagenPrincipal?: Imagen;
     instagram?: string;
     ubicacion: Posicion;
     nombre: string;

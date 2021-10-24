@@ -7,7 +7,7 @@ import { Lugar } from '../interfaces/lugar.interface';
 export class ImagenPipe implements PipeTransform {
 
   transform(lugar: Lugar): string {
-    return `${lugar.imagenHome}`;
+    return `${lugar.imagenHome.url}`;
   }
 
 }

@@ -3,18 +3,10 @@
 <br>
 
 
-<div fxLayout="row wrap"
-     fxLayout.xs="column"
-     fxLayoutAlign="center"
-     fxLayoutGap="20px">
+<div fxLayout="row wrap" fxLayout.xs="column" fxLayoutAlign="start start" fxLayoutGap="20px">
 
-  <div fxFlex="20"
-       fxFlex.lg="15"
-       fxFlex.sm="30"
-       *ngFor="let lugar of lugares$ | async" >
-
+  <div *ngFor="let lugar of lugares$ | async" style="min-height: 390px;" >
     <app-lugar-tarjeta [lugar]="lugar"></app-lugar-tarjeta>
-
   </div>
   
 

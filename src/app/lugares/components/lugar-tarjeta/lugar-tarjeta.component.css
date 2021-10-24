@@ -1,4 +1,9 @@
 
 mat-card {
-    margin-top: 20px;
+   margin-top: 20px;
+}
+
+img {
+    height: 140px;
+    width: 238px;
 }

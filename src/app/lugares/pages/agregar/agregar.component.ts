@@ -5,7 +5,7 @@ import { StorageService } from '../../../shared/services/storage.service';
 import { zip } from 'rxjs';
 import { map, filter, tap } from 'rxjs/operators';
 import { DialogMapaComponent } from '../../../shared/components/dialog-mapa/dialog-mapa.component';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MapaService } from '../../../shared/services/mapa.service';
 import { Localidad } from '../../../shared/interfaces/localidad.interface';
 import { LocalidadesService } from '../../../shared/services/localidades.service';
@@ -20,6 +20,8 @@ import { LugaresService } from '../../services/lugares.service';
 })
 export class AgregarComponent implements OnInit {
 
+    
+    submitHabilitado = true;
     tituloUploaderGaleria: string = "Subir imágenes a la galería";
     tituloUploaderHome: string = "Selecciona la imágen del Home";
     directorioLugaresStorage: string = "lugares2";
@@ -119,7 +121,7 @@ export class AgregarComponent implements OnInit {
         zip(this.lugarForm.statusChanges, this.lugarForm.valueChanges).pipe(
             filter(([stado, valor]) => stado == 'VALID'), //pasa solo los validos
             map(([stado, valor]) => valor),//descarta el estado y solo toma el valor
-            tap(data => console.log(data))//solo es para ver
+            //tap(data => console.log(data))//solo es para ver
         ).subscribe(formValue => {
             localStorage.setItem('lugar', JSON.stringify(formValue));
         })
@@ -234,33 +236,40 @@ export class AgregarComponent implements OnInit {
 
     /** Abre el dialog con para el mapa */
     openDialog() {
-        try {
-            let dialogRef = this.dialog.open(DialogMapaComponent, {
-                width: "60%",
-                height: "800px",
-                data: 0
-            });
-
-            dialogRef.afterClosed().subscribe(result => {
-                console.log(`Dialog result: ${result}`);
-                //this.mapaService.emitirDataMap(this.mapaService.dataTemporal);
-            });
-        } catch (error) {
-            console.log("Error:" + error)
+        if(this.submitHabilitado){
+            this.submitHabilitado = false;
         }
+        const dialogConfig = new MatDialogConfig();
+        dialogConfig.disableClose = false;
+        dialogConfig.autoFocus = true;
+        dialogConfig.width = "60%"
+        dialogConfig.height = "800px"
+        dialogConfig.id = "dialogMapa"
+        dialogConfig.data = 0
+        const dialogRef = this.dialog.open(DialogMapaComponent, dialogConfig);
+
+        dialogRef.afterClosed().subscribe(result => {
+            console.log(`Dialog result: ${result}`);
+            this.submitHabilitado = true;
+            //this.mapaService.emitirDataMap(this.mapaService.dataTemporal);
+        });
     }
 
     /** Enviar en formulario a firebase */
     agregarLugar() {
-        if (this.lugarForm.valid) {
+        
+        if (this.lugarForm.valid && this.submitHabilitado) {
 
             //envia el formulario
             this.lugaresService.addLugar(this.lugarForm.value);
             //limpia el formulario
             this.lugarForm.reset({
-                imagenHome: [this.imagenHome],
+                imagenHome: [this.imagenHomeDefault],
                 imagenPrincipal: [this.imagenPrincipalDefault]
             });
+            //limpia el mapa y el mini-mapa
+            this.mapaService.resetDataMapa();
+            this.mapaService.resetDataMiniMapa();
         }
     }
 
