@@ -4,6 +4,7 @@ import { Localidad } from '../../shared/interfaces/localidad.interface';
 
 export interface Lugar {
     id?: string;
+    nombre: string;
     publicado: boolean;
     departamento: Departamento;
     localidad: Localidad;
@@ -14,18 +15,17 @@ export interface Lugar {
     accesibilidad?: boolean;
     descripcion?: string;
     imagenHome?: Imagen;
-    facebook?: string;
     imagenPrincipal?: Imagen;
-    instagram?: string;
     ubicacion: Posicion;
-    nombre: string;
     tipo: LugarTipo;
     imagenes?: Imagen[];
-    valoraciones?: Valoracion[];
-    videos?: string[];
+    facebook?: string;
+    instagram?: string;
     web?: string;
     whatsapp?: string;
     telefonos?: string[];
+    valoraciones?: Valoracion[];
+    videos?: string[];
 }
 
 export interface Imagen {

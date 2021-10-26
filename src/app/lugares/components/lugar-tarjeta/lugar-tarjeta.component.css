@@ -1,6 +1,11 @@
 
 mat-card {
    margin-top: 20px;
+   width: 238px;
+}
+
+mat-card-content {
+    height: 80px;
 }
 
 img {

@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Lugar, Imagen, LugarTipo, Departamento } from '../../interfaces/lugar.interface';
 import { FormBuilder, Validators, FormGroup, FormControl, FormArray } from '@angular/forms';
 import { StorageService } from '../../../shared/services/storage.service';
-import { zip } from 'rxjs';
+import { pipe, zip } from 'rxjs';
 import { map, filter, tap } from 'rxjs/operators';
 import { DialogMapaComponent } from '../../../shared/components/dialog-mapa/dialog-mapa.component';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
@@ -20,7 +20,7 @@ import { LugaresService } from '../../services/lugares.service';
 })
 export class AgregarComponent implements OnInit {
 
-    
+
     submitHabilitado = true;
     tituloUploaderGaleria: string = "Subir imágenes a la galería";
     tituloUploaderHome: string = "Selecciona la imágen del Home";
@@ -37,21 +37,19 @@ export class AgregarComponent implements OnInit {
     //    localidad: Localidad[] = [];
 
     public lugarForm: FormGroup = this.fb.group({
+        nombre: ['', [Validators.required, Validators.minLength(2)]],
         publicado: [false, Validators.required],
-        auto: [false],
         departamento: ['', Validators.required],
         localidad: ['', Validators.required],
+        auto: [false],
         bicicleta: [false],
         caminar: [false],
         patrimonial: [false],
         accesibilidad: [false],
         descripcion: ['', [Validators.minLength(15), Validators.maxLength(50)]],
         imagenHome: [this.imagenHomeDefault],
-        facebook: [''],
         imagenPrincipal: [this.imagenPrincipalDefault],
-        instagram: [''],
-        ubicacion: [0],
-        nombre: ['', [Validators.required, Validators.minLength(2)]],
+        ubicacion: [{ "lng": -56.4372197, "lat": -32.8246801 }],
         tipo: [LugarTipo.urbano],
         imagenes: this.fb.array([
             this.fb.group({
@@ -59,17 +57,18 @@ export class AgregarComponent implements OnInit {
                 url: ['']
             })
         ]),
-        //valoraciones?: Valoracion[];
-        videos: this.fb.array([
-            this.fb.group({
-                url: ['']
-            })
-        ]),
+        facebook: [''],
+        instagram: [''],
         web: [''],
         whatsapp: [''],
         telefonos: this.fb.array([
             this.fb.group({
                 numero: ['', [Validators.minLength(8), Validators.maxLength(9)]]
+            })
+        ]),
+        videos: this.fb.array([
+            this.fb.group({
+                url: ['']
             })
         ])
     });
@@ -85,6 +84,7 @@ export class AgregarComponent implements OnInit {
         private _snackBar: MatSnackBar) {
         //este metodo solo se usa para cargar la base de datos una vez
         //this.localidadesService.cargarLocalidades(); 
+        //this.lugaresService.cargarLugares();
 
         /** Observable que se dispara al cambiar el valor del minimapa.
      *  Los datos del formulario cambian en funcion del valor del mimimapa
@@ -104,8 +104,8 @@ export class AgregarComponent implements OnInit {
             */
         });
 
-        if (this.ubicacion.value !== 0) {
-            this.mapaService.dMiniMapa = this.ubicacion.value();
+        if (this.ubicacion.value !== { "lng": -56.43721973207522, "lat": -32.824680163553545 }) {
+            //this.mapaService.dMiniMapa.centro = this.ubicacion.value();
         }
     }
 
@@ -235,8 +235,10 @@ export class AgregarComponent implements OnInit {
     }
 
     /** Abre el dialog con para el mapa */
+    
     openDialog() {
-        if(this.submitHabilitado){
+    
+        if (this.submitHabilitado) {
             this.submitHabilitado = false;
         }
         const dialogConfig = new MatDialogConfig();
@@ -248,20 +250,26 @@ export class AgregarComponent implements OnInit {
         dialogConfig.data = 0
         const dialogRef = this.dialog.open(DialogMapaComponent, dialogConfig);
 
-        dialogRef.afterClosed().subscribe(result => {
+        dialogRef.afterClosed().pipe(
+            tap(res => {
+                this.submitHabilitado = true;
+            })
+        ).subscribe(result => {
             console.log(`Dialog result: ${result}`);
-            this.submitHabilitado = true;
             //this.mapaService.emitirDataMap(this.mapaService.dataTemporal);
         });
+        
     }
 
     /** Enviar en formulario a firebase */
     agregarLugar() {
-        
+
         if (this.lugarForm.valid && this.submitHabilitado) {
 
+            const nuevoLugar:Lugar = this.lugarForm.value;
+            console.log(nuevoLugar);
             //envia el formulario
-            this.lugaresService.addLugar(this.lugarForm.value);
+            this.lugaresService.addLugar(nuevoLugar);
             //limpia el formulario
             this.lugarForm.reset({
                 imagenHome: [this.imagenHomeDefault],

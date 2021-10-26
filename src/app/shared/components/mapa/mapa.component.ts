@@ -53,11 +53,9 @@ export class MapaComponent implements OnInit {
     });
 
     //Si dMapa tiene marcador en true se crea el marcador y se centra en el
-    console.log("AfterViewInit dMapa.marcador = " + this.mapaService.dMapa.marcador )
     if (this.mapaService.dMapa.marcador) {
       this.addMarker();
       this.flyToMarker();
-      //falta deshabilitar el boton de agregar
     }
 
     //seccion para posicionar los controles
@@ -84,8 +82,10 @@ export class MapaComponent implements OnInit {
       this.mapaService.dMapa.zoom = 15;
       this.refreshButtons();
       this.marcador.on('dragend', () =>{
-        this.mapaService.dMapa.centro = this.marcador.getLngLat();
-      })
+        let lng = parseFloat(this.marcador.getLngLat().lng.toFixed(7));
+        let lat = parseFloat(this.marcador.getLngLat().lat.toFixed(7));
+        this.mapaService.dMapa.centro = { "lng": this.marcador.getLngLat().lng, "lat": this.marcador.getLngLat().lat };
+      });
     }
   }
 
