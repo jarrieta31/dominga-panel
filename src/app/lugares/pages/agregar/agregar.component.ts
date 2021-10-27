@@ -1,9 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { ActivatedRoute, Route } from '@angular/router';
 import { Lugar, Imagen, LugarTipo, Departamento } from '../../interfaces/lugar.interface';
 import { FormBuilder, Validators, FormGroup, FormControl, FormArray } from '@angular/forms';
 import { StorageService } from '../../../shared/services/storage.service';
 import { pipe, zip } from 'rxjs';
-import { map, filter, tap } from 'rxjs/operators';
+import { map, filter, tap, switchMap } from 'rxjs/operators';
 import { DialogMapaComponent } from '../../../shared/components/dialog-mapa/dialog-mapa.component';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MapaService } from '../../../shared/services/mapa.service';
@@ -20,8 +21,8 @@ import { LugaresService } from '../../services/lugares.service';
 })
 export class AgregarComponent implements OnInit {
 
-
     submitHabilitado = true;
+    lugar: Lugar;
     tituloUploaderGaleria: string = "Subir imágenes a la galería";
     tituloUploaderHome: string = "Selecciona la imágen del Home";
     directorioLugaresStorage: string = "lugares2";
@@ -31,8 +32,8 @@ export class AgregarComponent implements OnInit {
     lugaresTipo = [{ tipo: "Urbano" }, { tipo: "Rural" }];
     opsPatrimonial = [{ texto: "Sí", valor: true }, { texto: "No", valor: false }];
     public departamentos = Object.values(Departamento);
-    private imagenHomeDefault = { name: "imagen-default", url: "assets/default-home.jpg" };
-    private imagenPrincipalDefault = { name: "imagen-default", url: "assets/default-lugar-galeria.jpg" };
+    private imagenHomeDefault = { "name": "imagen-default", "url": "assets/default-home.jpg" };
+    private imagenPrincipalDefault = { "name": "imagen-default", "url": "assets/default-lugar-galeria.jpg" };
     localidades?: Localidad[] = [];
     //    localidad: Localidad[] = [];
 
@@ -75,6 +76,7 @@ export class AgregarComponent implements OnInit {
 
 
     constructor(
+        private activatedRoute: ActivatedRoute,
         public lugaresService: LugaresService,
         public fb: FormBuilder,
         private fbStorage: StorageService,
@@ -117,6 +119,16 @@ export class AgregarComponent implements OnInit {
             //    this.lugarForm.setValue(JSON.parse(lugarGuardado));
         }
 
+        //A partir de la ruta y el id recibido obtento el lugar para mostrar
+        this.activatedRoute.params
+            .pipe(
+                switchMap(({ id }) => this.lugaresService.getLugarId(id))
+            )
+            .subscribe(lugar => {
+                this.lugar = lugar.payload.data()
+                this.lugarForm.setValue(this.lugar);
+            });
+
         /**Si el formuario es válido lo guarda en el storage local */
         zip(this.lugarForm.statusChanges, this.lugarForm.valueChanges).pipe(
             filter(([stado, valor]) => stado == 'VALID'), //pasa solo los validos
@@ -126,13 +138,11 @@ export class AgregarComponent implements OnInit {
             localStorage.setItem('lugar', JSON.stringify(formValue));
         })
 
-        if (this.ubicacion.value !== 0) {
+        //if (this.ubicacion.value !== 0) {
 
-        }
+        //}
 
         this.getAllLocalidades();
-
-        //console.log(this.localidades.length);
 
     }
 
@@ -235,9 +245,9 @@ export class AgregarComponent implements OnInit {
     }
 
     /** Abre el dialog con para el mapa */
-    
+
     openDialog() {
-    
+
         if (this.submitHabilitado) {
             this.submitHabilitado = false;
         }
@@ -258,7 +268,7 @@ export class AgregarComponent implements OnInit {
             console.log(`Dialog result: ${result}`);
             //this.mapaService.emitirDataMap(this.mapaService.dataTemporal);
         });
-        
+
     }
 
     /** Enviar en formulario a firebase */
@@ -266,18 +276,22 @@ export class AgregarComponent implements OnInit {
 
         if (this.lugarForm.valid && this.submitHabilitado) {
 
-            const nuevoLugar:Lugar = this.lugarForm.value;
+            const nuevoLugar: Lugar = this.lugarForm.value;
             console.log(nuevoLugar);
             //envia el formulario
             this.lugaresService.addLugar(nuevoLugar);
-            //limpia el formulario
+            
+            //limpia el formulario y setea los valores inicales con el metodo reset
+            //El metodo 
             this.lugarForm.reset({
-                imagenHome: [this.imagenHomeDefault],
-                imagenPrincipal: [this.imagenPrincipalDefault]
+                imagenHome : this.imagenHomeDefault,
+                imagenPrincipal: this.imagenPrincipalDefault 
             });
+            this.galeria.length = 0; //vacia la galeria de fotos
             //limpia el mapa y el mini-mapa
             this.mapaService.resetDataMapa();
             this.mapaService.resetDataMiniMapa();
+            this.mapaService.emitirMiniMapa();
         }
     }
 

@@ -82,8 +82,6 @@ export class MapaComponent implements OnInit {
       this.mapaService.dMapa.zoom = 15;
       this.refreshButtons();
       this.marcador.on('dragend', () =>{
-        let lng = parseFloat(this.marcador.getLngLat().lng.toFixed(7));
-        let lat = parseFloat(this.marcador.getLngLat().lat.toFixed(7));
         this.mapaService.dMapa.centro = { "lng": this.marcador.getLngLat().lng, "lat": this.marcador.getLngLat().lat };
       });
     }

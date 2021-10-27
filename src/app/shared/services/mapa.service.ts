@@ -19,10 +19,12 @@ export class MapaService {
     this.dMiniMapa = { centro: { lng: -56.43721973207522, lat: -32.824680163553545 }, zoom: 5, marcador: false };
   }
 
+  /** Limpia los dato del mapa */
   resetDataMapa() {
     this.dMapa = { centro: { lng: -56.43721973207522, lat: -32.824680163553545 }, zoom: 6, marcador: false };
   }
   
+  /** Limpia los datos del minimapa */
   resetDataMiniMapa() {
     this.dMiniMapa = { centro: { lng: -56.43721973207522, lat: -32.824680163553545 }, zoom: 5, marcador: false };
   }

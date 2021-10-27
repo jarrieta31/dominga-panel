@@ -1,32 +1,33 @@
-
-    <mat-card>
-      <mat-card-header>
+<mat-card>
+    <mat-card-header>
         <mat-card-title>{{ lugar.nombre }}</mat-card-title>
         <mat-card-subtitle>Tipo: {{ lugar.tipo }}</mat-card-subtitle>
-      </mat-card-header>
+    </mat-card-header>
 
-      <img mat-card-image [src]="lugar | imagen">
+    <img mat-card-image [src]="lugar | imagen">
 
-      <mat-card-content>
+    <mat-card-content>
         {{ lugar.descripcion | deleteHtml | recortarParrafo }}
-      </mat-card-content>
+    </mat-card-content>
 
-      <mat-card-actions>
-        <button mat-button 
-                color="warn"
-                [routerLink]="['/lugares', lugar.id]">
-          Leer más...
+    <mat-card-actions>
+        <button mat-button color="warn" [routerLink]="['/lugares', lugar.id]">
+            Leer más...
         </button>
 
-        <button mat-button 
-                color="info"
-                [routerLink]="['/lugares/editar', lugar.id]">
-          Editar
+        <button mat-button color="info" [routerLink]="['/lugares/editar', lugar.id]">
+            Editar
         </button>
-      </mat-card-actions>
+    </mat-card-actions>
 
-      <mat-card-footer>
-        Activo: {{lugar.publicado }} <mat-icon color="danger">done_outline</mat-icon>
-      </mat-card-footer>
+    <mat-card-footer>
+        Publicado:
+        <span *ngIf="lugar.publicado">
+            Sí <mat-icon class="icon-si">done</mat-icon>
+        </span>
+        <span *ngIf="!lugar.publicado">
+            No <mat-icon color="warn">close</mat-icon>
+        </span>
+    </mat-card-footer>
 
-    </mat-card>
+</mat-card>

@@ -8,7 +8,11 @@ mat-card-content {
     height: 80px;
 }
 
-img {
-    height: 140px;
-    width: 238px;
+mat-card-footer {
+    padding-bottom: 20px;
+    padding-left: 20px;
+}
+
+.icon-si {
+    color: green;
 }

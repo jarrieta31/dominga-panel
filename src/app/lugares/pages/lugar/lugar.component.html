@@ -13,34 +13,27 @@
         <mat-divider></mat-divider>
     </div>
 
-    <div fxLayout="row"
-         fxLayout.xs="column"
-         fxLayoutGap="30px">
+    <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="30px">
 
         <div fxFlex="50">
+            
+
+        </div>
+        <div fxFlex="50">
             <h2>Imagen Home</h2>
-            <img [src]="lugar.imagenHome" >
+            <img [src]="lugar.imagenHome.url" >
             <mat-list>
                 <mat-list-item>Tipo de lugar: {{lugar.tipo}} </mat-list-item>
                 <mat-list-item>facebook: &nbsp;<a href="{{lugar.facebook}}">{{lugar.facebook}}</a></mat-list-item>
                 <mat-list-item>whatsapp: {{lugar.whatsapp}} </mat-list-item>
                 <mat-list-item>instagram: &nbsp; <a href="{{lugar.instagram}}">{{ lugar.instagram }}</a> </mat-list-item>
             </mat-list>
-
-            
-
             <br>
-            <button mat-button 
-                    color="warn"
-                    (click)="regresar()" >
+            <button mat-button color="warn" (click)="regresar()" >
                 Regresar
             </button>
         </div>
 
-        <div fxFlex="50">
-
-
-        </div>
 
     </div>
 
