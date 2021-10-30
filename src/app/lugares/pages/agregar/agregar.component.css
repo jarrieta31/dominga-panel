@@ -7,20 +7,13 @@ mat-divider{
     margin-bottom: 40px;
 }
 
-.div-descripcion {
-/*
-    border: rgba(0, 0, 0, 0.12) solid 1px;
-    border-radius: 5px;
-    */
-}
-
 .area {
     /*
     background-color: aquamarine;
     */
     padding: 10px;
     width: 100%;
-    min-height: 10rem;
+    min-height: 23.125rem;
     border: rgba(0, 0, 0, 0.12) solid 1px;
     border-radius: 5px;
 }

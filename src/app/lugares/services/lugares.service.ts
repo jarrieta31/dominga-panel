@@ -53,6 +53,10 @@ export class LugaresService {
     );
   }
 
+  deleteLugar(id:string){
+    return this.lugaresCollection.doc(id).delete();
+  }
+
   cargarLugares() {
 
     const datos = [{

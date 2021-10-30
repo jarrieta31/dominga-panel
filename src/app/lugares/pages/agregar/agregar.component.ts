@@ -22,7 +22,8 @@ import { LugaresService } from '../../services/lugares.service';
 export class AgregarComponent implements OnInit {
 
     submitHabilitado = true;
-    lugar: Lugar;
+    titulo:string;
+    idLugar: string;
     tituloUploaderGaleria: string = "Subir imágenes a la galería";
     tituloUploaderHome: string = "Selecciona la imágen del Home";
     directorioLugaresStorage: string = "lugares2";
@@ -47,17 +48,12 @@ export class AgregarComponent implements OnInit {
         caminar: [false],
         patrimonial: [false],
         accesibilidad: [false],
-        descripcion: ['', [Validators.minLength(15), Validators.maxLength(50)]],
+        descripcion: ['', [Validators.minLength(15), Validators.maxLength(3000)]],
         imagenHome: [this.imagenHomeDefault],
         imagenPrincipal: [this.imagenPrincipalDefault],
         ubicacion: [{ "lng": -56.4372197, "lat": -32.8246801 }],
         tipo: [LugarTipo.urbano],
-        imagenes: this.fb.array([
-            this.fb.group({
-                name: [''],
-                url: ['']
-            })
-        ]),
+        imagenes: [[]],
         facebook: [''],
         instagram: [''],
         web: [''],
@@ -122,11 +118,21 @@ export class AgregarComponent implements OnInit {
         //A partir de la ruta y el id recibido obtento el lugar para mostrar
         this.activatedRoute.params
             .pipe(
-                switchMap(({ id }) => this.lugaresService.getLugarId(id))
-            )
-            .subscribe(lugar => {
-                this.lugar = lugar.payload.data()
-                this.lugarForm.setValue(this.lugar);
+                switchMap(({ id }) => this.lugaresService.getLugarId(id)),
+            ).subscribe(lugar => {
+                // lugar.payload.id ) 
+                console.log(typeof lugar.payload.id)
+                if( lugar.payload.id != "undefined" ){
+                    //this.lugar = {id: lugar.payload.id, ...lugar.payload.data()};
+                    this.idLugar = lugar.payload.id;
+                    this.lugarForm.reset(lugar.payload.data());
+                    this.titulo = `Editando ${this.lugarForm.controls['nombre'].value}`;
+                    this.galeria = this.lugarForm.controls['imagenes'].value;
+                }
+                else {
+                    this.titulo = "Nuevo Lugar";
+                }
+            
             });
 
         /**Si el formuario es válido lo guarda en el storage local */
@@ -167,6 +173,7 @@ export class AgregarComponent implements OnInit {
         });
         //agrega la nueva imagen al array
         this.galeria.push($event);
+        this.lugarForm.controls['imagenes'].setValue(this.galeria);
     }
 
     /**
@@ -275,7 +282,6 @@ export class AgregarComponent implements OnInit {
     agregarLugar() {
 
         if (this.lugarForm.valid && this.submitHabilitado) {
-
             const nuevoLugar: Lugar = this.lugarForm.value;
             console.log(nuevoLugar);
             //envia el formulario
@@ -291,7 +297,9 @@ export class AgregarComponent implements OnInit {
             //limpia el mapa y el mini-mapa
             this.mapaService.resetDataMapa();
             this.mapaService.resetDataMiniMapa();
+            //Limpia el minimapa y el mapa
             this.mapaService.emitirMiniMapa();
+            this.mapaService.resetDataMapa();
         }
     }
 
