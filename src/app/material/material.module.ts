@@ -4,24 +4,24 @@ import { CommonModule } from '@angular/common';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { MatGridListModule } from '@angular/material/grid-list';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatExpansionModule } from '@angular/material/expansion'; 
 import { MatFormFieldModule } from "@angular/material/form-field";
-import { MatInputModule } from "@angular/material/input";
+import { MatGridListModule } from '@angular/material/grid-list';
 import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from "@angular/material/input";
 import { MatListModule } from '@angular/material/list';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatRadioModule } from '@angular/material/radio'; 
+import { MatSelectModule } from '@angular/material/select'; 
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle'; 
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTreeModule } from '@angular/material/tree'; 
-import { MatSlideToggleModule } from '@angular/material/slide-toggle'; 
-import { MatSelectModule } from '@angular/material/select'; 
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { NgxMatFileInputModule } from '@angular-material-components/file-input';
-import { MatDialogModule } from '@angular/material/dialog';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
-
-
 
 @NgModule({
   declarations: [],
@@ -32,22 +32,24 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     MatAutocompleteModule,
     MatButtonModule,
     MatCardModule,
-    MatGridListModule,
+    MatCheckboxModule,
+    MatDialogModule,
+    MatExpansionModule,
     MatFormFieldModule,
-    MatInputModule,
+    MatGridListModule,
     MatIconModule,
+    MatInputModule,
     MatListModule,
+    MatProgressBarModule,
     MatProgressSpinnerModule,
+    MatRadioModule,
+    MatSelectModule,
     MatSidenavModule,
+    MatSlideToggleModule,
+    MatSnackBarModule,
     MatToolbarModule,
     MatTreeModule,
-    MatSlideToggleModule,
-    MatSelectModule,
-    MatCheckboxModule,
-    MatProgressBarModule,
     NgxMatFileInputModule,
-    MatDialogModule,
-    MatSnackBarModule
   ]
 })
 export class MaterialModule { }
