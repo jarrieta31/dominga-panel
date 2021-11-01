@@ -190,6 +190,9 @@ export class AgregarComponent implements OnInit {
         this.fbStorage.borrarArchivoStorage(this.directorioLugaresStorage, $event);
     }
 
+    /**
+     * Función que agregar un nuevo formControl de tipo telefono
+     */
     agregarNuevoTelefonoAlFormulario() {
         const telefonosControl = this.lugarForm.get('telefonos') as FormArray;
         telefonosControl.push(
@@ -199,6 +202,9 @@ export class AgregarComponent implements OnInit {
         )
     }
 
+    /**
+     * Función que agregar un nuevo formControl de tipo video
+     */
     agregarNuevoVideoAlFormulario() {
         const videosControl = this.lugarForm.get('videos') as FormArray;
         videosControl.push(
@@ -239,7 +245,9 @@ export class AgregarComponent implements OnInit {
         console.log("estas en setImagenPrincipal ")
     }
 
-    /** Este método es llamado cada vez que se selecciona un departamento  */
+    /** 
+     * Este método es llamado cada vez que se selecciona un departamento
+     */
     getLocalidadesPorDepartamento() {
         this.localidadesService.getLoadidadesDepartamento(this.departamento.value)
             .then(res => {
@@ -251,8 +259,9 @@ export class AgregarComponent implements OnInit {
             })
     }
 
-    /** Abre el dialog con para el mapa */
-
+    /**
+     * Abre el dialog con para el mapa
+     */
     openDialog() {
 
         if (this.submitHabilitado) {

@@ -13,28 +13,6 @@ export class StorageService {
     //this.pageTokenExample();
   }
 
-  /*
-  public async  pageTokenExample() {
-  // Create a reference under which you want to list
-  var storageRef = this.storage.storage.ref();
-  var listRef = storageRef.child('/lugares2');
-  // Fetch the first page of 100.
-  var firstPage = await listRef.list({ maxResults: 100 });
-  console.log(firstPage.items[0])
-  // Use the result.
-  // processItems(firstPage.items)
-  // processPrefixes(firstPage.prefixes)
-  // Fetch the second page if there are more elements.
-  if (firstPage.nextPageToken) {
-    var secondPage = await listRef.list({
-      maxResults: 100,
-      pageToken: firstPage.nextPageToken,
-    });
-    // processItems(secondPage.items)
-    // processPrefixes(secondPage.prefixes)
-  }
-  */
-
   /**
    * Función para subir los ficheros al Storage de Firebase.
    * @param nombreArchivo - Nombre del archivo a subir.

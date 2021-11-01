@@ -16,34 +16,43 @@
       </mat-expansion-panel-header>
 
       <div fxLayout="column" fxLayoutAlign="center" fxLayoutGap="40px">
-
+        <!-- ======================================= filtro por departamentos ======================================-->
         <div fxLayout="row" fxLayoutAlign="space-evenly start" fxLayoutGap="40px" style="width: 1000px;">
           <div fxFlex.gt="20%">
             <mat-slide-toggle [(ngModel)]="filtroDepartamento">Filtro por Departamento: </mat-slide-toggle>
           </div>
           <div fxFlex=80%>
-            <mat-checkbox color="primary" [disabled]="!filtroDepartamento" labelPosition="after"
-                          *ngFor="let departamento of departamentos; let i=index"
-                          style="width: 30%;">
-              {{departamento}}
-            </mat-checkbox>
+           <mat-radio-group [(ngModel)]="departamentoSelec" color="primary" [disabled]="!filtroDepartamento" labelPosition="after">
+              <mat-radio-button style="width: 20%; height: 34px;" 
+                                *ngFor="let departamento of departamentos; let i=index"
+                                [value]="departamento">
+                {{departamento}}
+              </mat-radio-button>
+           </mat-radio-group> 
           </div>
         </div>
+        <!-- ======================================= Fin filtro por departamentos ======================================-->
 
+        <!-- ======================================= filtro por estado de Publicacion ======================================-->
         <div fxLayout="row" fxLayoutAlign="space-evenly start" fxLayoutGap="40px" style="width: 1000px;">
           <div fxFlex.gt="20%">
-            <mat-slide-toggle [(ngModel)]="filtroPublicado">Filtro por estado de publiación: </mat-slide-toggle>
+            <mat-slide-toggle [(ngModel)]="filtroPublicado" >Filtro por estado de publiación: </mat-slide-toggle>
           </div>
-          <mat-radio-group fxFlex="80%" aria-label="Selecciona una opción">
-            <mat-radio-button value="1" [disabled]="!filtroPublicado" checked="true">Publicados </mat-radio-button> &nbsp;
-            <mat-radio-button value="2" [disabled]="!filtroPublicado">Sin publicar </mat-radio-button>
+          <mat-radio-group [(ngModel)]="publicadoSelec" [disabled]="!filtroPublicado" fxFlex="80%">
+              <mat-radio-button *ngFor="let estado of published" [value]="estado.valor">
+                {{estado.estado}} &nbsp;
+              </mat-radio-button>
           </mat-radio-group>
-
         </div>
+        <!-- ======================================= Fin filtro por estado de Publicacion ======================================-->
       </div>
-<!--
-      <pre>filroPublicado {{filtroPublicado }}</pre>
--->
+      
+        <!-- ======================================= Aplicar Filtros ======================================-->
+        <br>
+      <div fxLayout="row" fxLayoutAlign="start center">
+        <button mat-raised-button color="primary" (click)="filtrarLugares()" >Aplicar filtros</button>
+      </div>
+        <!-- ======================================= Fin Aplicar Filtros ======================================-->
     </mat-expansion-panel>
   </mat-accordion>
 </div>
