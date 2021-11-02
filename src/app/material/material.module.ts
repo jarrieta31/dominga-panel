@@ -18,6 +18,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select'; 
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle'; 
+import { MatSliderModule } from '@angular/material/slider'; 
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTreeModule } from '@angular/material/tree'; 
@@ -46,6 +47,7 @@ import { NgxMatFileInputModule } from '@angular-material-components/file-input';
     MatSelectModule,
     MatSidenavModule,
     MatSlideToggleModule,
+    MatSliderModule,
     MatSnackBarModule,
     MatToolbarModule,
     MatTreeModule,

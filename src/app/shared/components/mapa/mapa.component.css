@@ -1,15 +1,31 @@
 .mapa {
-    width: 100%;
-    height: 560px;
+    /*Muy importante no cambiar*/
+    height: 480px;
 }
 
 
 .add-marker {
     width: 200px;
     position: fixed;
-    z-index: 1000000;
+    z-index: 100000;
     /*
     top: 50px;
     left: 50px;
     */
+}
+
+#control-zoom{
+    width: 350px;
+    height: 100px;
+    /*background-color: rgb(33, 35, 161);   */
+    z-index: 1500;
+    position: fixed;
+    left: 20px;
+    bottom:  -30px;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+mat-slider {
+  width: 100%;
 }

@@ -49,7 +49,7 @@
                     </mat-form-field>
                     <mat-form-field id="camp-principal2" fxFlex="50%">
                         <mat-label>Selecciona la Localidad</mat-label>
-                        <mat-select formControlName="localidad" (selectionChange)="setImagenPrincipal()">
+                        <mat-select formControlName="localidad" (selectionChange)="getLocalidadesPorDepartamento()">
                             <mat-option *ngFor="let localidad of localidades" [value]="localidad">{{ localidad.nombre }}
                             </mat-option>
                         </mat-select>

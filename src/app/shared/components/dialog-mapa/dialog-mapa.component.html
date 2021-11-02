@@ -1,7 +1,8 @@
-<mat-dialog-content class="mat-typography">
+
+  <mat-dialog-content style="margin: 0px; padding: 0px; height: 560px;">
     <app-mapa></app-mapa>
-</mat-dialog-content>
-<mat-dialog-actions align="end">
-  <button mat-raised-button color="warn" (click)="closeDialog()">Cancelar</button>
-  <button mat-raised-button color="primary" [mat-dialog-close]="true" (click)="confirmarMapa()" >Confirmar</button>
-</mat-dialog-actions>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end" style="padding: 0px; height: 54px; margin: 0px;">
+    <button mat-raised-button color="warn" (click)="closeDialog()">Cancelar</button>
+    <button mat-raised-button color="primary" [mat-dialog-close]="true" (click)="confirmarMapa()">Confirmar</button>
+  </mat-dialog-actions>

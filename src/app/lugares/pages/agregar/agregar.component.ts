@@ -115,7 +115,7 @@ export class AgregarComponent implements OnInit {
             //    this.lugarForm.setValue(JSON.parse(lugarGuardado));
         }
 
-        //A partir de la ruta y el id recibido obtento el lugar para mostrar
+        //A partir de la ruta y el id recibido obtiene el lugar para mostrar
         this.activatedRoute.params
             .pipe(
                 switchMap(({ id }) => this.lugaresService.getLugarId(id)),
@@ -126,6 +126,7 @@ export class AgregarComponent implements OnInit {
                     //this.lugar = {id: lugar.payload.id, ...lugar.payload.data()};
                     this.idLugar = lugar.payload.id;
                     this.lugarForm.reset(lugar.payload.data());
+                    
                     this.titulo = `Editando ${this.lugarForm.controls['nombre'].value}`;
                     this.galeria = this.lugarForm.controls['imagenes'].value;
                 }
@@ -191,7 +192,7 @@ export class AgregarComponent implements OnInit {
     }
 
     /**
-     * Función que agregar un nuevo formControl de tipo telefono
+     * Función que agrega un nuevo formControl de tipo telefono
      */
     agregarNuevoTelefonoAlFormulario() {
         const telefonosControl = this.lugarForm.get('telefonos') as FormArray;
@@ -203,7 +204,7 @@ export class AgregarComponent implements OnInit {
     }
 
     /**
-     * Función que agregar un nuevo formControl de tipo video
+     * Función que agrega un nuevo formControl de tipo video
      */
     agregarNuevoVideoAlFormulario() {
         const videosControl = this.lugarForm.get('videos') as FormArray;
@@ -270,10 +271,10 @@ export class AgregarComponent implements OnInit {
         const dialogConfig = new MatDialogConfig();
         dialogConfig.disableClose = false;
         dialogConfig.autoFocus = true;
-        dialogConfig.width = "60%"
-        dialogConfig.height = "800px"
-        dialogConfig.id = "dialogMapa"
-        dialogConfig.data = 0
+        dialogConfig.minHeight = "450px";
+        dialogConfig.minWidth = "900px";
+        dialogConfig.id = "dialogMapa";
+        dialogConfig.data = 0;
         const dialogRef = this.dialog.open(DialogMapaComponent, dialogConfig);
 
         dialogRef.afterClosed().pipe(

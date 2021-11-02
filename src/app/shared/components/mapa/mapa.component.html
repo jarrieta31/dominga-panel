@@ -3,27 +3,43 @@
 </div>
 
 
-    <mat-list class="add-marker" id="add-marker">
-        <mat-list-item> 
-            <button [disabled]="add_btn" mat-raised-button color="primary" (click)="addMarker()" >
-                <mat-icon>add_location_alt</mat-icon>
-                Agregar Marcador
-            </button>
-        </mat-list-item>
-        <mat-list-item> 
-            <button mat-raised-button color="primary" (click)="deleteMarker()" [disabled]="delete_btn" >
-                <mat-icon>wrong_location</mat-icon>
-                Eliminar Marcador
-            </button>
-        </mat-list-item>
-        <mat-list-item> 
-            <button mat-raised-button color="primary" (click)="flyToMarker()" [disabled]="move_btn" >
-                <mat-icon>my_location</mat-icon>
-                Ir al Marcador
-            </button>
-        </mat-list-item>
-    </mat-list>
+<mat-list class="add-marker" id="add-marker">
+    <mat-list-item>
+        <button [disabled]="add_btn" mat-raised-button color="primary" (click)="addMarker()" style="width: 100%;">
+            <mat-icon>add_location_alt</mat-icon>
+            Agregar Marcador
+        </button>
+    </mat-list-item>
+    <mat-list-item>
+        <button mat-raised-button color="primary" (click)="deleteMarker()" [disabled]="delete_btn" style="width: 100%;">
+            <mat-icon>wrong_location</mat-icon>
+            Eliminar Marcador
+        </button>
+    </mat-list-item>
+    <mat-list-item>
+        <button mat-raised-button color="primary" (click)="flyToMarker()" [disabled]="move_btn" style="width: 100%;">
+            <mat-icon>my_location</mat-icon>
+            Ir al Marcador
+        </button>
+    </mat-list-item>
+</mat-list>
 
-    <div id="control-zoom">
-        controles zoom
+<div fxLayout="column" id="control-zoom">
+    <div>
+        <mat-slider  color="primary" tickInterval="1000" step="0.2" min="6" max="19" [(value)]="zoom"
+            aria-label="units"></mat-slider>
     </div>
+    <div fxLayout="row" fxLayoutAlign="space-between center">
+        <div>
+            <button mat-flat-button color="primary" (click)="zoomOut()">
+                <mat-icon>zoom_out</mat-icon>
+            </button>
+        </div>
+        
+        <div>
+            <button mat-flat-button color="primary" (click)="zoomIn()">
+                <mat-icon>zoom_in</mat-icon>
+            </button>
+        </div>
+    </div>
+</div>

@@ -19,14 +19,14 @@ export class LocalidadesService {
     this.localidadesRef = db.collection('localidades');
 
     //Por ahora no se esta usando pero es otra manera de obtener todos las localidades
-    this.localidades$ = this.db.collection<Localidad>('localidades')
-      .snapshotChanges().pipe(
-        map(actions => actions.map(a => {
-          const data = a.payload.doc.data() as Localidad;
-          const id = a.payload.doc.id;
-          return { id, ...data };
-        }))
-      );
+    //this.localidades$ = this.db.collection<Localidad>('localidades')
+    //  .snapshotChanges().pipe(
+    //    map(actions => actions.map(a => {
+    //      const data = a.payload.doc.data() as Localidad;
+    //      const id = a.payload.doc.id;
+    //      return { id, ...data };
+    //    }))
+    //  );
   }
 
   /**OK Obtiene la colección completa de localidades */
