@@ -21,7 +21,6 @@ export class LugaresService {
         this.lugaresCollection = afs.collection<Lugar[]>('lugares');
         //this.lugares$ = this.lugaresCollection.valueChanges({ idField: 'id' });
         //const lugaresRef = this.afs.collection('lugares');
-        this.cargarLugares();
         this.lugares$ = new Subject();
         this.lugar$ = new Subject();
         this.getLugaresFirestore();
@@ -52,7 +51,9 @@ export class LugaresService {
                     const data: any = item.data()
                     arrLugares.push({ id: item.id, ...data });
                 })
+                console.error("todosLosLugares.length = " + this.todosLosLugares.length)
                 this.todosLosLugares = arrLugares;
+                console.error("todosLosLugares.length = "+ this.todosLosLugares.length)
                 this.lugares$.next(this.todosLosLugares); //el subject lugares$ emite los lugares
             }
         ).catch(error => {
@@ -125,11 +126,20 @@ export class LugaresService {
         );
     }
 
+    /** Elimina correctamente el lugar */
     deleteLugar(id: string) {
-        return this.lugaresCollection.doc(id).delete();
+        this.lugaresCollection.doc(id).delete().then(res => {
+            this.todosLosLugares = this.todosLosLugares.filter(lugar => {
+                return lugar.id !== id
+            });
+            this.getLugaresLocal();
+            console.log("Lugar eliminado correntamente")
+        }).catch(err => {
+            console.error("Se produjo un error al intentar eliminar un el lugar " + id + ". Error:" + err)
+        })    
     }
 
-    cargarLugares() {
+    cargarLugares():void {
 
         const datos = [{
             "nombre": "Finca Piedra",
@@ -1417,10 +1427,9 @@ export class LugaresService {
             "videos": []
         }];
 
-        for (let i = 0; i < datos.length; i++) {
+        for ( let i = 0; i < datos.length; i++ ) {
             this.afs.collection('lugares').add(datos[i]);
         }
-        //this.angularFirestore.collection('lugares').add(datos)
     }
 
 

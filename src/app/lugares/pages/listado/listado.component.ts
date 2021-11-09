@@ -30,9 +30,10 @@ export class ListadoComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
+        //this.lugaresService.cargarLugares();
         this.subsLugares = this.lugaresService.getObsLugares$().subscribe(lugares => this.lugares = lugares);
         this.subsDepartamentos = this.localidadesService.getObsDepartamentos().subscribe(dpts => this.departamentos = dpts);
-        this.lugaresService.getLugaresLocal();
+        //this.lugaresService.getLugaresLocal();
         this.localidadesService.emitirDepartamentosActivos();
     }
 
