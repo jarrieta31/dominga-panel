@@ -1,31 +1,31 @@
 import { Posicion } from '../../shared/interfaces/datosMapa.interface';
-import { Localidad } from '../../shared/interfaces/localidad.interface';
 
 
 export interface Lugar {
-    id?: string;
-    nombre: string;
-    publicado: boolean;
-    departamento: Departamento;
-    localidad: Localidad;
+    accesibilidad?: boolean;
     auto?: boolean;
     bicicleta?: boolean;
     caminar?: boolean;
-    patrimonial?: boolean;
-    accesibilidad?: boolean;
+    departamento: DepartamentoEnum;
     descripcion?: string;
+    facebook?: string;
+    id?: string;
     imagenHome?: Imagen;
     imagenPrincipal?: Imagen;
-    ubicacion: Posicion;
-    tipo: LugarTipo;
     imagenes?: Imagen[];
-    facebook?: string;
     instagram?: string;
-    web?: string;
-    whatsapp?: string;
+    localidad: string;
+    nombre: string;
+    patrimonial?: boolean;
+    prioridad: number;
+    publicado: boolean;
     telefonos?: string[];
+    tipo: LugarTipo;
+    ubicacion: Posicion;
     valoraciones?: Valoracion[];
     videos?: string[];
+    web?: string;
+    whatsapp?: string;
 }
 
 export interface Imagen {
@@ -48,7 +48,7 @@ export enum LugarTipo {
     rural = 'Rural',
 }
 
-export enum Departamento {
+export enum DepartamentoEnum {
     artigas = "Artigas",
     canelones = "Canelones",
     cerroLargo = "Cerro Largo",

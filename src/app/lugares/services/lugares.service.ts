@@ -1,10 +1,9 @@
 import { ComponentFactoryResolver, Injectable } from '@angular/core';
 import { Lugar } from '../interfaces/lugar.interface';
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument, DocumentReference } from '@angular/fire/compat/firestore';
-import { from, Observable } from 'rxjs';
+import { from, Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { LugarComponent } from '../pages/lugar/lugar.component';
-import { DataSource } from '@angular/cdk/collections';
 
 
 
@@ -13,22 +12,27 @@ import { DataSource } from '@angular/cdk/collections';
 })
 export class LugaresService {
 
-    private lugarDoc: AngularFirestoreDocument<Lugar>;
-    private lugaresCollection: AngularFirestoreCollection<Lugar>;
-    lugares$: Observable<Lugar[]>;
-
-
-    //const lugaresRef = this.angularFirestore.collection('lugares');
+    private lugaresCollection: AngularFirestoreCollection<Lugar[]>;
+    private lugares$: Subject<Lugar[]>;
+    private lugar$: Subject<Lugar>;
+    private todosLosLugares: Lugar[] = [];
 
     constructor(private afs: AngularFirestore) {
-        this.lugaresCollection = afs.collection<Lugar>('lugares');
-        this.lugares$ = this.lugaresCollection.valueChanges({ idField: 'id' });
-        const lugaresRef = this.afs.collection('lugares');
-
+        this.lugaresCollection = afs.collection<Lugar[]>('lugares');
+        //this.lugares$ = this.lugaresCollection.valueChanges({ idField: 'id' });
+        //const lugaresRef = this.afs.collection('lugares');
+        this.cargarLugares();
+        this.lugares$ = new Subject();
+        this.lugar$ = new Subject();
+        this.getLugaresFirestore();
     }
 
-    addLugar(lugar: Lugar): Observable<DocumentReference<Lugar>> {
-        return from(this.lugaresCollection.add(lugar));
+    addLugar(lugar: Lugar) {
+        this.afs.collection('lugares').add(lugar).then(res => {
+            console.log(res)
+        }).catch(error => {
+            console.log("Error al agrear nuevo lugar. Error: " + error);
+        })
     }
 
     updateLugar(lugar: Lugar): Observable<void> {
@@ -37,35 +41,85 @@ export class LugaresService {
         );
     }
 
-    getLugares() {
-        return this.afs.collection('lugares').snapshotChanges();
+    /** Obtiene todos los lugares desde firestor y los almacena en todosLosLugares[] para 
+     * no estar consultado la base y minimizar el traficio.
+     */
+    getLugaresFirestore() {
+        this.afs.collection('lugares').ref.get().then(
+            querySnapshot => {
+                const arrLugares: any[] = [];
+                querySnapshot.forEach(item => {
+                    const data: any = item.data()
+                    arrLugares.push({ id: item.id, ...data });
+                })
+                this.todosLosLugares = arrLugares;
+                this.lugares$.next(this.todosLosLugares); //el subject lugares$ emite los lugares
+            }
+        ).catch(error => {
+            console.error("Error en getLugares(). error:" + error);
+        }).finally(() => console.info("Corriendo getLugares() en lugares.services!"))
     }
 
-    getLugarId(id: string): Observable<any> {
+    /*Dado que el subjerct puede ser modificado desde otros lugares talvez sea una 
+    * buena idea tener este funcion para pedir su valor
+    **/
+    getObsLugares$(): Observable<Lugar[]> {
+        return this.lugares$.asObservable();
+    }
+
+    /** Retorna un observable de un lugar obtenido localmente del array lugares */
+    getObsLugar$(): Observable<Lugar> {
+        return this.lugar$.asObservable();
+    }
+
+    getLugaresLocal() {
+        this.lugares$.next(this.todosLosLugares);
+    }
+
+    /** Obtiene el lugar a partir del id que recibe y */
+    getLugarId(id: string): Observable<Lugar> {
+        const lugarEncontrado = this.todosLosLugares.filter(item => item.id == id);
         return from(
-            this.afs.doc(`lugares/${id}`).snapshotChanges()
+            //this.afs.doc(`lugares/${id}`).snapshotChanges() //funciona ok no se usa
+            //this.afs.doc(id).get()                          //funciona ok no se usa
+            lugarEncontrado
         );
     }
 
     /** OK: Filtra por departamento y retorna un obserbave  */
-    getLugaresPorDepartamento(departamento: string):Observable<any[]> {
-        return this.afs.collection('lugares', ref => ref.where('departamento', '==', departamento)).valueChanges({ idField: 'id' });
+    getLugaresPorDepartamento(departamento: string): void {
+        //si uso la consulta a firestore retorna un observable
+        //return this.afs.collection('lugares', ref => ref.where('departamento', '==', departamento)).valueChanges({ idField: 'id' });
+        this.lugares$.next(this.todosLosLugares.filter(lugar => lugar.departamento == departamento));
     }
 
     /** OK: Filtra por el estado de publicacion y retorna un obserbave  */
-    getLugaresPorEstado(publicado: boolean): Observable<any> {
-        return this.afs.collection('lugares', ref => ref.where('publicado', '==', publicado)).valueChanges({ idField: 'id' });
+    getLugaresPorEstado(publicado: boolean): void {
+        //si uso la consulta a firestore retorna un observable
+        //return this.afs.collection('lugares', ref => ref.where('publicado', '==', publicado)).valueChanges({ idField: 'id' });
+        this.lugares$.next(this.todosLosLugares.filter(lugar => lugar.publicado == publicado));
     }
 
-    /** OK: Filtra por el estado de publicacion y por el departamento retornando un obserbave  */
-    getLugaresPublicadoYDepartamento(publicado: boolean, departamento: string): Observable<any> {
-        return this.afs.collection('lugares', ref => ref.where('publicado', '==', publicado)
+    /** OK: Filtra por el estado de publicacion y por el departamento, luego 
+     * actualiza el Subject  lugares$
+      */
+    getLugaresPublicadoYDepartamento(publicado: boolean, departamento: string): void {
+        //si uso la consulta a firestore retorna un observable
+        /*return this.afs.collection('lugares', ref => ref.where('publicado', '==', publicado)
         .where('departamento','==',departamento)).valueChanges({ idField: 'id' });
+        */
+        this.lugares$.next(this.todosLosLugares.filter(lugar => {
+            if (lugar.publicado === publicado && lugar.departamento === departamento) {
+                return true;
+            } else {
+                return false;
+            }
+        })
+        );
     }
 
     //Falta hacer este metodo funcione, tiene que devolver un observable con un array de lugares que coinsidan con el termino de busqueda
     getSugerencias(termino: string): Observable<any> {
-
         return from(
             this.afs.doc(`lugares`).snapshotChanges()
         );
@@ -79,13 +133,10 @@ export class LugaresService {
 
         const datos = [{
             "nombre": "Finca Piedra",
+            "prioridad": 0,
             "publicado": true,
             "departamento": "San José",
-            "localidad": {
-                "id": "m0eMu24B5R9765CKPY50",
-                "departamento": "San José",
-                "nombre": "Mal Abrigo"
-            },
+            "localidad": "Mal Abrigo",
             "auto": true,
             "bicicleta": false,
             "caminar": false,
@@ -145,13 +196,10 @@ export class LugaresService {
             "videos": []
         }, {
             "nombre": "Mal Abrigo",
+            "prioridad": 0,
             "publicado": true,
             "departamento": "San José",
-            "localidad": {
-                "id": "m0eMu24B5R9765CKPY50",
-                "departamento": "San José",
-                "nombre": "Mal Abrigo"
-            },
+            "localidad": "Mal Abrigo",
             "auto": true,
             "bicicleta": false,
             "caminar": false,
@@ -223,13 +271,10 @@ export class LugaresService {
             "videos": []
         }, {
             "nombre": "Barras de Mahoma",
+            "prioridad": 0,
             "publicado": true,
             "departamento": "San José",
-            "localidad": {
-                "id": "m0eMu24B5R9765CKPY50",
-                "departamento": "San José",
-                "nombre": "Mal Abrigo"
-            },
+            "localidad": "Mal Abrigo",
             "auto": true,
             "bicicleta": true,
             "caminar": true,
@@ -304,13 +349,10 @@ export class LugaresService {
             "videos": []
         }, {
             "nombre": "Museo San José",
+            "prioridad": 0,
             "publicado": true,
             "departamento": "San José",
-            "localidad": {
-                "id": "yyHcbfn3ozxXWN4JGxCD",
-                "departamento": "San José",
-                "nombre": "San José De Mayo"
-            },
+            "localidad": "San José De Mayo",
             "auto": true,
             "bicicleta": true,
             "caminar": true,
@@ -370,13 +412,10 @@ export class LugaresService {
             "videos": []
         }, {
             "nombre": "Parque Rodó",
+            "prioridad": 0,
             "publicado": true,
             "departamento": "San José",
-            "localidad": {
-                "id": "yyHcbfn3ozxXWN4JGxCD",
-                "departamento": "San José",
-                "nombre": "San José De Mayo"
-            },
+            "localidad": "San José De Mayo",
             "auto": true,
             "bicicleta": true,
             "caminar": true,
@@ -451,13 +490,10 @@ export class LugaresService {
             "videos": []
         }, {
             "nombre": "Basílica Catedral",
+            "prioridad": 0,
             "publicado": true,
             "departamento": "San José",
-            "localidad": {
-                "id": "yyHcbfn3ozxXWN4JGxCD",
-                "departamento": "San José",
-                "nombre": "San José De Mayo"
-            },
+            "localidad": "San José De Mayo",
             "auto": true,
             "bicicleta": true,
             "caminar": true,
@@ -517,13 +553,10 @@ export class LugaresService {
             "videos": []
         }, {
             "nombre": "Club San José",
+            "prioridad": 0,
             "publicado": true,
             "departamento": "San José",
-            "localidad": {
-                "id": "yyHcbfn3ozxXWN4JGxCD",
-                "departamento": "San José",
-                "nombre": "San José De Mayo"
-            },
+            "localidad": "San José De Mayo",
             "auto": true,
             "bicicleta": true,
             "caminar": true,
@@ -578,13 +611,10 @@ export class LugaresService {
             "videos": []
         }, {
             "nombre": "AFE / ECIE",
+            "prioridad": 0,
             "publicado": true,
             "departamento": "San José",
-            "localidad": {
-                "id": "yyHcbfn3ozxXWN4JGxCD",
-                "departamento": "San José",
-                "nombre": "San José De Mayo"
-            },
+            "localidad": "San José De Mayo",
             "auto": true,
             "bicicleta": true,
             "caminar": true,
@@ -643,13 +673,10 @@ export class LugaresService {
             "videos": []
         }, {
             "nombre": "Picada Varela",
+            "prioridad": 0,
             "publicado": true,
             "departamento": "San José",
-            "localidad": {
-                "id": "yyHcbfn3ozxXWN4JGxCD",
-                "departamento": "San José",
-                "nombre": "San José De Mayo"
-            },
+            "localidad": "San José De Mayo",
             "auto": true,
             "bicicleta": true,
             "caminar": true,
@@ -697,13 +724,10 @@ export class LugaresService {
             "videos": []
         }, {
             "nombre": "Casa Dominga",
+            "prioridad": 0,
             "publicado": true,
             "departamento": "San José",
-            "localidad": {
-                "id": "yyHcbfn3ozxXWN4JGxCD",
-                "departamento": "San José",
-                "nombre": "San José De Mayo"
-            },
+            "localidad": "San José De Mayo",
             "auto": true,
             "bicicleta": true,
             "caminar": true,
@@ -781,13 +805,10 @@ export class LugaresService {
             "videos": []
         }, {
             "nombre": "Capilla del Huerto",
+            "prioridad": 0,
             "publicado": true,
             "departamento": "San José",
-            "localidad": {
-                "id": "yyHcbfn3ozxXWN4JGxCD",
-                "departamento": "San José",
-                "nombre": "San José De Mayo"
-            },
+            "localidad": "San José De Mayo",
             "auto": true,
             "bicicleta": true,
             "caminar": true,
@@ -831,13 +852,10 @@ export class LugaresService {
             "videos": []
         }, {
             "nombre": "ICE",
+            "prioridad": 0,
             "publicado": true,
             "departamento": "San José",
-            "localidad": {
-                "id": "yyHcbfn3ozxXWN4JGxCD",
-                "departamento": "San José",
-                "nombre": "San José De Mayo"
-            },
+            "localidad": "San José De Mayo",
             "auto": true,
             "bicicleta": true,
             "caminar": true,
@@ -879,13 +897,10 @@ export class LugaresService {
             "videos": []
         }, {
             "nombre": "Quinta del Horno",
+            "prioridad": 0,
             "publicado": true,
             "departamento": "San José",
-            "localidad": {
-                "id": "yyHcbfn3ozxXWN4JGxCD",
-                "departamento": "San José",
-                "nombre": "San José De Mayo"
-            },
+            "localidad": "San José De Mayo",
             "auto": true,
             "bicicleta": true,
             "caminar": true,
@@ -931,13 +946,10 @@ export class LugaresService {
             "videos": []
         }, {
             "nombre": "UTEC",
+            "prioridad": 0,
             "publicado": true,
             "departamento": "San José",
-            "localidad": {
-                "id": "yyHcbfn3ozxXWN4JGxCD",
-                "departamento": "San José",
-                "nombre": "San José De Mayo"
-            },
+            "localidad": "San José De Mayo",
             "auto": true,
             "bicicleta": true,
             "caminar": true,
@@ -989,13 +1001,10 @@ export class LugaresService {
             "videos": []
         }, {
             "nombre": "Sierra de Mahoma",
+            "prioridad": 0,
             "publicado": true,
             "departamento": "San José",
-            "localidad": {
-                "id": "m0eMu24B5R9765CKPY50",
-                "departamento": "San José",
-                "nombre": "Mal Abrigo"
-            },
+            "localidad": "Mal Abrigo",
             "auto": true,
             "bicicleta": false,
             "caminar": false,
@@ -1057,13 +1066,10 @@ export class LugaresService {
             "videos": []
         }, {
             "nombre": "Boliche de Campaña",
+            "prioridad": 0,
             "publicado": true,
             "departamento": "San José",
-            "localidad": {
-                "id": "m0eMu24B5R9765CKPY50",
-                "departamento": "San José",
-                "nombre": "Mal Abrigo"
-            },
+            "localidad": "Mal Abrigo",
             "auto": true,
             "bicicleta": false,
             "caminar": false,
@@ -1110,17 +1116,14 @@ export class LugaresService {
                 { "user": 0 }
             ],
             "videos": [
-                { "video": "https://www.youtube.com/embed/WEn3eSV-hvw" }
+                { "url": "https://www.youtube.com/embed/WEn3eSV-hvw" }
             ]
         }, {
             "nombre": "Teatro Maccio",
+            "prioridad": 0,
             "publicado": true,
             "departamento": "San José",
-            "localidad": {
-                "id": "yyHcbfn3ozxXWN4JGxCD",
-                "departamento": "San José",
-                "nombre": "San José De Mayo"
-            },
+            "localidad": "San José De Mayo",
             "auto": true,
             "bicicleta": true,
             "caminar": true,
@@ -1179,13 +1182,10 @@ export class LugaresService {
             "videos": []
         }, {
             "nombre": "Intendencia Municipal",
+            "prioridad": 0,
             "publicado": true,
             "departamento": "San José",
-            "localidad": {
-                "id": "yyHcbfn3ozxXWN4JGxCD",
-                "departamento": "San José",
-                "nombre": "San José De Mayo"
-            },
+            "localidad": "San José De Mayo",
             "auto": true,
             "bicicleta": true,
             "caminar": true,
@@ -1238,13 +1238,10 @@ export class LugaresService {
             "videos": []
         }, {
             "nombre": "Mercado Municipal",
+            "prioridad": 0,
             "publicado": true,
             "departamento": "San José",
-            "localidad": {
-                "id": "yyHcbfn3ozxXWN4JGxCD",
-                "departamento": "San José",
-                "nombre": "San José De Mayo"
-            },
+            "localidad": "San José De Mayo",
             "auto": true,
             "bicicleta": true,
             "caminar": true,
@@ -1283,13 +1280,10 @@ export class LugaresService {
             "videos": []
         }, {
             "nombre": "Club Madreselvas",
+            "prioridad": 0,
             "publicado": true,
             "departamento": "San José",
-            "localidad": {
-                "id": "yyHcbfn3ozxXWN4JGxCD",
-                "departamento": "San José",
-                "nombre": "San José De Mayo"
-            },
+            "localidad": "San José De Mayo",
             "auto": true,
             "bicicleta": true,
             "caminar": true,
@@ -1343,13 +1337,10 @@ export class LugaresService {
             "videos": []
         }, {
             "nombre": "Club Fraternidad",
+            "prioridad": 0,
             "publicado": true,
             "departamento": "San José",
-            "localidad": {
-                "id": "yyHcbfn3ozxXWN4JGxCD",
-                "departamento": "San José",
-                "nombre": "San José De Mayo"
-            },
+            "localidad": "San José De Mayo",
             "auto": true,
             "bicicleta": true,
             "caminar": true,
@@ -1387,13 +1378,10 @@ export class LugaresService {
             "videos": []
         }, {
             "nombre": "Sociedad Italiana",
+            "prioridad": 0,
             "publicado": true,
             "departamento": "San José",
-            "localidad": {
-                "id": "yyHcbfn3ozxXWN4JGxCD",
-                "departamento": "San José",
-                "nombre": "San José De Mayo"
-            },
+            "localidad": "San José De Mayo",
             "auto": true,
             "bicicleta": true,
             "caminar": true,
@@ -1434,5 +1422,6 @@ export class LugaresService {
         }
         //this.angularFirestore.collection('lugares').add(datos)
     }
+
 
 }

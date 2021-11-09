@@ -20,9 +20,9 @@ export class BuscarComponent implements OnInit {
   }
 
   buscando(){
-    this.lugaresService.lugares$.subscribe(
-      lugares => this.lugares = lugares
-    )
+    //this.lugaresService.lugares$.subscribe(
+    //  lugares => this.lugares = lugares
+    //)
   }
 
   //falta terminar

@@ -1,14 +1,13 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Route } from '@angular/router';
-import { Lugar, Imagen, LugarTipo, Departamento } from '../../interfaces/lugar.interface';
+import { Lugar, Imagen, LugarTipo, DepartamentoEnum } from '../../interfaces/lugar.interface';
 import { FormBuilder, Validators, FormGroup, FormControl, FormArray } from '@angular/forms';
 import { StorageService } from '../../../shared/services/storage.service';
-import { pipe, zip } from 'rxjs';
+import { pipe, Subscription, zip } from 'rxjs';
 import { map, filter, tap, switchMap } from 'rxjs/operators';
 import { DialogMapaComponent } from '../../../shared/components/dialog-mapa/dialog-mapa.component';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MapaService } from '../../../shared/services/mapa.service';
-import { Localidad } from '../../../shared/interfaces/localidad.interface';
 import { LocalidadesService } from '../../../shared/services/localidades.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { LugaresService } from '../../services/lugares.service';
@@ -19,10 +18,10 @@ import { LugaresService } from '../../services/lugares.service';
     templateUrl: './agregar.component.html',
     styleUrls: ['./agregar.component.css']
 })
-export class AgregarComponent implements OnInit {
+export class AgregarComponent implements OnInit, OnDestroy {
 
     submitHabilitado = true;
-    titulo:string;
+    titulo: string;
     idLugar: string;
     tituloUploaderGaleria: string = "Subir imágenes a la galería";
     tituloUploaderHome: string = "Selecciona la imágen del Home";
@@ -32,14 +31,17 @@ export class AgregarComponent implements OnInit {
     imagenSubidaAgregar: Imagen;
     lugaresTipo = [{ tipo: "Urbano" }, { tipo: "Rural" }];
     opsPatrimonial = [{ texto: "Sí", valor: true }, { texto: "No", valor: false }];
-    public departamentos = Object.values(Departamento);
+    departamentos:string[] = [];
+    localidades: string[] = [];
+    private subsDepartamentos: Subscription;
+    private subsLocalidades: Subscription;
     private imagenHomeDefault = { "name": "imagen-default", "url": "assets/default-home.jpg" };
     private imagenPrincipalDefault = { "name": "imagen-default", "url": "assets/default-lugar-galeria.jpg" };
-    localidades?: Localidad[] = [];
-    //    localidad: Localidad[] = [];
+
 
     public lugarForm: FormGroup = this.fb.group({
         nombre: ['', [Validators.required, Validators.minLength(2)]],
+        prioridad: [0, [Validators.required]],
         publicado: [false, Validators.required],
         departamento: ['', Validators.required],
         localidad: ['', Validators.required],
@@ -80,9 +82,7 @@ export class AgregarComponent implements OnInit {
         private mapaService: MapaService,
         private localidadesService: LocalidadesService,
         private _snackBar: MatSnackBar) {
-        //este metodo solo se usa para cargar la base de datos una vez
-        //this.localidadesService.cargarLocalidades(); 
-        //this.lugaresService.cargarLugares();
+
 
         /** Observable que se dispara al cambiar el valor del minimapa.
      *  Los datos del formulario cambian en funcion del valor del mimimapa
@@ -115,26 +115,36 @@ export class AgregarComponent implements OnInit {
             //    this.lugarForm.setValue(JSON.parse(lugarGuardado));
         }
 
+        // cargando los datos de lugares, departamentos y localidades
+        this.subsDepartamentos = this.localidadesService.getObsDepartamentos().subscribe(dptos => this.departamentos = dptos);
+        this.localidadesService.emitirDepartamentosActivos();
+        this.subsLocalidades = this.localidadesService.getObsLocalidades().subscribe(locs => this.localidades = locs); 
+
         //A partir de la ruta y el id recibido obtiene el lugar para mostrar
         this.activatedRoute.params
             .pipe(
+                tap(res => console.log( res )),
                 switchMap(({ id }) => this.lugaresService.getLugarId(id)),
             ).subscribe(lugar => {
                 // lugar.payload.id ) 
-                console.log(typeof lugar.payload.id)
-                if( lugar.payload.id != "undefined" ){
+                //const lugar = [0]this.lugaresService.getLugarId(id)
+                //console.log(lugar)
+                if (lugar.id != "undefined") {
                     //this.lugar = {id: lugar.payload.id, ...lugar.payload.data()};
-                    this.idLugar = lugar.payload.id;
-                    this.lugarForm.reset(lugar.payload.data());
-                    
+                    this.idLugar = lugar.id;
+                    delete lugar.id
+                    this.lugarForm.reset(lugar);
                     this.titulo = `Editando ${this.lugarForm.controls['nombre'].value}`;
                     this.galeria = this.lugarForm.controls['imagenes'].value;
+                    this.localidadesService.getLocadidadesDepartamento(lugar.departamento);
                 }
                 else {
                     this.titulo = "Nuevo Lugar";
                 }
-            
+
             });
+
+        console.log(this.localidades);
 
         /**Si el formuario es válido lo guarda en el storage local */
         zip(this.lugarForm.statusChanges, this.lugarForm.valueChanges).pipe(
@@ -149,23 +159,29 @@ export class AgregarComponent implements OnInit {
 
         //}
 
-        this.getAllLocalidades();
+        //this.getAllLocalidades();
 
+    }
+
+    ngOnDestroy(): void {
+        this.subsDepartamentos.unsubscribe();
+        this.subsLocalidades.unsubscribe();
+        
     }
 
     /** Funciona pero no se usa es solo para pruebas: Método que trae 
      * todas las localidades existentes */
-    getAllLocalidades(): void {
-        this.localidadesService.getAll().snapshotChanges().pipe(
-            map(changes =>
-                changes.map(c =>
-                    ({ id: c.payload.doc.id, ...c.payload.doc.data() })
-                )
-            )
-        ).subscribe(data => {
-            this.localidades = data;
-        });
-    }
+    //getAllLocalidades(): void {
+    //    this.localidadesService.getAll().snapshotChanges().pipe(
+    //        map(changes =>
+    //            changes.map(c =>
+    //                ({ id: c.payload.doc.id, ...c.payload.doc.data() })
+    //            )
+    //        )
+    //    ).subscribe(data => {
+    //        this.localidades = data;
+    //    });
+    //}
 
     agregarImagenSubida($event) {
         //si el nombre de la imagen ya esta en el array la elimina
@@ -250,14 +266,14 @@ export class AgregarComponent implements OnInit {
      * Este método es llamado cada vez que se selecciona un departamento
      */
     getLocalidadesPorDepartamento() {
-        this.localidadesService.getLoadidadesDepartamento(this.departamento.value)
-            .then(res => {
-                this.localidades = [];
-                res.docs.forEach(item => {
-                    //cada item contiene el id y la data por separados
-                    this.localidades.push({ id: item.id, ...item.data() })
-                })
-            })
+        this.localidadesService.getLocadidadesDepartamento(this.departamento.value)
+            //.then(res => {
+            //    this.localidades = [];
+            //    res.docs.forEach(item => {
+            //        //cada item contiene el id y la data por separados
+            //        this.localidades.push({ id: item.id, ...item.data() })
+            //    })
+            //})
     }
 
     /**
@@ -296,12 +312,12 @@ export class AgregarComponent implements OnInit {
             console.log(nuevoLugar);
             //envia el formulario
             this.lugaresService.addLugar(nuevoLugar);
-            
+
             //limpia el formulario y setea los valores inicales con el metodo reset
             //El metodo 
             this.lugarForm.reset({
-                imagenHome : this.imagenHomeDefault,
-                imagenPrincipal: this.imagenPrincipalDefault 
+                imagenHome: this.imagenHomeDefault,
+                imagenPrincipal: this.imagenPrincipalDefault
             });
             this.galeria.length = 0; //vacia la galeria de fotos
             //limpia el mapa y el mini-mapa
