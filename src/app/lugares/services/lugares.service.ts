@@ -51,9 +51,9 @@ export class LugaresService {
                     const data: any = item.data()
                     arrLugares.push({ id: item.id, ...data });
                 })
-                console.error("todosLosLugares.length = " + this.todosLosLugares.length)
+                console.log("todosLosLugares.length = " + this.todosLosLugares.length)
                 this.todosLosLugares = arrLugares;
-                console.error("todosLosLugares.length = "+ this.todosLosLugares.length)
+                console.log("todosLosLugares.length = "+ this.todosLosLugares.length)
                 this.lugares$.next(this.todosLosLugares); //el subject lugares$ emite los lugares
             }
         ).catch(error => {

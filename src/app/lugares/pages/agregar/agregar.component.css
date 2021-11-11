@@ -19,7 +19,9 @@ mat-divider{
 }
 
 .main-column{
+    /*
     min-height: 900px;
+    /*
 }
 
 .container-img {
@@ -54,10 +56,13 @@ mat-divider{
 }
 
 .container {
+    /*
     border: rgba(0, 0, 0, 0.12) solid 1px;
     border-radius: 5px;
+    */
     padding: 10px;
     margin-bottom: 2px;
+
 /*    height: 800px; */
  /*   background-color: gold;  */
 }
@@ -70,16 +75,21 @@ mat-divider{
 .container-galeria {
     /*border: red solid 1px;*/
     /*background-color: darkgoldenrod;*/
-    padding-right: 40px;
-    min-height: 920px;
+    /*height: 402px;*/
 }
 
 .contenedor_galeria {
-    min-height: 615px;
+    min-height: 315px;
+    margin-bottom: 40px;
+    /*background-color: darksalmon; */
+}
+
+.galeria {
+    max-width: 1600px;
 }
 
 #camp-principal {
-    width: 100%;
+    
     /*
     background-color: aquamarine;
     */

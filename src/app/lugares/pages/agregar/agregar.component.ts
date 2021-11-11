@@ -21,7 +21,7 @@ import { LugaresService } from '../../services/lugares.service';
 export class AgregarComponent implements OnInit, OnDestroy {
 
     submitHabilitado = true;
-    titulo: string;
+    titulo: string = "Nuevo Lugar";
     idLugar: string;
     tituloUploaderGaleria: string = "Subir imágenes a la galería";
     tituloUploaderHome: string = "Selecciona la imágen del Home";
@@ -31,10 +31,11 @@ export class AgregarComponent implements OnInit, OnDestroy {
     imagenSubidaAgregar: Imagen;
     lugaresTipo = [{ tipo: "Urbano" }, { tipo: "Rural" }];
     opsPatrimonial = [{ texto: "Sí", valor: true }, { texto: "No", valor: false }];
-    departamentos:string[] = [];
+    departamentos: string[] = [];
     localidades: string[] = [];
-    private subsDepartamentos: Subscription;
-    private subsLocalidades: Subscription;
+    private sourceDepartamentos: Subscription;
+    private sourceLocalidades: Subscription;
+    private sourceMiniMapa: Subscription;
     private imagenHomeDefault = { "name": "imagen-default", "url": "assets/default-home.jpg" };
     private imagenPrincipalDefault = { "name": "imagen-default", "url": "assets/default-lugar-galeria.jpg" };
 
@@ -87,7 +88,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
         /** Observable que se dispara al cambiar el valor del minimapa.
      *  Los datos del formulario cambian en funcion del valor del mimimapa
      */
-        const sourceMapa = this.mapaService.miniMapaSubject$.subscribe(res => {
+        this.sourceMiniMapa = this.mapaService.getObsMiniMapa().subscribe(res => {
             //si los datos del minimapa son validos y tiene marcado en true
             if (res !== undefined && res.marcador == true) {
                 this.ubicacion.setValue(res.centro);
@@ -96,10 +97,11 @@ export class AgregarComponent implements OnInit, OnDestroy {
                 this.ubicacion.setValue(0);
             }
             /** Aca hay que chequearlo bien porque iria el caso en que el formulrio biene con los datos
-            if (this.ubicacion.value !== 0 ) {
-                this.mapaService.dMiniMapa = this.ubicacion.value();
+             */
+            if (this.ubicacion.value !== 0) {
+                //this.mapaService.dMiniMapa = this.ubicacion.value();
             }
-            */
+
         });
 
         if (this.ubicacion.value !== { "lng": -56.43721973207522, "lat": -32.824680163553545 }) {
@@ -116,20 +118,22 @@ export class AgregarComponent implements OnInit, OnDestroy {
         }
 
         // cargando los datos de lugares, departamentos y localidades
-        this.subsDepartamentos = this.localidadesService.getObsDepartamentos().subscribe(dptos => this.departamentos = dptos);
+        this.sourceDepartamentos = this.localidadesService.getObsDepartamentos().subscribe(dptos => this.departamentos = dptos);
         this.localidadesService.emitirDepartamentosActivos();
-        this.subsLocalidades = this.localidadesService.getObsLocalidades().subscribe(locs => this.localidades = locs); 
+        this.sourceLocalidades = this.localidadesService.getObsLocalidades().subscribe(locs => this.localidades = locs);
 
-        //A partir de la ruta y el id recibido obtiene el lugar para mostrar
+        /*A partir de la ruta y el id recibido obtiene el lugar para mostrar 
+        *
+        **/
         this.activatedRoute.params
             .pipe(
-                tap(res => console.log( res )),
+                tap(res => console.log(res)),
                 switchMap(({ id }) => this.lugaresService.getLugarId(id)),
             ).subscribe(lugar => {
                 // lugar.payload.id ) 
                 //const lugar = [0]this.lugaresService.getLugarId(id)
-                //console.log(lugar)
-                if (lugar.id != "undefined") {
+                //console.error(typeof lugar.id)
+                if (lugar.id !== undefined) {
                     //this.lugar = {id: lugar.payload.id, ...lugar.payload.data()};
                     this.idLugar = lugar.id;
                     delete lugar.id
@@ -137,14 +141,11 @@ export class AgregarComponent implements OnInit, OnDestroy {
                     this.titulo = `Editando ${this.lugarForm.controls['nombre'].value}`;
                     this.galeria = this.lugarForm.controls['imagenes'].value;
                     this.localidadesService.getLocadidadesDepartamento(lugar.departamento);
+                    this.mapaService.dMiniMapa = { centro: lugar.ubicacion, zoom: 15, marcador: true };
+                    console.error("Agregar : " + this.mapaService.dMiniMapa.centro.lat + ", " + this.mapaService.dMiniMapa.centro.lng);
+                    this.mapaService.emitirMiniMapa();
                 }
-                else {
-                    this.titulo = "Nuevo Lugar";
-                }
-
             });
-
-        console.log(this.localidades);
 
         /**Si el formuario es válido lo guarda en el storage local */
         zip(this.lugarForm.statusChanges, this.lugarForm.valueChanges).pipe(
@@ -154,19 +155,24 @@ export class AgregarComponent implements OnInit, OnDestroy {
         ).subscribe(formValue => {
             localStorage.setItem('lugar', JSON.stringify(formValue));
         })
-
-        //if (this.ubicacion.value !== 0) {
-
-        //}
-
-        //this.getAllLocalidades();
-
     }
 
     ngOnDestroy(): void {
-        this.subsDepartamentos.unsubscribe();
-        this.subsLocalidades.unsubscribe();
-        
+        this.sourceDepartamentos.unsubscribe();
+        this.sourceLocalidades.unsubscribe();
+        this.sourceMiniMapa.unsubscribe();
+
+        this.lugarForm.reset({
+            imagenHome: this.imagenHomeDefault,
+            imagenPrincipal: this.imagenPrincipalDefault
+        });
+        this.galeria.length = 0; //vacia la galeria de fotos
+        //limpia el mapa y el mini-mapa
+        this.mapaService.resetDataMapa();
+        this.mapaService.resetDataMiniMapa();
+        //Limpia el minimapa y el mapa
+        this.mapaService.emitirMiniMapa();
+        this.mapaService.resetDataMapa();
     }
 
     /** Funciona pero no se usa es solo para pruebas: Método que trae 
@@ -267,13 +273,6 @@ export class AgregarComponent implements OnInit, OnDestroy {
      */
     getLocalidadesPorDepartamento() {
         this.localidadesService.getLocadidadesDepartamento(this.departamento.value)
-            //.then(res => {
-            //    this.localidades = [];
-            //    res.docs.forEach(item => {
-            //        //cada item contiene el id y la data por separados
-            //        this.localidades.push({ id: item.id, ...item.data() })
-            //    })
-            //})
     }
 
     /**
@@ -309,12 +308,10 @@ export class AgregarComponent implements OnInit, OnDestroy {
 
         if (this.lugarForm.valid && this.submitHabilitado) {
             const nuevoLugar: Lugar = this.lugarForm.value;
-            console.log(nuevoLugar);
             //envia el formulario
             this.lugaresService.addLugar(nuevoLugar);
 
             //limpia el formulario y setea los valores inicales con el metodo reset
-            //El metodo 
             this.lugarForm.reset({
                 imagenHome: this.imagenHomeDefault,
                 imagenPrincipal: this.imagenPrincipalDefault

@@ -2,20 +2,18 @@
     <h1>{{titulo}}</h1>
 </div>
 
-<form [formGroup]="lugarForm" (ngSubmit)="agregarLugar()" id="formLugar" >
+<form [formGroup]="lugarForm" (ngSubmit)="agregarLugar()" id="formLugar">
 
     <div fxLayout="row" fxLayoutAlign="space-between stretch" fxLayoutGap="40px">
 
         <!-- ============================== Columna izquierda ==================================== -->
-        <div class="main-column" fxFlex="50" fxLayout="column" fxLayoutGap="20px">
+        <div class="main-column" fxFlex="50" fxLayout="column stretch" fxLayoutGap="20px">
 
-            <!-- ==============================  Datos Generales  ==================================== -->
-
-            <div class="container">
+            <!-- ==============================  Nombre/Publicado ==================================== -->
+            <div class="container" style="height: 124px;">
                 <div>
-                    <h2>Datos iniciales</h2>
+                    <h2>Nombre/estado de publicación</h2>
                 </div>
-                <!-- ==============================  Nombre/Publicado ==================================== -->
                 <div fxLayout="row" fxLayoutGap="40px">
 
                     <mat-form-field fxFlex="50%">
@@ -38,98 +36,100 @@
                 <!-- ============================== Fin  Nombre/Publicado ==================================== -->
 
                 <!-- ==============================  Departamento y Localidad ==================================== -->
-                <div fxLayout="row" fxLayoutGap="40px">
-                    <mat-form-field id="camp-principal" fxFlex="50%">
-                        <mat-label>Selecciona el Departamento</mat-label>
-                        <mat-select formControlName="departamento" (selectionChange)="getLocalidadesPorDepartamento()">
-                            <mat-option *ngFor="let departamento of departamentos" [value]="departamento">{{
-                                departamento }}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                    <mat-form-field id="camp-principal2" fxFlex="50%">
-                        <mat-label>Selecciona la Localidad</mat-label>
-                        <mat-select formControlName="localidad" (selectionChange)="setImagenPrincipal()">
-                            <mat-option *ngFor="let localidad of localidades" [value]="localidad">{{ localidad }}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
                 <!-- ============================== Fin Departamento y Localidad ==================================== -->
+                <div class="container" style="height: 124px;">
+                    <div>
+                        <h2>Departamento y localidad</h2>
+                    </div>
+                    <div fxLayout="row" fxLayoutGap="40px">
+                        <mat-form-field id="camp-principal" fxFlex="50%">
+                            <mat-label>Selecciona el Departamento</mat-label>
+                            <mat-select formControlName="departamento"
+                                (selectionChange)="getLocalidadesPorDepartamento()">
+                                <mat-option *ngFor="let departamento of departamentos" [value]="departamento">{{
+                                    departamento }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <mat-form-field id="camp-principal2" fxFlex="50%">
+                            <mat-label>Selecciona la Localidad</mat-label>
+                            <mat-select formControlName="localidad" (selectionChange)="setImagenPrincipal()">
+                                <mat-option *ngFor="let localidad of localidades" [value]="localidad">{{ localidad }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                </div>
 
                 <!-- ============================== Como llegar ==================================== -->
-                <div fxLayout="row" fxLayoutGap="40px">
-                    <div fxFlex="25%">
-                        <mat-label>Se puede llegar en: </mat-label>
+                <!-- ============================== Fin Como llegar ==================================== -->
+                <div class="container" style="height: 124px;">
+                    <div>
+                        <h2>Como llegar</h2>
                     </div>
-                    <div fxFlex="15%">
-                        <mat-checkbox formControlName="auto">Auto</mat-checkbox>
-                    </div>
-                    <div fxFlex="15%">
-                        <mat-checkbox formControlName="bicicleta">Bicicleta</mat-checkbox>
-                    </div>
-                    <div fxFlex="15%">
-                        <mat-checkbox formControlName="caminar">Caminando</mat-checkbox>
+                    <div fxLayout="row" fxLayoutGap="40px">
+                        <div fxFlex="25%">
+                            <mat-label>Se puede llegar en: </mat-label>
+                        </div>
+                        <div fxFlex="15%">
+                            <mat-checkbox formControlName="auto">Auto</mat-checkbox>
+                        </div>
+                        <div fxFlex="15%">
+                            <mat-checkbox formControlName="bicicleta">Bicicleta</mat-checkbox>
+                        </div>
+                        <div fxFlex="15%">
+                            <mat-checkbox formControlName="caminar">Caminando</mat-checkbox>
+                        </div>
                     </div>
                 </div>
-                <!-- ============================== Fin Como llegar ==================================== -->
 
                 <!-- ============================== Tipo/Patrimonial ==================================== -->
-                <div fxLayout="row" fxLayoutGap="40px">
-                    <mat-form-field fxFlex="50">
-                        <span matPrefix>Tipo de Lugar: &nbsp; &nbsp;</span>
-                        <mat-select formControlName="tipo">
-                            <mat-option *ngFor="let item of lugaresTipo" [value]="item.tipo">{{ item.tipo }}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                    <mat-form-field fxFlex="50">
-                        <span matPrefix>Patrimonial: &nbsp; &nbsp;</span>
-                        <mat-select formControlName="patrimonial">
-                            <mat-option *ngFor="let item of opsPatrimonial" [value]="item.valor">{{ item.texto }}
-                            </mat-option>
-                        </mat-select>
-                        <mat-hint align="start">Selecciona si es un lugar patrimonial</mat-hint>
-                    </mat-form-field>
-                </div>
                 <!-- ============================== Fin Tipo/Patrimonial ==================================== -->
-
+                <div class="container" style="height: 124px;">
+                    <div>
+                        <h2>Tipo/Patrimonial</h2>
+                    </div>
+                    <div fxLayout="row" fxLayoutGap="40px">
+                        <mat-form-field fxFlex="50">
+                            <span matPrefix>Tipo de Lugar: &nbsp; &nbsp;</span>
+                            <mat-select formControlName="tipo">
+                                <mat-option *ngFor="let item of lugaresTipo" [value]="item.tipo">{{ item.tipo }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <mat-form-field fxFlex="50">
+                            <span matPrefix>Patrimonial: &nbsp; &nbsp;</span>
+                            <mat-select formControlName="patrimonial">
+                                <mat-option *ngFor="let item of opsPatrimonial" [value]="item.valor">{{ item.texto }}
+                                </mat-option>
+                            </mat-select>
+                            <mat-hint align="start">Selecciona si es un lugar patrimonial</mat-hint>
+                        </mat-form-field>
+                    </div>
+                </div>
                 <!-- ============================== Descripción ==================================== -->
-                <div fxLayout="row">
-                    <mat-form-field class="area">
-                        <mat-label>Descripción del lugar</mat-label>
-                        <textarea class="descripcion" formControlName="descripcion" matInput
-                            placeholder="Escribe una descripción ..." cdkAutosizeMinRows=2 cdkTextareaAutosize></textarea>
-                    </mat-form-field>
+                <div>
+                    <div>
+                        <h2>Descripción</h2>
+                    </div>
+                    <div fxLayout="row">
+                        <mat-form-field class="area">
+                            <mat-label>Descripción del lugar</mat-label>
+                            <textarea class="descripcion" formControlName="descripcion" matInput
+                                placeholder="Escribe una descripción ..." cdkAutosizeMinRows=2
+                                cdkTextareaAutosize>
+                            </textarea>
+                        </mat-form-field>
+                    </div>
                 </div>
                 <!-- ============================== Fin Descripción ==================================== -->
 
             </div>
-            <!-- ============================== Fin datos iniciales ==================================== -->
+        </div>
 
-            <!-- ============================== Mapa ==================================== -->
-            <div fxLayout="column" class="container">
-                <h2>Ubicación del Lugar</h2>
-                <div fxLayout="row">
-                    <div fxLayout="column">
-                        <div>
-                            <p>Abra el mapa y creé un marcador en la ubicación del lugar para obtener sus coordenadas
-                            </p>
-                        </div>
 
-                        <div>
-                            <button mat-raised-button color="primary" (click)="openDialog()">
-                                <mat-icon>map</mat-icon>
-                                Abrir Mapa
-                            </button>
-                        </div>
-                    </div>
-                    <div fxLayout="column">
-                        <app-mini-mapa></app-mini-mapa>
-                    </div>
-                </div>
-            </div>
-            <!-- ============================== Fin Mapa ==================================== -->
+        <!-- ============================== Columna derecha ==================================== -->
+        <div class="main-column" fxFlex="50%" fxLayout="column" fxLayoutAlign="start stretch" fxLayoutGap="10">
 
             <!-- ============================== Telefonos ==================================== -->
             <div fxLayout="column" class="container">
@@ -186,131 +186,166 @@
                 <div fxFlex="100%">
                     <h2 class="subtitulo">Sitio Web y Redes Sociales</h2>
                 </div>
-                <div fxLayout="row" fxLayoutGap="10px">
-                    <div fxLayout="column" fxFlex.gt-lg="50%">
-                        <mat-form-field class="example-full-width" appearance="fill">
-                            <mat-label>Sitio Web</mat-label>
-                            <input type="url" matInput formControlName="web" placeholder="http://www.fincapiedra.com/">
-                            <mat-icon matSuffix>insert_link</mat-icon>
-                        </mat-form-field>
-                        <mat-form-field class="example-full-width" appearance="fill">
-                            <mat-label>Whatsapp</mat-label>
-                            <input type="url" matInput formControlName="whatsapp"
-                                placeholder="http://www.fincapiedra.com/">
-                            <mat-icon matSuffix>insert_link</mat-icon>
-                        </mat-form-field>
-                    </div>
-                    <div fxLayout="column" fxFlex.gt-lg="50%">
-                        <mat-form-field class="example-full-width" appearance="fill">
-                            <mat-label>Facebook</mat-label>
-                            <input type="url" matInput formControlName="facebook"
-                                placeholder="http://www.fincapiedra.com/">
-                            <mat-icon matSuffix>insert_link</mat-icon>
-                        </mat-form-field>
-                        <mat-form-field class="example-full-width" appearance="fill">
-                            <mat-label>Instagram</mat-label>
-                            <input type="url" matInput formControlName="instagram"
-                                placeholder="http://www.fincapiedra.com/">
-                            <mat-icon matSuffix>insert_link</mat-icon>
-                        </mat-form-field>
-                    </div>
+                <div fxLayout="column" fxLayoutAlign="space-evenly" fxLayoutGap="30px">
+                    <mat-form-field appearance="fill">
+                        <mat-label>Sitio Web</mat-label>
+                        <input type="url" matInput formControlName="web" placeholder="http://www.mi-sitio-web.com/">
+                        <mat-icon matSuffix>insert_link</mat-icon>
+                    </mat-form-field>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Whatsapp</mat-label>
+                        <input type="url" matInput formControlName="whatsapp"
+                            placeholder="https://api.whatsapp.com/send?phone=598123456">
+                        <mat-icon matSuffix>insert_link</mat-icon>
+                    </mat-form-field>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Facebook</mat-label>
+                        <input type="url" matInput formControlName="facebook"
+                            placeholder="https://m.facebook.com/mi-perfil/">
+                        <mat-icon matSuffix>insert_link</mat-icon>
+                    </mat-form-field>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Instagram</mat-label>
+                        <input type="url" matInput formControlName="instagram" placeholder="http://www.instagram.com/">
+                        <mat-icon matSuffix>insert_link</mat-icon>
+                    </mat-form-field>
                 </div>
             </div>
             <!-- ============================== Fin Sitio Web Y Redes Sociales ==================================== -->
 
-            <div fxLayout="row" fxLayoutAlign="center center" >
-                <button mat-raised-button color="accent" type="submit" [disabled]="lugarForm.invalid" >
-                    Guardar Lugar
-                </button>
-            </div>
+            <!-- ============================== Mapa ==================================== -->
+            <div fxLayout="column" class="container">
+                <h2>Ubicación del Lugar</h2>
+                <div fxLayout="row">
+                    <div fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="30px">
+                        <div style="width: 70%;">
+                            <p>Abra el mapa y creé un marcador en la ubicación del lugar para obtener sus coordenadas
+                            </p>
+                        </div>
 
+                        <div>
+                            <button mat-raised-button color="primary" (click)="openDialog()">
+                                <mat-icon>map</mat-icon>
+                                Abrir Mapa
+                            </button>
+                        </div>
+                        <div>
+                            <p>Latitud: , Longitud: </p>
+                        </div>
+                    </div>
+                    <div fxLayout="column">
+                        <app-mini-mapa></app-mini-mapa>
+                    </div>
+                </div>
+            </div>
+            <!-- ============================== Fin Mapa ==================================== -->
         </div>
 
+    </div>
+    <br>
+    <mat-divider></mat-divider>
 
-        <!-- ============================== Columna derecha ==================================== -->
-        <div class="main-column" fxFlex="50%" fxLayout="column" fxLayoutAlign="start stretch" fxLayoutGap="10">
-
-            <!-- ============================== Imagen Home ==================================== -->
-            <div fxLayout="row wrapDirection" fxLayoutAlign="space-around start"
-                class="container container-home">
-                <div fxFlex="100%" class="home">
-                    <h2 style="text-align: center;">Imágen Home</h2>
-                </div>
-                <div fxFlex="50%" class="home" fxLayout="column" fxLayoutAlign="space-around center">
-                    <mat-card class="container-img">
-                        <img mat-card-image [src]="lugarForm.value.imagenHome.url" class="imagen-home">
-                        <mat-card-actions *ngIf="imagenHome.value.name != 'imagen-default'">
-                            <button mat-raised-button color="warn" (click)="setImagenHome('')">
-                                <mat-icon>delete</mat-icon> Eliminar
-                            </button>
-                        </mat-card-actions>
-                    </mat-card>
-                    <p>Tamaño de imágen: 600 x 353 px</p>
-                </div>
-                <div fxFlex="50%" class="home">
-                    <app-upload-files [tituloUploader]="tituloUploaderHome" [DirectorioUploader]="directorioHomeStorage"
-                        (imagenSubidaUploader)="setImagenHome($event)">
-                    </app-upload-files>
-                </div>
+    <div fxLayout="row">
+        <!-- ============================== Imagen Home ==================================== -->
+        <div fxFlex="50%" fxLayout="row wrapDirection" fxLayoutAlign="space-around start"
+            class="container container-home">
+            <div fxFlex="100%" class="home">
+                <h2 style="text-align: center;">Imágen Home</h2>
             </div>
-            <!-- ============================== Fin Imagen Home ==================================== -->
+            <div fxFlex="50%" class="home" fxLayout="column" fxLayoutAlign="space-around center">
+                <mat-card class="container-img">
+                    <img mat-card-image [src]="lugarForm.value.imagenHome.url" class="imagen-home">
+                    <mat-card-actions *ngIf="imagenHome.value.name != 'imagen-default'">
+                        <button mat-stroked-button color="warn" (click)="setImagenHome('')">
+                            <mat-icon>delete</mat-icon> Eliminar
+                        </button>
+                    </mat-card-actions>
+                </mat-card>
+                <p>Tamaño de imágen: 600 x 353 px</p>
+            </div>
+            <div fxFlex="50%" class="home">
+                <app-upload-files [tituloUploader]="tituloUploaderHome" [DirectorioUploader]="directorioHomeStorage"
+                    (imagenSubidaUploader)="setImagenHome($event)">
+                </app-upload-files>
+            </div>
+        </div>
+        <!-- ============================== Fin Imagen Home ==================================== -->
 
-            <!-- ============================== Galeria de imagenes/ Imagen Principal ==================================== -->
-            <div class="container container-galeria" fxLayout="column" fxLayoutAling="space-around start">
-                <div fxLayout="row wrapDirection" fxLayoutAling='space-around center'>
-                    <div fxFlex="100%">
-                        <h2 style="text-align: center;">Galería de Imágenes e Imágen Principal</h2>
-                    </div>
-                    <div fxFlex="50%" class="container-img" fxLayout="column" fxLayoutAlign="space-around center">
-                        <mat-card>
-                            <img mat-card-image [src]="lugarForm.value.imagenPrincipal.url" class="imagen-principal"
-                                alt="">
-                            <mat-card-footer>
-                                Tamaño de imágen: 600 x 450 px
-                            </mat-card-footer>
-                        </mat-card>
-                    </div>
-
-                    <div fxFlex="50%" fxLayout="column" fxFlexAlign="space-around center">
-                        <!-- Módulo para subir archivos -->
-                        <app-upload-files fxFlex="60%" [tituloUploader]="tituloUploaderGaleria"
-                            [DirectorioUploader]="directorioLugaresStorage"
-                            (imagenSubidaUploader)="agregarImagenSubida($event)">
-                        </app-upload-files>
-                        <h4 fxFlex="5%">Imágen Principal</h4>
-                        <mat-form-field id="camp-principal" fxFlex="20%">
-                            <mat-label>Selecciona una imágen de la galería para usar de imágen principal</mat-label>
-                            <mat-select formControlName="imagenPrincipal" (selectionChange)="setImagenPrincipal()">
-                                <mat-option *ngFor="let imagen of galeria" [value]="imagen">{{ imagen.name }}
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </div>
-
+        <!-- ==============================  Imagen Principal ==================================== -->
+        <div fxFlex="50%" class="container container-galeria" fxLayout="column" fxLayoutAling="space-around start">
+            <div>
+                <h2 style="text-align: center;">Galería de Imágenes e Imágen Principal</h2>
+            </div>
+            <div fxLayout="row" fxLayoutAling='space-around center' fxLayoutGap="30px">
+                <div fxFlex="50%" class="container-img" fxLayout="column" fxLayoutAlign="space-around center">
+                    <mat-card>
+                        <img mat-card-image [src]="lugarForm.value.imagenPrincipal.url" class="imagen-principal" alt="">
+                        <mat-card-footer>
+                            Tamaño de imágen: 600 x 450 px
+                        </mat-card-footer>
+                    </mat-card>
                 </div>
-                <div fxFlex="5%">
-                    <h2>Galería de imágenes</h2>
+
+                <div fxFlex="50%" fxLayout="column" fxFlexAlign="space-around center">
+                    <!-- Módulo para subir archivos -->
+                    <app-upload-files [tituloUploader]="tituloUploaderGaleria"
+                        [DirectorioUploader]="directorioLugaresStorage"
+                        (imagenSubidaUploader)="agregarImagenSubida($event)">
+                    </app-upload-files>
+                    <h4>Imágen Principal</h4>
+                    <mat-form-field id="camp-principal">
+                        <mat-label>Selecciona una imágen de la galería para usar de imágen principal</mat-label>
+                        <mat-select formControlName="imagenPrincipal" (selectionChange)="setImagenPrincipal()">
+                            <mat-option *ngFor="let imagen of galeria" [value]="imagen">{{ imagen.name }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
                 </div>
-                <div class="contenedor_galeria" fxFlex fxLayout="row wrapDirection" fxLayoutAlign="start start"
-                    fxLayoutGap="10px" *ngIf="galeria.length > 0">
+
+            </div>
+        </div>
+        <!-- ============================== Imagen Principal ==================================== -->
+
+    </div>
+
+    <!-- ============================== Galería de Imágenes ==================================== -->
+    <div fxLayout="column" class="contenedor_galeria">
+        <div>
+            <h2>Galería de imágenes</h2>
+        </div>
+        <div fxLayout='row' fxLayoutAlign="center center" >
+            <div class="galeria">
+
+                <div fxFlex fxLayout="row wrapDirection" fxLayoutAlign="space-around start" fxLayoutGap="10px"
+                    *ngIf="galeria.length > 0">
                     <!-- Módulo para mostrar las imagenes de la galeria -->
                     <app-imagen *ngFor="let foto of galeria" [imagen]="foto"
                         (imagenABorrar)="eliminarImagenGaleria($event)">
                     </app-imagen>
                 </div>
             </div>
-            <!-- ============================== Fin Galeria de imagenes/ Imagen Principal ==================================== -->
-<!-- 
+        </div>
+    </div>
+
+
+    <div fxLayout="row" fxLayoutAlign="end start" fxLayoutGap="30px" style="padding-right: 50px;">
+        <button mat-raised-button color="primary">
+            Cancelar
+        </button>
+        <button mat-raised-button color="accent" type="submit" [disabled]="lugarForm.invalid">
+            Guardar Lugar
+        </button>
+    </div>
+    <!-- 
             <div fxFlex>
                 <pre>{{ this.imagenes | json }}</pre>
             </div>
 -->
-            <div style="overflow: scroll; width: 100%;height: 200px;">
-                <span>Valores</span>
-                <pre>{{ this.lugarForm.value | json }}</pre>
-            </div>
-        </div>
 
+<!-- 
+    <div style="overflow: scroll; width: 100%;height: 200px;">
+        <span>Valores</span>
+        <pre>{{ this.lugarForm.value | json }}</pre>
     </div>
-
+-->
 </form>
