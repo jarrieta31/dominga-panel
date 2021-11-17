@@ -53,7 +53,7 @@ export class ValidatorService {
     validarInstagram(control: FormControl): ValidationErrors | null {
         const valor: string = control.value?.trim().toLowerCase();
         //Ejemplo: https://www.facebook.com/museodepartamentaldesanjose/
-        let regExPersonal = /^https:\/\/www\.facebook\.com\/\b([-a-zA-Z0-9()@:%_\+.~#?&//=]{3,})$/g;
+        let regExPersonal = /^https:\/\/www\.instagram\.com\/\b([-a-zA-Z0-9()@:%_\+.~#?&//=]{3,})$/g;
         if(regExPersonal.test(valor)){
             return null;
         }

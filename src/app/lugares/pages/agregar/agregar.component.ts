@@ -11,6 +11,8 @@ import { MapaService } from '../../../shared/services/mapa.service';
 import { LocalidadesService } from '../../../shared/services/localidades.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { LugaresService } from '../../services/lugares.service';
+import { AngularEditorConfig } from '@kolkov/angular-editor';
+import { ValidatorService } from '../../../shared/services/validator.service';
 
 
 @Component({
@@ -57,10 +59,10 @@ export class AgregarComponent implements OnInit, OnDestroy {
         ubicacion: [{ "lng": -56.4372197, "lat": -32.8246801 }],
         tipo: [LugarTipo.urbano],
         imagenes: [[]],
-        facebook: [''],
-        instagram: [''],
-        web: [''],
-        whatsapp: [''],
+        facebook: ['', [this.vs.validarFacebook]],
+        instagram: ['', [this.vs.validarInstagram]],
+        web: ['', [this.vs.validarWeb]],
+        whatsapp: ['', [this.vs.valididarWhatsapp]],
         telefonos: this.fb.array([
             this.fb.group({
                 numero: ['', [Validators.minLength(8), Validators.maxLength(9)]]
@@ -73,8 +75,37 @@ export class AgregarComponent implements OnInit, OnDestroy {
         ])
     });
 
+    editorConfig: AngularEditorConfig = {
+        editable: true,
+        spellcheck: true,
+        height: '15rem',
+        minHeight: '5rem',
+        placeholder: 'Enter text here...',
+        translate: 'no',
+        defaultParagraphSeparator: 'p',
+        defaultFontName: 'Arial',
+        toolbarHiddenButtons: [
+          ['bold']
+          ],
+        customClasses: [
+          {
+            name: "quote",
+            class: "quote",
+          },
+          {
+            name: 'redText',
+            class: 'redText'
+          },
+          {
+            name: "titleText",
+            class: "titleText",
+            tag: "h1",
+          },
+        ]
+      };
 
     constructor(
+        private vs: ValidatorService,
         private activatedRoute: ActivatedRoute,
         public lugaresService: LugaresService,
         public fb: FormBuilder,
@@ -361,4 +392,16 @@ export class AgregarComponent implements OnInit, OnDestroy {
         return this.lugarForm.get('departamento');
     }
 
+    get web() {
+        return this.lugarForm.get('web');
+    }
+    get whatsapp() {
+        return this.lugarForm.get('whatsapp');
+    }
+    get instagram() {
+        return this.lugarForm.get('instagram');
+    }
+    get facebook() {
+        return this.lugarForm.get('facebook');
+    }
 }

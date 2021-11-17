@@ -113,13 +113,9 @@
                         <h2>Descripción</h2>
                     </div>
                     <div fxLayout="row">
-                        <mat-form-field class="area">
-                            <mat-label>Descripción del lugar</mat-label>
-                            <textarea class="descripcion" formControlName="descripcion" matInput
-                                placeholder="Escribe una descripción ..." cdkAutosizeMinRows=2
-                                cdkTextareaAutosize>
-                            </textarea>
-                        </mat-form-field>
+                        <div class="area">
+                            <angular-editor formControlName="descripcion" [config]="editorConfig"></angular-editor>
+                        </div>
                     </div>
                 </div>
                 <!-- ============================== Fin Descripción ==================================== -->
@@ -191,23 +187,36 @@
                         <mat-label>Sitio Web</mat-label>
                         <input type="url" matInput formControlName="web" placeholder="http://www.mi-sitio-web.com/">
                         <mat-icon matSuffix>insert_link</mat-icon>
+                        <ng-container *ngIf="!web.valid && web.touched">
+                            <mat-error>La URL ingresada no es válida!</mat-error>
+                        </ng-container>
                     </mat-form-field>
                     <mat-form-field appearance="fill">
                         <mat-label>Whatsapp</mat-label>
                         <input type="url" matInput formControlName="whatsapp"
                             placeholder="https://api.whatsapp.com/send?phone=598123456">
                         <mat-icon matSuffix>insert_link</mat-icon>
+                        <ng-container *ngIf="!whatsapp.valid && whatsapp.touched">
+                            <mat-error>URL no válida! Ejemplo: https://api.whatsapp.com/send?phone=598123456
+                            </mat-error>
+                        </ng-container>
                     </mat-form-field>
                     <mat-form-field appearance="fill">
                         <mat-label>Facebook</mat-label>
                         <input type="url" matInput formControlName="facebook"
                             placeholder="https://m.facebook.com/mi-perfil/">
                         <mat-icon matSuffix>insert_link</mat-icon>
+                        <ng-container *ngIf="!facebook.valid && facebook.touched">
+                            <mat-error>URL no válida! Ejemplo: https://www.facebook.com/mi-perfil </mat-error>
+                        </ng-container>
                     </mat-form-field>
                     <mat-form-field appearance="fill">
                         <mat-label>Instagram</mat-label>
                         <input type="url" matInput formControlName="instagram" placeholder="http://www.instagram.com/">
                         <mat-icon matSuffix>insert_link</mat-icon>
+                        <ng-container *ngIf="!instagram.valid && instagram.touched">
+                            <mat-error>URL no válida! Ejemplo: http://www.instagram.com/mi-perfil</mat-error>
+                        </ng-container>
                     </mat-form-field>
                 </div>
             </div>
@@ -313,7 +322,7 @@
         <div>
             <h2>Galería de imágenes</h2>
         </div>
-        <div fxLayout='row' fxLayoutAlign="center center" >
+        <div fxLayout='row' fxLayoutAlign="center center">
             <div class="galeria">
 
                 <div fxFlex fxLayout="row wrapDirection" fxLayoutAlign="space-around start" fxLayoutGap="10px"
@@ -342,7 +351,7 @@
             </div>
 -->
 
-<!-- 
+    <!-- 
     <div style="overflow: scroll; width: 100%;height: 200px;">
         <span>Valores</span>
         <pre>{{ this.lugarForm.value | json }}</pre>

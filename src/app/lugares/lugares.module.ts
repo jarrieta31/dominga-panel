@@ -1,7 +1,11 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { FormsModule , ReactiveFormsModule } from '@angular/forms';
+import { HttpClientModule} from '@angular/common/http';
+import { NgModule } from '@angular/core';
+
+//otros
+import { AngularEditorModule } from '@kolkov/angular-editor';
 
 //Módulos propios
 import { LugaresRoutingModule } from './lugares-routing.module';
@@ -11,14 +15,13 @@ import { SharedModule } from '../shared/shared.module';
 //Componentes
 import { AgregarComponent } from './pages/agregar/agregar.component';
 import { BuscarComponent } from './pages/buscar/buscar.component';
-import { LugarComponent } from './pages/lugar/lugar.component';
-import { HomeComponent } from './pages/home/home.component';
-import { ListadoComponent } from './pages/listado/listado.component';
-import { LugarTarjetaComponent } from './components/lugar-tarjeta/lugar-tarjeta.component';
-import { ImagenPipe } from './pipes/imagen.pipe';
 import { DeleteHtmlPipe } from './pipes/delete-html.pipe';
+import { HomeComponent } from './pages/home/home.component';
+import { ImagenPipe } from './pipes/imagen.pipe';
+import { ListadoComponent } from './pages/listado/listado.component';
+import { LugarComponent } from './pages/lugar/lugar.component';
+import { LugarTarjetaComponent } from './components/lugar-tarjeta/lugar-tarjeta.component';
 import { RecortarParrafoPipe } from './pipes/recortar-parrafo.pipe';
-
 
 
 @NgModule({
@@ -34,13 +37,15 @@ import { RecortarParrafoPipe } from './pipes/recortar-parrafo.pipe';
     RecortarParrafoPipe,
   ],
   imports: [
+    AngularEditorModule,
     CommonModule,
     FlexLayoutModule,
-    MaterialModule,
     FormsModule,
-    ReactiveFormsModule,
+    HttpClientModule,
     LugaresRoutingModule,
-    SharedModule
+    MaterialModule,
+    ReactiveFormsModule,
+    SharedModule,
   ]
 })
 export class LugaresModule { }
