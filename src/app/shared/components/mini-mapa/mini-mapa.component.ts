@@ -32,7 +32,6 @@ export class MiniMapaComponent implements OnInit, AfterViewInit {
 
     ngAfterViewInit(): void {
 
-        console.error("minimapa" )
         this.mapa = new mapboxgl.Map({
             container: this.divMiniMapa.nativeElement,
             style: 'mapbox://styles/mapbox/streets-v11',
@@ -43,7 +42,6 @@ export class MiniMapaComponent implements OnInit, AfterViewInit {
 
         this.sourceMiniMapa = this.mapaService.getObsMiniMapa().subscribe(res => {
 
-            console.error("minimapa" )
             if (res !== undefined && res.marcador == true) {
                 // Si el marcador no existe lo crea, de lo contrario cambia su ubicacion
                 if (this.marcador === undefined) {// si no existe lo crea
@@ -62,7 +60,6 @@ export class MiniMapaComponent implements OnInit, AfterViewInit {
 
     /**Agrega un marcador y actualiza la información del mapa en el servicio mapa-service */
     addMarker() {
-        console.error("addMarcador: " + this.mapaService.dMiniMapa.centro.lat +", " + this.mapaService.dMiniMapa.centro.lng)
         this.marcador = new mapboxgl.Marker({
             color: "red",
             draggable: false

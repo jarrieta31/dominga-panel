@@ -39,7 +39,7 @@
                 <!-- ============================== Fin Departamento y Localidad ==================================== -->
                 <div class="container" style="height: 124px;">
                     <div>
-                        <h2>Departamento y localidad</h2>
+                        <h2>Departamento/Localidad</h2>
                     </div>
                     <div fxLayout="row" fxLayoutGap="40px">
                         <mat-form-field id="camp-principal" fxFlex="50%">
@@ -90,20 +90,38 @@
                         <h2>Tipo/Patrimonial</h2>
                     </div>
                     <div fxLayout="row" fxLayoutGap="40px">
-                        <mat-form-field fxFlex="50">
+                        <mat-form-field fxFlex="33">
                             <span matPrefix>Tipo de Lugar: &nbsp; &nbsp;</span>
                             <mat-select formControlName="tipo">
-                                <mat-option *ngFor="let item of lugaresTipo" [value]="item.tipo">{{ item.tipo }}
+                                <mat-option *ngFor="let item of lugaresTipo" [value]="item.tipo">
+                                    {{ item.tipo }}
                                 </mat-option>
                             </mat-select>
+                            <mat-hint align="start">
+                                Seleccione el tipo de lugar.
+                            </mat-hint>
                         </mat-form-field>
-                        <mat-form-field fxFlex="50">
+                        <mat-form-field fxFlex="33">
                             <span matPrefix>Patrimonial: &nbsp; &nbsp;</span>
                             <mat-select formControlName="patrimonial">
-                                <mat-option *ngFor="let item of opsPatrimonial" [value]="item.valor">{{ item.texto }}
+                                <mat-option *ngFor="let item of opsPatrimonial" [value]="item.valor">
+                                    {{ item.texto }}
                                 </mat-option>
                             </mat-select>
-                            <mat-hint align="start">Selecciona si es un lugar patrimonial</mat-hint>
+                            <mat-hint align="start">
+                                Seleccione si es un lugar patrimonial.
+                            </mat-hint>
+                        </mat-form-field>
+                        <mat-form-field fxFlex="33">
+                            <span matPrefix>Prioridad: &nbsp; &nbsp;</span>
+                            <mat-select formControlName="prioridad" (selectionChange)="cambiarPrioridad()">
+                                <mat-option *ngFor="let item of prioridades" [value]="item">
+                                    {{ item }}
+                                </mat-option>
+                            </mat-select>
+                            <mat-hint align="start">
+                                Seleccione el órden de prioridad en el que se mostrará en la lista de lugares.
+                            </mat-hint>
                         </mat-form-field>
                     </div>
                 </div>

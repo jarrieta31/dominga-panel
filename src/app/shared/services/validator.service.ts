@@ -16,48 +16,67 @@ export class ValidatorService {
 
 
     validarWeb(control: FormControl): ValidationErrors | null {
-        const valor: string = control.value?.trim().toLowerCase();
-        let regEx = /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/gm;
-        //               (https|http):// www.      google              .com                  .{es,uy}        :4200
-        let regExPersonal = /^https?:\/\/(?:www\.[\w]{2,63}\.[a-z]{2,3}|[\w]{3,63}\.[a-z]{2,3}){1}(?:\.[a-z]{2}){0,1}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/g;
-        if( regExPersonal.test(valor) ){
-            console.log("paso la validacion");
+        console.log(control.value)
+        if (control.value === "" || control.value === null) {
             return null;
+        } else {
+            const valor: string = control.value?.trim().toLowerCase();
+            //               (https|http):// www.      google              .com                  .{es,uy}        :4200
+            let regExPersonal = /^https?:\/\/(?:www\.[\w]{2,63}\.[a-z]{2,3}|[\w]{3,63}\.[a-z]{2,3}){1}(?:\.[a-z]{2}){0,1}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/g;
+            if (regExPersonal.test(valor)) {
+                return null;
+            }
+            return { web: true };
         }
-        console.log("no es válido")
-        return { web: true };
     }
 
     //Falta crear la expresion regular
     validarFacebook(control: FormControl): ValidationErrors | null {
-        const valor: string = control.value?.trim().toLowerCase();
-        //Ejemplo: https://www.facebook.com/museodepartamentaldesanjose/
-        let regExPersonal = /^https:\/\/www\.facebook\.com\/\b([-a-zA-Z0-9()@:%_\+.~#?&//=]{3,})$/g;
-        if(regExPersonal.test(valor)){
+
+        console.log(control.value)
+        if (control.value === "" || control.value === null) {
             return null;
+        } else {
+            const valor: string = control.value?.trim().toLowerCase();
+            //Ejemplo: https://www.facebook.com/museodepartamentaldesanjose/
+            let regExPersonal = /^https:\/\/www\.facebook\.com\/\b([-a-zA-Z0-9()@:%_\+.~#?&//=]{3,})$/g;
+            if (regExPersonal.test(valor)) {
+                return null;
+            }
+            return { whatsapp: true };
         }
-        return {whatsapp: true};
     }
 
     //revisar
     valididarWhatsapp(control: FormControl): ValidationErrors | null {
-        const valor: string = control.value?.trim().toLowerCase();
-        //Ejemplo: https://api.whatsapp.com/send?phone=59899468473
-        let regExPersonal = /^https:\/\/api\.whatsapp.com\/send\?phone\=[\d]{11}$/g;
-        if(regExPersonal.test(valor)){
+
+        console.log(control.value)
+        if (control.value === "" || control.value === null) {
             return null;
+        } else {
+            const valor: string = control.value?.trim().toLowerCase();
+            //Ejemplo: https://api.whatsapp.com/send?phone=59899468473
+            let regExPersonal = /^https:\/\/api\.whatsapp.com\/send\?phone\=[\d]{11}$/g;
+            if (regExPersonal.test(valor)) {
+                return null;
+            }
+            return { whatsapp: true };
         }
-        return {whatsapp: true};
     }
 
     validarInstagram(control: FormControl): ValidationErrors | null {
-        const valor: string = control.value?.trim().toLowerCase();
-        //Ejemplo: https://www.facebook.com/museodepartamentaldesanjose/
-        let regExPersonal = /^https:\/\/www\.instagram\.com\/\b([-a-zA-Z0-9()@:%_\+.~#?&//=]{3,})$/g;
-        if(regExPersonal.test(valor)){
+        console.log(control.value)
+        if (control.value === "" || control.value === null) {
             return null;
+        } else {
+            const valor: string = control.value?.trim().toLowerCase();
+            //Ejemplo: https://www.facebook.com/museodepartamentaldesanjose/
+            let regExPersonal = /^https:\/\/www\.instagram\.com\/\b([-a-zA-Z0-9()@:%_\+.~#?&//=]{3,})$/g;
+            if (regExPersonal.test(valor)) {
+                return null;
+            }
+            return { whatsapp: true };
         }
-        return {whatsapp: true};
     }
 
 }

@@ -15,6 +15,7 @@ export class LugaresService {
     private lugaresCollection: AngularFirestoreCollection<Lugar[]>;
     private lugares$: Subject<Lugar[]>;
     private lugar$: Subject<Lugar>;
+    private prioridades$: Subject<number[]>;
     private todosLosLugares: Lugar[] = [];
 
     constructor(private afs: AngularFirestore) {
@@ -24,6 +25,8 @@ export class LugaresService {
         this.lugares$ = new Subject();
         this.lugar$ = new Subject();
         this.getLugaresFirestore();
+        this.prioridades$ = new Subject();
+
     }
 
     addLugar(lugar: Lugar) {
@@ -34,13 +37,66 @@ export class LugaresService {
         })
     }
 
+    /** 
+     * Actualiza o crea la lista de de prioridades (Subject) contando los lugares, para mostrarla en el selector de prioridades
+     * @param {Boolean} sumarUno Este valor sirve para saber si se está agregando un nuevo lugar o simplemente
+     * se está actulizando la prioridad del lugar. Si es un nuevo lugar sumarUno debe ser true.
+     */
+    actualizarListaPrioridades(sumarUno: boolean) {
+        let listPrioridades: number[] = [];
+        if (sumarUno) { //si la lista es para crear un nuevo lugar se agrega 1
+            for (let i = 0; i < this.todosLosLugares.length + 1; i++) {
+                listPrioridades[i] = i+1;
+            }
+        } else { //si la lista es para actualizar la prioridad de un lugar existente
+            for (let i = 0; i < this.todosLosLugares.length; i++) {
+                listPrioridades[i] = i+1;
+            }
+        }
+        console.log("update prioridades: "+ listPrioridades)
+        this.prioridades$.next(listPrioridades);
+    }
+
+    /**
+     * Cambia la posición u prioridad de un lugar, para que se muestre antes o despues en el array de todosLosLugares. 
+     * @param {Lugar} lugar Recibe el lugar al que le vamos a cambiar la prioridad.
+     * @param {Number} nuevaPrioridad Es el valor de la nueva prioridad o posición que debe estar en el array todosLosLugares.
+     */
+    cambiarPrioridadDeUnLugar(lugar:Lugar, nuevaPrioridad:number){
+        this.todosLosLugares.splice(lugar.prioridad, 1);//elimina ese lugar de la posicion actual
+        this.todosLosLugares.splice(nuevaPrioridad, 0, lugar);//Inserta el lugar en su nueva posición
+        for(let i=0; i < this.todosLosLugares.length; i++){ //actualiza la prioridades del array para que correspondan con el indice
+            this.todosLosLugares[i].prioridad = i+1;
+        }
+
+        this.lugares$.next(this.todosLosLugares);
+    }
+
+    /** Ordena el array local todosLosLugares */
+    reordenarLugaresPorPrioridad() {
+        this.todosLosLugares.sort(this.compararPrioridadLugares);
+    }
+
+    /** Funcion para comparar las prioridades de los lugares */
+    compararPrioridadLugares(a: Lugar, b: Lugar): number {
+        if (a.prioridad < b.prioridad) {
+            return -1;
+        }
+        if (a.prioridad > b.prioridad) {
+            return 1;
+        }
+        // a debe ser igual b
+        return 0;
+    }
+
     updateLugar(lugar: Lugar): Observable<void> {
         return from(
             this.afs.doc<Lugar>(`lugares/${lugar.id}`).update(lugar) //en ves de pasar el lugar completo se puede poner campo por campo
         );
     }
 
-    /** Obtiene todos los lugares desde firestor y los almacena en todosLosLugares[] para 
+    /** 
+     * Obtiene todos los lugares desde firestor y los almacena en todosLosLugares[] para 
      * no estar consultado la base y minimizar el traficio.
      */
     getLugaresFirestore() {
@@ -52,8 +108,9 @@ export class LugaresService {
                     arrLugares.push({ id: item.id, ...data });
                 })
                 console.log("todosLosLugares.length = " + this.todosLosLugares.length)
-                this.todosLosLugares = arrLugares;
-                console.log("todosLosLugares.length = "+ this.todosLosLugares.length)
+                this.todosLosLugares = arrLugares.slice();
+                this.actualizarListaPrioridades(false);
+                console.log("todosLosLugares.length = " + this.todosLosLugares.length)
                 this.lugares$.next(this.todosLosLugares); //el subject lugares$ emite los lugares
             }
         ).catch(error => {
@@ -61,11 +118,20 @@ export class LugaresService {
         }).finally(() => console.info("Corriendo getLugares() en lugares.services!"))
     }
 
-    /*Dado que el subjerct puede ser modificado desde otros lugares talvez sea una 
-    * buena idea tener este funcion para pedir su valor
-    **/
+    /**
+     * Obtiene el observable del Subject lugares$ con la lista de todos los lugares.
+     * @returns {Observable}
+     */
     getObsLugares$(): Observable<Lugar[]> {
         return this.lugares$.asObservable();
+    }
+
+    /**
+     * Obtiene el observable del Subject prioridades$ con la lista de prioridades.
+     * @returns {Observable}
+     */
+    getObsPrioridades$(): Observable<number[]> {
+        return this.prioridades$.asObservable();
     }
 
     /** Retorna un observable de un lugar obtenido localmente del array lugares */
@@ -87,7 +153,11 @@ export class LugaresService {
         );
     }
 
-    /** OK: Filtra por departamento y retorna un obserbave  */
+    /** 
+     * test Ok: Filtra lugares por departamento en el array local todosLosLugares. La lista 
+     * resultante es emitida desde el Subject lugares$. 
+     * @param {String} departamento Nombre del departamento por el cual se realiza la busqueda.
+     */
     getLugaresPorDepartamento(departamento: string): void {
         //si uso la consulta a firestore retorna un observable
         //return this.afs.collection('lugares', ref => ref.where('departamento', '==', departamento)).valueChanges({ idField: 'id' });
@@ -136,10 +206,10 @@ export class LugaresService {
             console.log("Lugar eliminado correntamente")
         }).catch(err => {
             console.error("Se produjo un error al intentar eliminar un el lugar " + id + ". Error:" + err)
-        })    
+        })
     }
 
-    cargarLugares():void {
+    cargarLugares(): void {
 
         const datos = [{
             "nombre": "Finca Piedra",
@@ -1427,7 +1497,7 @@ export class LugaresService {
             "videos": []
         }];
 
-        for ( let i = 0; i < datos.length; i++ ) {
+        for (let i = 0; i < datos.length; i++) {
             this.afs.collection('lugares').add(datos[i]);
         }
     }

@@ -10,6 +10,7 @@ import { MaterialModule } from '../material/material.module';
 import { MiniMapaComponent } from './components/mini-mapa/mini-mapa.component';
 import { MapaComponent } from './components/mapa/mapa.component';
 import { DialogMapaComponent } from './components/dialog-mapa/dialog-mapa.component';
+import { QuitarEspaciosPipe } from './pipes/quitar-espacios.pipe';
 
 
 @NgModule({
@@ -19,7 +20,8 @@ import { DialogMapaComponent } from './components/dialog-mapa/dialog-mapa.compon
     ImagenComponent,
     MiniMapaComponent,
     MapaComponent,
-    DialogMapaComponent
+    DialogMapaComponent,
+    QuitarEspaciosPipe
   ],
   exports:[
     ErrorPageComponent,

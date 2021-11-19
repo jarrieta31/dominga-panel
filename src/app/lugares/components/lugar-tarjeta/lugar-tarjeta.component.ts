@@ -10,7 +10,7 @@ import { LugaresService } from '../../services/lugares.service';
 })
 export class LugarTarjetaComponent  {
 
-  @Input() lugar!: Lugar;
+  @Input() lugar: Lugar;
 
   constructor( private lugaresService:LugaresService){}
   

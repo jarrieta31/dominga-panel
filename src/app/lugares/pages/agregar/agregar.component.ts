@@ -3,7 +3,7 @@ import { ActivatedRoute, Route } from '@angular/router';
 import { Lugar, Imagen, LugarTipo, DepartamentoEnum } from '../../interfaces/lugar.interface';
 import { FormBuilder, Validators, FormGroup, FormControl, FormArray } from '@angular/forms';
 import { StorageService } from '../../../shared/services/storage.service';
-import { pipe, Subscription, zip } from 'rxjs';
+import { Observable, pipe, Subscription, zip } from 'rxjs';
 import { map, filter, tap, switchMap } from 'rxjs/operators';
 import { DialogMapaComponent } from '../../../shared/components/dialog-mapa/dialog-mapa.component';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
@@ -13,6 +13,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { LugaresService } from '../../services/lugares.service';
 import { AngularEditorConfig } from '@kolkov/angular-editor';
 import { ValidatorService } from '../../../shared/services/validator.service';
+
 
 
 @Component({
@@ -38,6 +39,9 @@ export class AgregarComponent implements OnInit, OnDestroy {
     private sourceDepartamentos: Subscription;
     private sourceLocalidades: Subscription;
     private sourceMiniMapa: Subscription;
+    private sourcePrioridades: Subscription;
+    public prioridades$: Observable<number[]>;
+    prioridades: number[] = [];
     private imagenHomeDefault = { "name": "imagen-default", "url": "assets/default-home.jpg" };
     private imagenPrincipalDefault = { "name": "imagen-default", "url": "assets/default-lugar-galeria.jpg" };
 
@@ -59,10 +63,10 @@ export class AgregarComponent implements OnInit, OnDestroy {
         ubicacion: [{ "lng": -56.4372197, "lat": -32.8246801 }],
         tipo: [LugarTipo.urbano],
         imagenes: [[]],
-        facebook: ['', [this.vs.validarFacebook]],
-        instagram: ['', [this.vs.validarInstagram]],
-        web: ['', [this.vs.validarWeb]],
-        whatsapp: ['', [this.vs.valididarWhatsapp]],
+        facebook: [null, [this.vs.validarFacebook]],
+        instagram: [null, [this.vs.validarInstagram]],
+        web: [null, [this.vs.validarWeb]],
+        whatsapp: [null, [this.vs.valididarWhatsapp]],
         telefonos: this.fb.array([
             this.fb.group({
                 numero: ['', [Validators.minLength(8), Validators.maxLength(9)]]
@@ -85,24 +89,24 @@ export class AgregarComponent implements OnInit, OnDestroy {
         defaultParagraphSeparator: 'p',
         defaultFontName: 'Arial',
         toolbarHiddenButtons: [
-          ['bold']
-          ],
+            ['bold']
+        ],
         customClasses: [
-          {
-            name: "quote",
-            class: "quote",
-          },
-          {
-            name: 'redText',
-            class: 'redText'
-          },
-          {
-            name: "titleText",
-            class: "titleText",
-            tag: "h1",
-          },
+            {
+                name: "quote",
+                class: "quote",
+            },
+            {
+                name: 'redText',
+                class: 'redText'
+            },
+            {
+                name: "titleText",
+                class: "titleText",
+                tag: "h1",
+            },
         ]
-      };
+    };
 
     constructor(
         private vs: ValidatorService,
@@ -152,31 +156,30 @@ export class AgregarComponent implements OnInit, OnDestroy {
         this.sourceDepartamentos = this.localidadesService.getObsDepartamentos().subscribe(dptos => this.departamentos = dptos);
         this.localidadesService.emitirDepartamentosActivos();
         this.sourceLocalidades = this.localidadesService.getObsLocalidades().subscribe(locs => this.localidades = locs);
+        //this.prioridades$ = this.lugaresService.getObsPrioridades$();
+        this.sourcePrioridades = this.lugaresService.getObsPrioridades$().subscribe(prioridades => this.prioridades = prioridades);
 
-        /*A partir de la ruta y el id recibido obtiene el lugar para mostrar 
-        *
-        **/
-        this.activatedRoute.params
-            .pipe(
-                tap(res => console.log(res)),
-                switchMap(({ id }) => this.lugaresService.getLugarId(id)),
-            ).subscribe(lugar => {
-                // lugar.payload.id ) 
-                //const lugar = [0]this.lugaresService.getLugarId(id)
-                //console.error(typeof lugar.id)
-                if (lugar.id !== undefined) {
-                    //this.lugar = {id: lugar.payload.id, ...lugar.payload.data()};
-                    this.idLugar = lugar.id;
-                    delete lugar.id
-                    this.lugarForm.reset(lugar);
-                    this.titulo = `Editando ${this.lugarForm.controls['nombre'].value}`;
-                    this.galeria = this.lugarForm.controls['imagenes'].value;
-                    this.localidadesService.getLocadidadesDepartamento(lugar.departamento);
-                    this.mapaService.dMiniMapa = { centro: lugar.ubicacion, zoom: 15, marcador: true };
-                    console.error("Agregar : " + this.mapaService.dMiniMapa.centro.lat + ", " + this.mapaService.dMiniMapa.centro.lng);
-                    this.mapaService.emitirMiniMapa();
-                }
-            });
+        /**
+        * A partir de la ruta y el id recibido obtiene el lugar para mostrar 
+        */
+        this.activatedRoute.params.pipe(
+            tap(res => console.log(res)),
+            switchMap(({ id }) => this.lugaresService.getLugarId(id)),
+        ).subscribe(lugar => {
+            if (lugar.id !== undefined) {//Si estamos editando un lugar
+                this.idLugar = lugar.id;
+                delete lugar.id //para setear el formulario es necesario quitar el tatributo id
+                this.lugarForm.reset(lugar);
+                this.titulo = `Editando ${this.lugarForm.controls['nombre'].value}`;
+                this.galeria = this.lugarForm.controls['imagenes'].value;
+                this.localidadesService.getLocadidadesDepartamento(lugar.departamento);
+                this.mapaService.dMiniMapa = { centro: lugar.ubicacion, zoom: 15, marcador: true };
+                this.mapaService.emitirMiniMapa();
+                this.lugaresService.actualizarListaPrioridades(false);
+            } else {
+                this.lugaresService.actualizarListaPrioridades(true);
+            }
+        });
 
         /**Si el formuario es válido lo guarda en el storage local */
         zip(this.lugarForm.statusChanges, this.lugarForm.valueChanges).pipe(
@@ -192,6 +195,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
         this.sourceDepartamentos.unsubscribe();
         this.sourceLocalidades.unsubscribe();
         this.sourceMiniMapa.unsubscribe();
+        this.sourcePrioridades.unsubscribe();;
 
         this.lugarForm.reset({
             imagenHome: this.imagenHomeDefault,
@@ -219,6 +223,10 @@ export class AgregarComponent implements OnInit, OnDestroy {
     //        this.localidades = data;
     //    });
     //}
+
+    cambiarPrioridad() {
+       // this.lugaresService.cambiarPrioridadDeUnLugar();
+    }
 
     agregarImagenSubida($event) {
         //si el nombre de la imagen ya esta en el array la elimina
