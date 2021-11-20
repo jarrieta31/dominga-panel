@@ -100,7 +100,7 @@ export class LugaresService {
      * no estar consultado la base y minimizar el traficio.
      */
     getLugaresFirestore() {
-        this.afs.collection('lugares').ref.get().then(
+        this.afs.collection('lugares').ref.where('prioridad',">",-1).orderBy('prioridad').get().then(
             querySnapshot => {
                 const arrLugares: any[] = [];
                 querySnapshot.forEach(item => {

@@ -166,14 +166,15 @@ export class AgregarComponent implements OnInit, OnDestroy {
             tap(res => console.log(res)),
             switchMap(({ id }) => this.lugaresService.getLugarId(id)),
         ).subscribe(lugar => {
-            if (lugar.id !== undefined) {//Si estamos editando un lugar
-                this.idLugar = lugar.id;
-                delete lugar.id //para setear el formulario es necesario quitar el tatributo id
-                this.lugarForm.reset(lugar);
+            let lugarActual: Lugar = JSON.parse(JSON.stringify(lugar));
+            if (lugarActual.id !== undefined) {//Si estamos editando un lugar
+                this.idLugar = lugarActual.id;
+                delete lugarActual.id //para setear el formulario es necesario quitar el tatributo id
+                this.lugarForm.reset(lugarActual);
                 this.titulo = `Editando ${this.lugarForm.controls['nombre'].value}`;
                 this.galeria = this.lugarForm.controls['imagenes'].value;
-                this.localidadesService.getLocadidadesDepartamento(lugar.departamento);
-                this.mapaService.dMiniMapa = { centro: lugar.ubicacion, zoom: 15, marcador: true };
+                this.localidadesService.getLocadidadesDepartamento(lugarActual.departamento);
+                this.mapaService.dMiniMapa = { centro: lugarActual.ubicacion, zoom: 15, marcador: true };
                 this.mapaService.emitirMiniMapa();
                 this.lugaresService.actualizarListaPrioridades(false);
             } else {

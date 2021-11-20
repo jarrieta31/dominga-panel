@@ -16,7 +16,7 @@ export class ValidatorService {
 
 
     validarWeb(control: FormControl): ValidationErrors | null {
-        console.log(control.value)
+        //console.log(control.value)
         if (control.value === "" || control.value === null) {
             return null;
         } else {
@@ -33,7 +33,7 @@ export class ValidatorService {
     //Falta crear la expresion regular
     validarFacebook(control: FormControl): ValidationErrors | null {
 
-        console.log(control.value)
+        //console.log(control.value)
         if (control.value === "" || control.value === null) {
             return null;
         } else {
@@ -50,7 +50,7 @@ export class ValidatorService {
     //revisar
     valididarWhatsapp(control: FormControl): ValidationErrors | null {
 
-        console.log(control.value)
+        //console.log(control.value)
         if (control.value === "" || control.value === null) {
             return null;
         } else {
@@ -65,7 +65,7 @@ export class ValidatorService {
     }
 
     validarInstagram(control: FormControl): ValidationErrors | null {
-        console.log(control.value)
+        //console.log(control.value)
         if (control.value === "" || control.value === null) {
             return null;
         } else {
