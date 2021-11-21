@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { FlexLayoutModule } from '@angular/flex-layout';
-import { FormsModule , ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule} from '@angular/common/http';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 
 //otros
@@ -16,6 +16,7 @@ import { SharedModule } from '../shared/shared.module';
 import { AgregarComponent } from './pages/agregar/agregar.component';
 import { BuscarComponent } from './pages/buscar/buscar.component';
 import { DeleteHtmlPipe } from './pipes/delete-html.pipe';
+import { DialogEliminarComponent } from './components/dialog-eliminar/dialog-eliminar.component';
 import { HomeComponent } from './pages/home/home.component';
 import { ImagenPipe } from './pipes/imagen.pipe';
 import { ListadoComponent } from './pages/listado/listado.component';
@@ -25,27 +26,28 @@ import { RecortarParrafoPipe } from './pipes/recortar-parrafo.pipe';
 
 
 @NgModule({
-  declarations: [
-    AgregarComponent,
-    BuscarComponent,
-    LugarComponent,
-    HomeComponent,
-    ListadoComponent,
-    LugarTarjetaComponent,
-    ImagenPipe,
-    DeleteHtmlPipe,
-    RecortarParrafoPipe,
-  ],
-  imports: [
-    AngularEditorModule,
-    CommonModule,
-    FlexLayoutModule,
-    FormsModule,
-    HttpClientModule,
-    LugaresRoutingModule,
-    MaterialModule,
-    ReactiveFormsModule,
-    SharedModule,
-  ]
+    declarations: [
+        AgregarComponent,
+        BuscarComponent,
+        DeleteHtmlPipe,
+        DialogEliminarComponent,
+        HomeComponent,
+        ImagenPipe,
+        ListadoComponent,
+        LugarComponent,
+        LugarTarjetaComponent,
+        RecortarParrafoPipe,
+    ],
+    imports: [
+        AngularEditorModule,
+        CommonModule,
+        FlexLayoutModule,
+        FormsModule,
+        HttpClientModule,
+        LugaresRoutingModule,
+        MaterialModule,
+        ReactiveFormsModule,
+        SharedModule,
+    ]
 })
 export class LugaresModule { }

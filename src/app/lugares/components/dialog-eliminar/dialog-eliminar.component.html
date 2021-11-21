@@ -1,0 +1,13 @@
+<h2 mat-dialog-title>Eliminar Lugar</h2>
+<mat-dialog-content class="mat-typography">
+    <h3>¡Atención Eliminando Lugar!</h3>
+    <p>¿Está seguro que quiere eliminar el lugar <em>"{{data.nombre}}"</em> de la APP?</p>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-stroked-button color="primary" mat-dialog-close (click)="closeDialog()">
+        Cancelar
+    </button>
+    <button mat-stroked-button color="warn" [mat-dialog-close]="true" cdkFocusInitial (click)="eliminarLugar(data.id)">
+        Eliminar
+    </button>
+</mat-dialog-actions>

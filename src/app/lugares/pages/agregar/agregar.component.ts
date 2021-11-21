@@ -57,7 +57,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
         caminar: [false],
         patrimonial: [false],
         accesibilidad: [false],
-        descripcion: ['', [Validators.minLength(15), Validators.maxLength(3000)]],
+        descripcion: ['', [Validators.minLength(50), Validators.maxLength(4000)]],
         imagenHome: [this.imagenHomeDefault],
         imagenPrincipal: [this.imagenPrincipalDefault],
         ubicacion: [{ "lng": -56.4372197, "lat": -32.8246801 }],
@@ -89,7 +89,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
         defaultParagraphSeparator: 'p',
         defaultFontName: 'Arial',
         toolbarHiddenButtons: [
-            ['bold']
+            //['bold']
         ],
         customClasses: [
             {
@@ -146,6 +146,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         const lugarGuardado = localStorage.getItem('lugar');
+        //this.lugaresService.cargarLugares()
         //si lugarGuardado no esta vacio lo asigna al formulario
         if (lugarGuardado) {
             //descomentar cuando este enviando bien los datos
@@ -159,14 +160,16 @@ export class AgregarComponent implements OnInit, OnDestroy {
         //this.prioridades$ = this.lugaresService.getObsPrioridades$();
         this.sourcePrioridades = this.lugaresService.getObsPrioridades$().subscribe(prioridades => this.prioridades = prioridades);
 
+        this.lugaresService.actualizarListaPrioridades(true);
         /**
         * A partir de la ruta y el id recibido obtiene el lugar para mostrar 
         */
         this.activatedRoute.params.pipe(
-            tap(res => console.log(res)),
+            //tap(res => console.log("hola mundo")),
             switchMap(({ id }) => this.lugaresService.getLugarId(id)),
         ).subscribe(lugar => {
             let lugarActual: Lugar = JSON.parse(JSON.stringify(lugar));
+            console.log("Lugar  " + lugar)
             if (lugarActual.id !== undefined) {//Si estamos editando un lugar
                 this.idLugar = lugarActual.id;
                 delete lugarActual.id //para setear el formulario es necesario quitar el tatributo id
@@ -177,8 +180,6 @@ export class AgregarComponent implements OnInit, OnDestroy {
                 this.mapaService.dMiniMapa = { centro: lugarActual.ubicacion, zoom: 15, marcador: true };
                 this.mapaService.emitirMiniMapa();
                 this.lugaresService.actualizarListaPrioridades(false);
-            } else {
-                this.lugaresService.actualizarListaPrioridades(true);
             }
         });
 
@@ -211,24 +212,6 @@ export class AgregarComponent implements OnInit, OnDestroy {
         this.mapaService.resetDataMapa();
     }
 
-    /** Funciona pero no se usa es solo para pruebas: Método que trae 
-     * todas las localidades existentes */
-    //getAllLocalidades(): void {
-    //    this.localidadesService.getAll().snapshotChanges().pipe(
-    //        map(changes =>
-    //            changes.map(c =>
-    //                ({ id: c.payload.doc.id, ...c.payload.doc.data() })
-    //            )
-    //        )
-    //    ).subscribe(data => {
-    //        this.localidades = data;
-    //    });
-    //}
-
-    cambiarPrioridad() {
-       // this.lugaresService.cambiarPrioridadDeUnLugar();
-    }
-
     agregarImagenSubida($event) {
         //si el nombre de la imagen ya esta en el array la elimina
         this.galeria = this.galeria.filter((item) => {
@@ -237,6 +220,13 @@ export class AgregarComponent implements OnInit, OnDestroy {
         //agrega la nueva imagen al array
         this.galeria.push($event);
         this.lugarForm.controls['imagenes'].setValue(this.galeria);
+    }
+
+
+    openSnackBarSubmit(message: string) {
+        this._snackBar.open(message, "Aceptar", {
+            duration: 5000
+        });
     }
 
     /**
@@ -344,25 +334,31 @@ export class AgregarComponent implements OnInit, OnDestroy {
     }
 
     /** Enviar en formulario a firebase */
-    agregarLugar() {
-
+    submitLugar() {
+        //envia el formulario
         if (this.lugarForm.valid && this.submitHabilitado) {
-            const nuevoLugar: Lugar = this.lugarForm.value;
-            //envia el formulario
-            this.lugaresService.addLugar(nuevoLugar);
-
-            //limpia el formulario y setea los valores inicales con el metodo reset
-            this.lugarForm.reset({
-                imagenHome: this.imagenHomeDefault,
-                imagenPrincipal: this.imagenPrincipalDefault
-            });
-            this.galeria.length = 0; //vacia la galeria de fotos
-            //limpia el mapa y el mini-mapa
-            this.mapaService.resetDataMapa();
-            this.mapaService.resetDataMiniMapa();
-            //Limpia el minimapa y el mapa
-            this.mapaService.emitirMiniMapa();
-            this.mapaService.resetDataMapa();
+            console.log("idLugar: " + this.idLugar)
+            //verifica si es una actualización o un lugar nuevo
+            if (this.idLugar !== undefined) {
+                this.lugaresService.updateLugar(this.lugarForm.value, this.idLugar);
+                this.openSnackBarSubmit('¡El lugar se ha actualizado correctamente!');
+            } else {
+                this.lugaresService.addLugar(this.lugarForm.value);
+                this.openSnackBarSubmit('¡Se a guardado el nuevo lugar!');
+                //limpia el formulario y setea los valores inicales con el metodo reset
+                this.lugarForm.reset({
+                    imagenHome: this.imagenHomeDefault,
+                    imagenPrincipal: this.imagenPrincipalDefault
+                });
+                this.galeria.length = 0; //vacia la galeria de fotos
+                //limpia el mapa y el mini-mapa
+                this.mapaService.resetDataMapa();
+                this.mapaService.resetDataMiniMapa();
+                //Limpia el minimapa y el mapa
+                this.mapaService.emitirMiniMapa();
+                this.mapaService.resetDataMapa();
+            }
+            this.lugaresService.getLugaresFirestore();
         }
     }
 
@@ -412,5 +408,13 @@ export class AgregarComponent implements OnInit, OnDestroy {
     }
     get facebook() {
         return this.lugarForm.get('facebook');
+    }
+
+    get prioridad() {
+        return this.lugarForm.get('prioridad');
+    }
+
+    get descripcion() {
+        return this.lugarForm.get('descripcion');
     }
 }

@@ -7,7 +7,8 @@
     <img mat-card-image [src]="lugar | imagen">
 
     <mat-card-content>
-        {{ lugar.descripcion | deleteHtml | recortarParrafo }}
+        <!-- {{ lugar.descripcion | deleteHtml | recortarParrafo }} -->
+        <div [innerHTML]="lugar.descripcion | recortarParrafo"></div>
     </mat-card-content>
 
     <mat-card-actions>
@@ -24,7 +25,7 @@
                 </button>
             </mat-grid-tile>
             <mat-grid-tile colspan="1" [rowspan]="1">
-                <button mat-button mat-stroked-button color="warn" (click)="eliminarLugar(lugar.id)">
+                <button mat-button mat-stroked-button color="warn" (click)="openDialog(lugar)">
                     Eliminar
                 </button>
             </mat-grid-tile>

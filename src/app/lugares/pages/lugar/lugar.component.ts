@@ -20,7 +20,7 @@ export class LugarComponent implements OnInit {
     ngOnInit(): void {
         //A partir de la ruta y el id recibido obtento el lugar para mostrar
         this.activatedRoute.params.pipe(
-            tap(res => console.log(res)),
+            //tap(res => console.log(res)),
             switchMap(({ id }) => this.lugaresService.getLugarId(id)))
             .subscribe(lugar => {
                 if ( lugar.id !== undefined ) {

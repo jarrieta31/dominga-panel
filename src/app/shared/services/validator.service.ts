@@ -39,11 +39,12 @@ export class ValidatorService {
         } else {
             const valor: string = control.value?.trim().toLowerCase();
             //Ejemplo: https://www.facebook.com/museodepartamentaldesanjose/
-            let regExPersonal = /^https:\/\/www\.facebook\.com\/\b([-a-zA-Z0-9()@:%_\+.~#?&//=]{3,})$/g;
-            if (regExPersonal.test(valor)) {
+            //let regExPersonal = /^https:\/\/www\.facebook\.com\/\b([-a-zA-Z0-9()@:%_\+.~#?&//=]{3,})$/g;
+            let regExBajada = /(?:https?:\/\/)?(?:www\.)?(mbasic.facebook|m\.facebook|facebook|fb)\.(com|me)\/(?:(?:\w\.)*#!\/)?(?:pages\/)?(?:[\w\-\.]*\/)*([\w\-\.]*)/ig
+            if (regExBajada.test(valor)) {
                 return null;
             }
-            return { whatsapp: true };
+            return { facebook: true };
         }
     }
 
@@ -71,7 +72,7 @@ export class ValidatorService {
         } else {
             const valor: string = control.value?.trim().toLowerCase();
             //Ejemplo: https://www.facebook.com/museodepartamentaldesanjose/
-            let regExPersonal = /^https:\/\/www\.instagram\.com\/\b([-a-zA-Z0-9()@:%_\+.~#?&//=]{3,})$/g;
+            let regExPersonal = /^https:\/\/(?:www\.)?instagram\.com\/\b([-a-zA-Z0-9()@:%_\+.~#?&//=]{3,})$/g;
             if (regExPersonal.test(valor)) {
                 return null;
             }

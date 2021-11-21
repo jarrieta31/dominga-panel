@@ -16,7 +16,7 @@ export interface Lugar {
     instagram?: string;
     localidad: string;
     nombre: string;
-    patrimonial?: boolean;
+    patrimonial: boolean;
     prioridad: number;
     publicado: boolean;
     telefonos?: string[];

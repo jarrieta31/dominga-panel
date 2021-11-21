@@ -1,8 +1,11 @@
 <div class="mat-typography" style="text-align: center;">
     <h1>{{titulo}}</h1>
 </div>
+<pre>
+    {{ this.lugarForm.valid }}
+</pre>
 
-<form [formGroup]="lugarForm" (ngSubmit)="agregarLugar()" id="formLugar">
+<form [formGroup]="lugarForm" (ngSubmit)="submitLugar()" id="formLugar">
 
     <div fxLayout="row" fxLayoutAlign="space-between stretch" fxLayoutGap="40px">
 
@@ -114,7 +117,7 @@
                         </mat-form-field>
                         <mat-form-field fxFlex="33">
                             <span matPrefix>Prioridad: &nbsp; &nbsp;</span>
-                            <mat-select formControlName="prioridad" (selectionChange)="cambiarPrioridad()">
+                            <mat-select formControlName="prioridad">
                                 <mat-option *ngFor="let item of prioridades" [value]="item">
                                     {{ item }}
                                 </mat-option>
@@ -133,6 +136,15 @@
                     <div fxLayout="row">
                         <div class="area">
                             <angular-editor formControlName="descripcion" [config]="editorConfig"></angular-editor>
+                            <br>
+                            <ng-container *ngIf="!descripcion.valid && descripcion.touched">
+                                <mat-error *ngIf="descripcion.errors.maxlength">
+                                    La descripción del lugar no puede superar los 4000 caracteres.
+                                </mat-error>
+                                <mat-error *ngIf="descripcion.errors.minlength">
+                                    La descripción del lugar no puede ser menor a 50 carcacteres.                                    caracteres.
+                                </mat-error>
+                            </ng-container>
                         </div>
                     </div>
                 </div>

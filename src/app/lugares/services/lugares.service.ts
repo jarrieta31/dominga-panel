@@ -45,15 +45,15 @@ export class LugaresService {
     actualizarListaPrioridades(sumarUno: boolean) {
         let listPrioridades: number[] = [];
         if (sumarUno) { //si la lista es para crear un nuevo lugar se agrega 1
-            for (let i = 0; i < this.todosLosLugares.length + 1; i++) {
-                listPrioridades[i] = i+1;
+            for (let i = 0; i < (this.todosLosLugares.length + 1); i++) {
+                listPrioridades[i] = i + 1;
             }
         } else { //si la lista es para actualizar la prioridad de un lugar existente
             for (let i = 0; i < this.todosLosLugares.length; i++) {
-                listPrioridades[i] = i+1;
+                listPrioridades[i] = i + 1;
             }
         }
-        console.log("update prioridades: "+ listPrioridades)
+        //console.log("update prioridades: "+ listPrioridades)
         this.prioridades$.next(listPrioridades);
     }
 
@@ -62,11 +62,11 @@ export class LugaresService {
      * @param {Lugar} lugar Recibe el lugar al que le vamos a cambiar la prioridad.
      * @param {Number} nuevaPrioridad Es el valor de la nueva prioridad o posición que debe estar en el array todosLosLugares.
      */
-    cambiarPrioridadDeUnLugar(lugar:Lugar, nuevaPrioridad:number){
+    cambiarPrioridadDeUnLugar(lugar: Lugar, nuevaPrioridad: number) {
         this.todosLosLugares.splice(lugar.prioridad, 1);//elimina ese lugar de la posicion actual
         this.todosLosLugares.splice(nuevaPrioridad, 0, lugar);//Inserta el lugar en su nueva posición
-        for(let i=0; i < this.todosLosLugares.length; i++){ //actualiza la prioridades del array para que correspondan con el indice
-            this.todosLosLugares[i].prioridad = i+1;
+        for (let i = 0; i < this.todosLosLugares.length; i++) { //actualiza la prioridades del array para que correspondan con el indice
+            this.todosLosLugares[i].prioridad = i + 1;
         }
 
         this.lugares$.next(this.todosLosLugares);
@@ -89,9 +89,14 @@ export class LugaresService {
         return 0;
     }
 
-    updateLugar(lugar: Lugar): Observable<void> {
+    /**
+     * Actulizar el lugar utilizando el método destructivo set. (borra todo lo que este y guarda solo los valores actuales)
+     * @param lugar 
+     * @returns 
+     */
+    updateLugar(lugar: Lugar, id: string): Observable<void> {
         return from(
-            this.afs.doc<Lugar>(`lugares/${lugar.id}`).update(lugar) //en ves de pasar el lugar completo se puede poner campo por campo
+            this.afs.doc<Lugar>(`lugares/${id}`).set(lugar) //en ves de pasar el lugar completo se puede poner campo por campo
         );
     }
 
@@ -100,7 +105,7 @@ export class LugaresService {
      * no estar consultado la base y minimizar el traficio.
      */
     getLugaresFirestore() {
-        this.afs.collection('lugares').ref.where('prioridad',">",-1).orderBy('prioridad').get().then(
+        this.afs.collection('lugares').ref.where('prioridad', ">", -1).orderBy('prioridad').get().then(
             querySnapshot => {
                 const arrLugares: any[] = [];
                 querySnapshot.forEach(item => {
@@ -213,7 +218,7 @@ export class LugaresService {
 
         const datos = [{
             "nombre": "Finca Piedra",
-            "prioridad": 0,
+            "prioridad": 1,
             "publicado": true,
             "departamento": "San José",
             "localidad": "Mal Abrigo",
@@ -276,7 +281,7 @@ export class LugaresService {
             "videos": []
         }, {
             "nombre": "Mal Abrigo",
-            "prioridad": 0,
+            "prioridad": 2,
             "publicado": true,
             "departamento": "San José",
             "localidad": "Mal Abrigo",
@@ -343,15 +348,15 @@ export class LugaresService {
                 "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fmalabrigo-14.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
             }],
             "facebook": "https://m.facebook.com/MalAbrigoPPT/",
-            "instagram": "",
-            "web": "",
+            "instagram": null,
+            "web": null,
             "whatsapp": "https://api.whatsapp.com/send?phone=59894479401",
             "telefonos": [],
             "valoraciones": [],
             "videos": []
         }, {
             "nombre": "Barras de Mahoma",
-            "prioridad": 0,
+            "prioridad": 3,
             "publicado": true,
             "departamento": "San José",
             "localidad": "Mal Abrigo",
@@ -429,7 +434,7 @@ export class LugaresService {
             "videos": []
         }, {
             "nombre": "Museo San José",
-            "prioridad": 0,
+            "prioridad": 4,
             "publicado": true,
             "departamento": "San José",
             "localidad": "San José De Mayo",
@@ -484,7 +489,7 @@ export class LugaresService {
             "facebook": "https://www.facebook.com/museodepartamentaldesanjose/",
             "instagram": "https://instagram.com/museosanjose?igshid=1jc5iftzor1xj",
             "web": "https://www.sanjose.gub.uy/departamento/turismo/museo-san-jose/",
-            "whatsapp": "",
+            "whatsapp": null,
             "telefonos": [
                 { "numero": "43423672" }
             ],
@@ -492,7 +497,7 @@ export class LugaresService {
             "videos": []
         }, {
             "nombre": "Parque Rodó",
-            "prioridad": 0,
+            "prioridad": 4,
             "publicado": true,
             "departamento": "San José",
             "localidad": "San José De Mayo",
@@ -561,16 +566,16 @@ export class LugaresService {
                 "name": "parque-15",
                 "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fparque-15.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
             }],
-            "facebook": "",
-            "instagram": "",
+            "facebook": null,
+            "instagram": null,
             "web": "https://www.sanjose.gub.uy/departamento/turismo/parque-rodo/",
-            "whatsapp": "",
+            "whatsapp": null,
             "telefonos": [],
             "valoraciones": [],
             "videos": []
         }, {
             "nombre": "Basílica Catedral",
-            "prioridad": 0,
+            "prioridad": 6,
             "publicado": true,
             "departamento": "San José",
             "localidad": "San José De Mayo",
@@ -624,16 +629,16 @@ export class LugaresService {
                 "name": "Catedral-11",
                 "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2FCatedral-11.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
             }],
-            "facebook": "",
-            "instagram": "",
+            "facebook": null,
+            "instagram": null,
             "web": "https://www.sanjose.gub.uy/departamento/turismo/basilica-catedral/",
-            "whatsapp": "",
+            "whatsapp": null,
             "telefonos": [],
             "valoraciones": [],
             "videos": []
         }, {
             "nombre": "Club San José",
-            "prioridad": 0,
+            "prioridad": 7,
             "publicado": true,
             "departamento": "San José",
             "localidad": "San José De Mayo",
@@ -679,9 +684,9 @@ export class LugaresService {
                 "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fclub-san-jose-9.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
             }],
             "facebook": "https://www.facebook.com/CantinadelClubSanJose/?ti=as",
-            "instagram": "",
-            "web": "",
-            "whatsapp": "",
+            "instagram": null,
+            "web": null,
+            "whatsapp": null,
             "telefonos": [
                 {
                     "numero": "43426344"
@@ -691,7 +696,7 @@ export class LugaresService {
             "videos": []
         }, {
             "nombre": "AFE / ECIE",
-            "prioridad": 0,
+            "prioridad": 8,
             "publicado": true,
             "departamento": "San José",
             "localidad": "San José De Mayo",
@@ -753,7 +758,7 @@ export class LugaresService {
             "videos": []
         }, {
             "nombre": "Picada Varela",
-            "prioridad": 0,
+            "prioridad": 9,
             "publicado": true,
             "departamento": "San José",
             "localidad": "San José De Mayo",
@@ -795,16 +800,16 @@ export class LugaresService {
                 "name": "picada-varela-6",
                 "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fpicada-varela-6.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
             }],
-            "facebook": "",
-            "instagram": "",
+            "facebook": null,
+            "instagram": null,
             "web": "https://www.sanjose.gub.uy/departamento/turismo/picada-varela/",
-            "whatsapp": "",
+            "whatsapp": null,
             "telefonos": [],
             "valoraciones": [],
             "videos": []
         }, {
             "nombre": "Casa Dominga",
-            "prioridad": 0,
+            "prioridad": 10,
             "publicado": true,
             "departamento": "San José",
             "localidad": "San José De Mayo",
@@ -885,7 +890,7 @@ export class LugaresService {
             "videos": []
         }, {
             "nombre": "Capilla del Huerto",
-            "prioridad": 0,
+            "prioridad": 11,
             "publicado": true,
             "departamento": "San José",
             "localidad": "San José De Mayo",
@@ -921,10 +926,10 @@ export class LugaresService {
                 "name": "huerto-5",
                 "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fhuerto-5.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
             }],
-            "facebook": "",
-            "instagram": "",
+            "facebook": null,
+            "instagram": null,
             "web": "https://www.sanjose.gub.uy/departamento/turismo/capilla-nuestra-senora-del-huerto/",
-            "whatsapp": "",
+            "whatsapp": null,
             "telefonos": [],
             "valoraciones": [
                 { "user": 0 }
@@ -932,7 +937,7 @@ export class LugaresService {
             "videos": []
         }, {
             "nombre": "ICE",
-            "prioridad": 0,
+            "prioridad": 12,
             "publicado": true,
             "departamento": "San José",
             "localidad": "San José De Mayo",
@@ -968,8 +973,8 @@ export class LugaresService {
             }],
             "facebook": "https://www.facebook.com/InstitutoCulturalEspanolSanJose/?ti=as",
             "instagram": "https://instagram.com/icesanjose?igshid=1m6jvf2kus26k",
-            "web": "",
-            "whatsapp": "",
+            "web": null,
+            "whatsapp": null,
             "telefonos": [],
             "valoraciones": [
                 { "user": 0 }
@@ -977,7 +982,7 @@ export class LugaresService {
             "videos": []
         }, {
             "nombre": "Quinta del Horno",
-            "prioridad": 0,
+            "prioridad": 13,
             "publicado": true,
             "departamento": "San José",
             "localidad": "San José De Mayo",
@@ -1013,10 +1018,10 @@ export class LugaresService {
                 "name": "quintadelhorno-04",
                 "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fquintadelhorno-04.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
             }],
-            "facebook": "",
-            "instagram": "",
+            "facebook": null,
+            "instagram": null,
             "web": "https://www.sanjose.gub.uy/departamento/turismo/quinta-del-horno/",
-            "whatsapp": "",
+            "whatsapp": null,
             "telefonos": [{
                 "numero": "43431314"
             }],
@@ -1026,7 +1031,7 @@ export class LugaresService {
             "videos": []
         }, {
             "nombre": "UTEC",
-            "prioridad": 0,
+            "prioridad": 14,
             "publicado": true,
             "departamento": "San José",
             "localidad": "San José De Mayo",
@@ -1071,17 +1076,17 @@ export class LugaresService {
                 "name": "utec-7",
                 "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Futec-7.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
             }],
-            "facebook": "",
-            "instagram": "",
+            "facebook": null,
+            "instagram": null,
             "web": "https://utec.edu.uy/itr-centrosur/un-edificio-con-pasado-y-futuro/",
-            "whatsapp": "",
+            "whatsapp": null,
             "valoraciones": [{
                 "user": 0
             }],
             "videos": []
         }, {
             "nombre": "Sierra de Mahoma",
-            "prioridad": 0,
+            "prioridad": 15,
             "publicado": true,
             "departamento": "San José",
             "localidad": "Mal Abrigo",
@@ -1136,9 +1141,9 @@ export class LugaresService {
                 "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2FSierraMahoma-10.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
             }],
             "facebook": "https://www.facebook.com/sierrasdemahoma.mahoma",
-            "instagram": "",
-            "web": "",
-            "whatsapp": "",
+            "instagram": null,
+            "web": null,
+            "whatsapp": null,
             "telefonos": [],
             "valoraciones": [
                 { "user": 0 }
@@ -1146,7 +1151,7 @@ export class LugaresService {
             "videos": []
         }, {
             "nombre": "Boliche de Campaña",
-            "prioridad": 0,
+            "prioridad": 16,
             "publicado": true,
             "departamento": "San José",
             "localidad": "Mal Abrigo",
@@ -1185,10 +1190,10 @@ export class LugaresService {
                 "name": "bolichedecampa%C3%B1a-05",
                 "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fbolichedecampa%C3%B1a-05.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
             }],
-            "facebook": "",
-            "instagram": "",
-            "web": "",
-            "whatsapp": "",
+            "facebook": null,
+            "instagram": null,
+            "web": null,
+            "whatsapp": null,
             "telefonos": [{
                 "numero": "43401558"
             }],
@@ -1200,7 +1205,7 @@ export class LugaresService {
             ]
         }, {
             "nombre": "Teatro Maccio",
-            "prioridad": 0,
+            "prioridad": 17,
             "publicado": true,
             "departamento": "San José",
             "localidad": "San José De Mayo",
@@ -1251,10 +1256,10 @@ export class LugaresService {
                 "name": "teatro-9",
                 "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fteatro-9.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
             }],
-            "facebook": "",
-            "instagram": "",
+            "facebook": null,
+            "instagram": null,
             "web": "https://www.sanjose.gub.uy/departamento/turismo/teatro-maccio/",
-            "whatsapp": "",
+            "whatsapp": null,
             "telefonos": [{
                 "phone": "43422723"
             }],
@@ -1262,7 +1267,7 @@ export class LugaresService {
             "videos": []
         }, {
             "nombre": "Intendencia Municipal",
-            "prioridad": 0,
+            "prioridad": 18,
             "publicado": true,
             "departamento": "San José",
             "localidad": "San José De Mayo",
@@ -1307,10 +1312,10 @@ export class LugaresService {
                 "name": "intendencia-7",
                 "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fintendencia-7.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
             }],
-            "facebook": "",
-            "instagram": "",
+            "facebook": null,
+            "instagram": null,
             "web": "https://www.sanjose.gub.uy/",
-            "whatsapp": "",
+            "whatsapp": null,
             "telefonos": [{
                 "numero": "43429000"
             }],
@@ -1318,7 +1323,7 @@ export class LugaresService {
             "videos": []
         }, {
             "nombre": "Mercado Municipal",
-            "prioridad": 0,
+            "prioridad": 19,
             "publicado": true,
             "departamento": "San José",
             "localidad": "San José De Mayo",
@@ -1351,16 +1356,16 @@ export class LugaresService {
                 "name": "feria-3",
                 "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fferia-3.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
             }],
-            "facebook": "",
-            "instagram": "",
-            "web": "",
-            "whatsapp": "",
+            "facebook": null,
+            "instagram": null,
+            "web": null,
+            "whatsapp": null,
             "telefonos": [],
             "valoraciones": [],
             "videos": []
         }, {
             "nombre": "Club Madreselvas",
-            "prioridad": 0,
+            "prioridad": 20,
             "publicado": true,
             "departamento": "San José",
             "localidad": "San José De Mayo",
@@ -1408,16 +1413,16 @@ export class LugaresService {
                 "name": "madreselva-8",
                 "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fmadreselva-8.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
             }],
-            "facebook": "",
+            "facebook": null,
             "instagram": "https://instagram.com/las_madreselvas_tenis?igshid=6pkeh7as6wlq",
-            "web": "",
+            "web": null,
             "whatsapp": "https://api.whatsapp.com/send?phone=59898524797",
             "telefonos": [],
             "valoraciones": [],
             "videos": []
         }, {
             "nombre": "Club Fraternidad",
-            "prioridad": 0,
+            "prioridad": 21,
             "publicado": true,
             "departamento": "San José",
             "localidad": "San José De Mayo",
@@ -1448,8 +1453,8 @@ export class LugaresService {
                 "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Ffraternidad-2.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
             }],
             "facebook": "https://www.facebook.com/fraternidadclubok/",
-            "instagram": "",
-            "web": "",
+            "instagram": null,
+            "web": null,
             "whatsapp": "https://api.whatsapp.com/send?phone=59899191099",
             "telefonos": [{
                 "numero": "43431702"
@@ -1458,7 +1463,7 @@ export class LugaresService {
             "videos": []
         }, {
             "nombre": "Sociedad Italiana",
-            "prioridad": 0,
+            "prioridad": 22,
             "publicado": true,
             "departamento": "San José",
             "localidad": "San José De Mayo",
@@ -1488,10 +1493,10 @@ export class LugaresService {
                 "name": "italiana-2",
                 "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fitaliana-2.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
             }],
-            "facebook": "",
-            "instagram": "",
-            "web": "",
-            "whatsapp": "",
+            "facebook": null,
+            "instagram": null,
+            "web": null,
+            "whatsapp": null,
             "telefonos": [],
             "valoracioneses": [],
             "videos": []
