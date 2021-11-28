@@ -17,7 +17,7 @@ export class ListadoComponent implements OnInit, OnDestroy {
     public departamentos: string[] = [];
     private sourceDepartamentos: Subscription;
     lugares: Lugar[];
-    //lugares$: Observable<Lugar[]>;
+    lugares$: Observable<Lugar[]>;
     private sourceLugares: Subscription;
     filtroDepartamento = false;
     filtroPublicado = false;
@@ -31,15 +31,17 @@ export class ListadoComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         //this.lugaresService.cargarLugares();
-        this.sourceLugares = this.lugaresService.getObsLugares$().subscribe(lugares => this.lugares = lugares);
+        //this.sourceLugares = this.lugaresService.getObsLugares$().subscribe(lugares => this.lugares = lugares);
+        this.lugares$ = this.lugaresService.getObsLugares$();
         this.sourceDepartamentos = this.localidadesService.getObsDepartamentos().subscribe(dpts => this.departamentos = dpts);
-        this.lugaresService.getLugaresLocal();
+        this.lugaresService.emitirLugares();
         this.localidadesService.emitirDepartamentosActivos();
     }
 
     ngOnDestroy(): void {
-        this.sourceLugares.unsubscribe();
+        //this.sourceLugares.unsubscribe();
         this.sourceDepartamentos.unsubscribe();
+        
     }
 
     /** Función que detecta el click sobre los checkboxs del filtro por departamento
@@ -75,7 +77,7 @@ export class ListadoComponent implements OnInit, OnDestroy {
             this.lugaresService.getLugaresPorEstado(this.publicadoSelec);
         }
         else if (!this.filtroPublicado && !this.filtroDepartamento) {
-            this.lugaresService.getLugaresLocal();
+            this.lugaresService.emitirLugares();
         }
 
     }

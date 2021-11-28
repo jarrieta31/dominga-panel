@@ -24,8 +24,10 @@ import { ValidatorService } from '../../../shared/services/validator.service';
 export class AgregarComponent implements OnInit, OnDestroy {
 
     submitHabilitado = true;
+    idNuevoLugar: string = "";
     titulo: string = "Nuevo Lugar";
     idLugar: string;
+    prioridadAnterior: number;
     tituloUploaderGaleria: string = "Subir imágenes a la galería";
     tituloUploaderHome: string = "Selecciona la imágen del Home";
     directorioLugaresStorage: string = "lugares2";
@@ -48,7 +50,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
 
     public lugarForm: FormGroup = this.fb.group({
         nombre: ['', [Validators.required, Validators.minLength(2)]],
-        prioridad: [0, [Validators.required]],
+        prioridad: [1, [Validators.required]],
         publicado: [false, Validators.required],
         departamento: ['', Validators.required],
         localidad: ['', Validators.required],
@@ -160,7 +162,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
         //this.prioridades$ = this.lugaresService.getObsPrioridades$();
         this.sourcePrioridades = this.lugaresService.getObsPrioridades$().subscribe(prioridades => this.prioridades = prioridades);
 
-        this.lugaresService.actualizarListaPrioridades(true);
+        this.lugaresService.updateListaPrioridadesLocal(true);
         /**
         * A partir de la ruta y el id recibido obtiene el lugar para mostrar 
         */
@@ -169,9 +171,11 @@ export class AgregarComponent implements OnInit, OnDestroy {
             switchMap(({ id }) => this.lugaresService.getLugarId(id)),
         ).subscribe(lugar => {
             let lugarActual: Lugar = JSON.parse(JSON.stringify(lugar));
-            console.log("Lugar  " + lugar)
+            //console.log("Lugar  " + lugar)
             if (lugarActual.id !== undefined) {//Si estamos editando un lugar
                 this.idLugar = lugarActual.id;
+                let prio = lugar.prioridad;
+                this.prioridadAnterior = prio
                 delete lugarActual.id //para setear el formulario es necesario quitar el tatributo id
                 this.lugarForm.reset(lugarActual);
                 this.titulo = `Editando ${this.lugarForm.controls['nombre'].value}`;
@@ -179,7 +183,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
                 this.localidadesService.getLocadidadesDepartamento(lugarActual.departamento);
                 this.mapaService.dMiniMapa = { centro: lugarActual.ubicacion, zoom: 15, marcador: true };
                 this.mapaService.emitirMiniMapa();
-                this.lugaresService.actualizarListaPrioridades(false);
+                this.lugaresService.updateListaPrioridadesLocal(false);
             }
         });
 
@@ -334,16 +338,44 @@ export class AgregarComponent implements OnInit, OnDestroy {
     }
 
     /** Enviar en formulario a firebase */
-    submitLugar() {
+    async submitLugar() {
         //envia el formulario
         if (this.lugarForm.valid && this.submitHabilitado) {
-            console.log("idLugar: " + this.idLugar)
             //verifica si es una actualización o un lugar nuevo
-            if (this.idLugar !== undefined) {
-                this.lugaresService.updateLugar(this.lugarForm.value, this.idLugar);
-                this.openSnackBarSubmit('¡El lugar se ha actualizado correctamente!');
-            } else {
-                this.lugaresService.addLugar(this.lugarForm.value);
+            if (this.idLugar !== undefined) {//si se esta editando un lugar
+                //this.lugaresService.updateLugar(this.lugarForm.value, this.idLugar);
+                const lugar: Lugar = this.lugarForm.value;
+                lugar.id = this.idLugar;
+                if (this.prioridadAnterior !== lugar.prioridad) {//Sí la prioridad cambio
+                    this.lugaresService.modificarPrioridadDeLugar(lugar);
+                    this.lugaresService.updateLugarFirestore(this.lugarForm.value, this.idLugar)
+                        .then(res => {
+                            this.openSnackBarSubmit('¡El lugar se ha actualizado correctamente!');
+                        })
+                        .catch(error => {
+                            this.openSnackBarSubmit('¡Error, no se ha podido actualizar el lugar en Firestore!');
+                            console.error('¡Error, no se ha podido actualizar el lugar en Firestore!. Error: '+ error);
+                        });
+                    this.lugaresService.corregirPrioridadesFirestore(lugar.id);
+                } else { //Sí la prioridad no cambio
+                    this.lugaresService.updateLugarLocal(lugar);
+                    this.lugaresService.updateLugarFirestore(this.lugarForm.value, this.idLugar)
+                        .then(res => {
+                            this.openSnackBarSubmit('¡El lugar se ha actualizado correctamente!');
+                        })
+                        .catch(error => {
+                            this.openSnackBarSubmit('¡Error, no se ha podido actualizar el lugar en Firestore!');
+                            console.error('¡Error, no se ha podido actualizar el lugar en Firestore!. Error: '+ error);
+                        });
+                }
+            } else { //Si el lugar es nuevo
+                let nuevoId = this.lugaresService.addLugar(this.lugarForm.value);
+                if(nuevoId !== ''){
+                    this.openSnackBarSubmit('¡El nuevo lugar se ha guardado correctamente!');
+                    this.lugaresService.corregirPrioridadesFirestore(nuevoId);
+                }else{
+                    this.openSnackBarSubmit('¡Por algún motivo el nuevo lugar no se pudo gardar!');
+                }
                 this.openSnackBarSubmit('¡Se a guardado el nuevo lugar!');
                 //limpia el formulario y setea los valores inicales con el metodo reset
                 this.lugarForm.reset({
@@ -358,7 +390,6 @@ export class AgregarComponent implements OnInit, OnDestroy {
                 this.mapaService.emitirMiniMapa();
                 this.mapaService.resetDataMapa();
             }
-            this.lugaresService.getLugaresFirestore();
         }
     }
 

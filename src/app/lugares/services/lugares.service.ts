@@ -1,7 +1,7 @@
-import { ComponentFactoryResolver, Injectable } from '@angular/core';
+import { ComponentFactoryResolver, Injectable, OnInit } from '@angular/core';
 import { Lugar } from '../interfaces/lugar.interface';
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument, DocumentReference } from '@angular/fire/compat/firestore';
-import { from, Observable, Subject } from 'rxjs';
+import { from, Observable, Subject, BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { LugarComponent } from '../pages/lugar/lugar.component';
 
@@ -13,28 +13,41 @@ import { LugarComponent } from '../pages/lugar/lugar.component';
 export class LugaresService {
 
     private lugaresCollection: AngularFirestoreCollection<Lugar[]>;
-    private lugares$: Subject<Lugar[]>;
-    private lugar$: Subject<Lugar>;
-    private prioridades$: Subject<number[]>;
-    private todosLosLugares: Lugar[] = [];
+    private lugares$: BehaviorSubject<Lugar[]>;
+    private prioridades$: BehaviorSubject<number[]>;
+    todosLosLugares: Lugar[] = []; //copia local de todos los lugares para trabajar con ella
+    private lugaresOriginal: Lugar[] = []; //copia local de todos los lugares que sirve de referecia paras ver cual cambió
+    private idNuevoLugar:string = '';
 
     constructor(private afs: AngularFirestore) {
         this.lugaresCollection = afs.collection<Lugar[]>('lugares');
-        //this.lugares$ = this.lugaresCollection.valueChanges({ idField: 'id' });
-        //const lugaresRef = this.afs.collection('lugares');
-        this.lugares$ = new Subject();
-        this.lugar$ = new Subject();
+        this.lugares$ = new BehaviorSubject(this.todosLosLugares);
         this.getLugaresFirestore();
-        this.prioridades$ = new Subject();
-
+        this.prioridades$ = new BehaviorSubject([]);
     }
 
-    addLugar(lugar: Lugar) {
-        this.afs.collection('lugares').add(lugar).then(res => {
-            console.log(res)
-        }).catch(error => {
-            console.log("Error al agrear nuevo lugar. Error: " + error);
+    /**
+     * Agrega un lugar en firestore, obteniendo el id resultante para luego insertarlo en el 
+     * array local todosLosLugares y corregir las prioridades del array.
+     * @param lugar Contiene la información del nuevo lugar.
+     * @returns Retorna el ID del lugar obtenido de firestore
+     */
+    addLugar(lugar: Lugar):string {
+        let respuesta:string = '';
+        this.afs.collection('lugares').add(lugar).then(documentReference => {
+            lugar.id = documentReference.id;
+            this.todosLosLugares.splice((lugar.prioridad-1),0,lugar);//inserta el lugar en el array todosLosLugares segun su prioridad
+            this.lugaresOriginal.splice((lugar.prioridad-1),0,lugar);//inserta el lugar en el array lugaresOriginal segun su prioridad
+            this.corregirPrioridades();//corrige la prioridad de todos los elementos que debieron moverse.
         })
+        .catch(error =>{
+            console.error("Se produjo un error al agregar un nuevo lugar. ");
+        });
+        return lugar.id;     
+    }
+
+    getIdNuevoLugar():string{
+        return this.idNuevoLugar;
     }
 
     /** 
@@ -42,7 +55,7 @@ export class LugaresService {
      * @param {Boolean} sumarUno Este valor sirve para saber si se está agregando un nuevo lugar o simplemente
      * se está actulizando la prioridad del lugar. Si es un nuevo lugar sumarUno debe ser true.
      */
-    actualizarListaPrioridades(sumarUno: boolean) {
+    updateListaPrioridadesLocal(sumarUno: boolean) {
         let listPrioridades: number[] = [];
         if (sumarUno) { //si la lista es para crear un nuevo lugar se agrega 1
             for (let i = 0; i < (this.todosLosLugares.length + 1); i++) {
@@ -59,45 +72,72 @@ export class LugaresService {
 
     /**
      * Cambia la posición u prioridad de un lugar, para que se muestre antes o despues en el array de todosLosLugares. 
-     * @param {Lugar} lugar Recibe el lugar al que le vamos a cambiar la prioridad.
-     * @param {Number} nuevaPrioridad Es el valor de la nueva prioridad o posición que debe estar en el array todosLosLugares.
+     * En definitiva actualiza la información y mueve el lugar a una posición en el array, forzando al resto de elementos a moverse.
+     * @param {Lugar} lugar Recibe el lugar al que le vamos a cambiar la prioridad, el valor de la prioridad ya viene en el lugar.
      */
-    cambiarPrioridadDeUnLugar(lugar: Lugar, nuevaPrioridad: number) {
-        this.todosLosLugares.splice(lugar.prioridad, 1);//elimina ese lugar de la posicion actual
-        this.todosLosLugares.splice(nuevaPrioridad, 0, lugar);//Inserta el lugar en su nueva posición
-        for (let i = 0; i < this.todosLosLugares.length; i++) { //actualiza la prioridades del array para que correspondan con el indice
-            this.todosLosLugares[i].prioridad = i + 1;
-        }
-
-        this.lugares$.next(this.todosLosLugares);
-    }
-
-    /** Ordena el array local todosLosLugares */
-    reordenarLugaresPorPrioridad() {
-        this.todosLosLugares.sort(this.compararPrioridadLugares);
-    }
-
-    /** Funcion para comparar las prioridades de los lugares */
-    compararPrioridadLugares(a: Lugar, b: Lugar): number {
-        if (a.prioridad < b.prioridad) {
-            return -1;
-        }
-        if (a.prioridad > b.prioridad) {
-            return 1;
-        }
-        // a debe ser igual b
-        return 0;
+    modificarPrioridadDeLugar(lugar: Lugar) {
+        let index1 = this.todosLosLugares.findIndex(item => lugar.id === item.id);
+        this.todosLosLugares.splice(index1, 1);//Elimina el lugar de su posición anterior
+        this.todosLosLugares.splice((lugar.prioridad-1), 0, lugar);//Inserta el lugar en su nueva posición
+        this.corregirPrioridades(); //actualiza la prioridades del array todosLosLugares para que correspondan con el indice
     }
 
     /**
-     * Actulizar el lugar utilizando el método destructivo set. (borra todo lo que este y guarda solo los valores actuales)
-     * @param lugar 
+     * Cambia la prioridad de cada lugar del array todosLosLugares en base a su posicón actual, dicha prioridad debe ser 1 + 
+     * que el indice en el que está el lugar.
+     */
+    corregirPrioridades(){
+        for(let i=0; i < this.todosLosLugares.length; i ++){
+            this.todosLosLugares[i].prioridad = (i+1);
+        }
+        this.emitirLugares()
+    }
+
+    /**
+     * Actualiza el ID de todos los lugares en firestore que esten despues del ID recibido.
+     * Asigna la prioridad basandose en el indice actual del array local mas 1.
+     * @param idLugarEditado Es el ID del lugar editado.
+     */
+    corregirPrioridadesFirestore(idLugarEditado:string){
+        let index:number =  this.todosLosLugares.findIndex(item => item.id === idLugarEditado);
+        let prio:number; let id:string;
+        for(let i=(index+1); i < this.todosLosLugares.length; i++){
+            prio = (i + 1);
+            id =  this.todosLosLugares[i].id;
+            this.updatePrioridadLugarFirestore(id, prio);
+        }
+    }
+
+
+    /**
+     * Actuliza la información de lugar en la nube de Firestore, utilizando el método destructivo "set" (borra todo lo que este y 
+     * guarda solo los valores actuales).
+     * @param lugar Contiene todos los datos del lugar menos el ID.
      * @returns 
      */
-    updateLugar(lugar: Lugar, id: string): Observable<void> {
-        return from(
-            this.afs.doc<Lugar>(`lugares/${id}`).set(lugar) //en ves de pasar el lugar completo se puede poner campo por campo
-        );
+    updateLugarFirestore(lugar: Lugar, id: string):Promise<any> {
+        return this.afs.doc<Lugar>(`lugares/${id}`).set(lugar); //en ves de pasar el lugar completo se puede poner campo por campo        
+    }
+
+    /**
+     * Actualiza la información de un lugar ya existente en el array local todosLosLugares.
+     * @param data Es la data con toda la información del lugar includio el ID
+     */
+    updateLugarLocal(data: Lugar){
+        let i = this.todosLosLugares.findIndex(lugar => lugar.id === data.id);
+        this.todosLosLugares[i] = data;
+    }
+
+    /**
+     * Función que se utiliza para actualizar la prioridad de un lugar en la nube de firestore. Es llamada luego de actulizar el 
+     * array local todosLosLugares.
+     * @param idLugar Es el ID del lugar a actulizar la prioridad.
+     * @param prio Prioridad que tendrá el lugar.
+     */
+    updatePrioridadLugarFirestore(idLugar: string, prio:  number){
+        this.afs.doc<Lugar>(`lugares/${idLugar}`).update({prioridad: prio})
+        .then(res => console.log("Se actualizó la prioridad"))
+        .catch(error => { console.error("Se produjo un error al actualizar la prioridad. Error: "+error)  })
     }
 
     /** 
@@ -114,13 +154,15 @@ export class LugaresService {
                 })
                 console.log("todosLosLugares.length = " + this.todosLosLugares.length)
                 this.todosLosLugares = arrLugares.slice();
-                this.actualizarListaPrioridades(false);
+                this.lugaresOriginal = arrLugares.slice();
+                //this.corregirPrioridades(); //actualiza cada prioridad segun el inidice
+                this.updateListaPrioridadesLocal(false);//
                 console.log("todosLosLugares.length = " + this.todosLosLugares.length)
                 this.lugares$.next(this.todosLosLugares); //el subject lugares$ emite los lugares
             }
         ).catch(error => {
-            console.error("Error en getLugares(). error:" + error);
-        }).finally(() => console.info("Corriendo getLugares() en lugares.services!"))
+            console.error("Error en getLugaresFirestore(). error:" + error);
+        }).finally(() => console.info("Corriendo getLugaresFirestore() en lugares.services!"))
     }
 
     /**
@@ -140,11 +182,11 @@ export class LugaresService {
     }
 
     /** Retorna un observable de un lugar obtenido localmente del array lugares */
-    getObsLugar$(): Observable<Lugar> {
-        return this.lugar$.asObservable();
-    }
+  //  getObsLugar$(): Observable<Lugar> {
+  //      return this.lugar$.asObservable();
+  //  }
 
-    getLugaresLocal() {
+    emitirLugares() {
         this.lugares$.next(this.todosLosLugares);
     }
 
@@ -207,7 +249,7 @@ export class LugaresService {
             this.todosLosLugares = this.todosLosLugares.filter(lugar => {
                 return lugar.id !== id
             });
-            this.getLugaresLocal();
+            this.emitirLugares();
             console.log("Lugar eliminado correntamente")
         }).catch(err => {
             console.error("Se produjo un error al intentar eliminar un el lugar " + id + ". Error:" + err)
