@@ -59,7 +59,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
         caminar: [false],
         patrimonial: [false],
         accesibilidad: [false],
-        descripcion: ['', [Validators.minLength(50), Validators.maxLength(4000)]],
+        descripcion: ['', [Validators.minLength(60), Validators.maxLength(4800)]],
         imagenHome: [this.imagenHomeDefault],
         imagenPrincipal: [this.imagenPrincipalDefault],
         ubicacion: [{ "lng": -56.4372197, "lat": -32.8246801 }],
@@ -356,7 +356,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
                             this.openSnackBarSubmit('¡Error, no se ha podido actualizar el lugar en Firestore!');
                             console.error('¡Error, no se ha podido actualizar el lugar en Firestore!. Error: '+ error);
                         });
-                    this.lugaresService.corregirPrioridadesFirestore(lugar.id);
+                    this.lugaresService.corregirPrioridadesFirestore(lugar.id,'edit');
                 } else { //Sí la prioridad no cambio
                     this.lugaresService.updateLugarLocal(lugar);
                     this.lugaresService.updateLugarFirestore(this.lugarForm.value, this.idLugar)
@@ -372,7 +372,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
                 let nuevoId = this.lugaresService.addLugar(this.lugarForm.value);
                 if(nuevoId !== ''){
                     this.openSnackBarSubmit('¡El nuevo lugar se ha guardado correctamente!');
-                    this.lugaresService.corregirPrioridadesFirestore(nuevoId);
+                    this.lugaresService.corregirPrioridadesFirestore(nuevoId,'add');
                 }else{
                     this.openSnackBarSubmit('¡Por algún motivo el nuevo lugar no se pudo gardar!');
                 }

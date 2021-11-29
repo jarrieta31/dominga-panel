@@ -39,28 +39,9 @@ export class ListadoComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        //this.sourceLugares.unsubscribe();
         this.sourceDepartamentos.unsubscribe();
         
     }
-
-    /** Función que detecta el click sobre los checkboxs del filtro por departamento
-     * y los agrega o quita del array departamentosAFiltrar
-     */
-    // selecCheckDepartamento(dep: string) {
-    //     let depExiste = this.departamentosAFiltrar.includes(dep);
-    //     if (depExiste) {
-    //         this.departamentosAFiltrar = this.departamentosAFiltrar.filter((item) => {
-    //             return item !== dep //retorna todos elementos diferentes a  item 
-    //         });
-    //     }
-    //     else {
-    //         //No se permiten mas de 10 condiciones OR concatenadas
-    //         if(this.departamentosAFiltrar.length < 10){
-    //             this.departamentosAFiltrar.push(dep);
-    //         }
-    //     }
-    // }
 
     /** LLama al metodo correspondiente del servicio lugares para hacer el filtro.
      * A partir de los filstros seleccionados por el usuario crea los paramentos

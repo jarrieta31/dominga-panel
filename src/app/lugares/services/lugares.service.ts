@@ -98,13 +98,21 @@ export class LugaresService {
      * Asigna la prioridad basandose en el indice actual del array local mas 1.
      * @param idLugarEditado Es el ID del lugar editado.
      */
-    corregirPrioridadesFirestore(idLugarEditado:string){
+    corregirPrioridadesFirestore(idLugarEditado:string, accion:string){
         let index:number =  this.todosLosLugares.findIndex(item => item.id === idLugarEditado);
         let prio:number; let id:string;
-        for(let i=(index+1); i < this.todosLosLugares.length; i++){
-            prio = (i + 1);
-            id =  this.todosLosLugares[i].id;
-            this.updatePrioridadLugarFirestore(id, prio);
+        if(accion === 'edit' || accion === 'add'){
+            for (let i = (index + 1); i < this.todosLosLugares.length; i++) {
+                prio = (i + 1);
+                id = this.todosLosLugares[i].id;
+                this.updatePrioridadLugarFirestore(id, prio);
+            }
+        }else if(accion === 'delete') {
+            for (let i = 0; i < this.todosLosLugares.length; i++) {
+                prio = (i + 1);
+                id = this.todosLosLugares[i].id;
+                this.updatePrioridadLugarFirestore(id, prio);
+            }
         }
     }
 
@@ -245,10 +253,11 @@ export class LugaresService {
 
     /** Elimina correctamente el lugar */
     deleteLugar(id: string) {
+        let indiceEliminar = this.todosLosLugares.findIndex(item => item.id === id );
         this.lugaresCollection.doc(id).delete().then(res => {
-            this.todosLosLugares = this.todosLosLugares.filter(lugar => {
-                return lugar.id !== id
-            });
+            this.todosLosLugares.splice(indiceEliminar,1); 
+            this.corregirPrioridades();
+            this.corregirPrioridadesFirestore(id, 'delete')
             this.emitirLugares();
             console.log("Lugar eliminado correntamente")
         }).catch(err => {

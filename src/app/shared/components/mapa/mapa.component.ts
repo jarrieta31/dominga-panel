@@ -1,7 +1,8 @@
-import { Component, ElementRef, OnInit, ViewChild, AfterViewInit, ChangeDetectorRef, enableProdMode } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, AfterViewInit, ChangeDetectorRef, enableProdMode, Output, EventEmitter } from '@angular/core';
 import { MapaService } from '../../services/mapa.service';
 import * as mapboxgl from 'mapbox-gl';
 import { DatosMapa } from '../../interfaces/datosMapa.interface';
+import { MatSliderChange } from '@angular/material/slider';
 
 @Component({
     selector: 'app-mapa',
@@ -17,6 +18,7 @@ export class MapaComponent implements OnInit {
     delete_btn: boolean = true;
     move_btn: boolean = true;
     zoom: number = 12;
+    //@Output() zoomSlider:EventEmitter<MatSliderChange> = new EventEmitter<MatSliderChange>();
 
     constructor(private mapaService: MapaService,
         private cdRef: ChangeDetectorRef
@@ -151,22 +153,27 @@ export class MapaComponent implements OnInit {
         }
     }
 
+    /**
+     * Aumenta el zoom del mapa cada vez que se presiona el botón más y actualiza el valor de la variable zoom
+     */
     zoomIn() {
         this.mapa.zoomIn();
         this.zoom = this.mapa.getZoom();
     }
 
+    /**
+     * Desminuye el zoom del mapa cada vez que se presiona el botón menos y actualiza el valor de la variable zoom
+     */
     zoomOut() {
         this.mapa.zoomOut()
         this.zoom = this.mapa.getZoom();
     }
 
-    formatLabel(value: number) {
-        if (value >= 1000) {
-            return Math.round(value / 1000) + 'k';
-        }
-
-        return value;
+    /**
+     * Actualizar el zoom del mapa cada vez que se desliza la barra slider
+     */
+    updateZoom(){
+        this.mapa.zoomTo(this.zoom);
     }
 
 }

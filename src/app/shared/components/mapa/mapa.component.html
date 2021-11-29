@@ -26,7 +26,8 @@
 
 <div fxLayout="column" id="control-zoom">
     <div>
-        <mat-slider  color="primary" tickInterval="1000" step="0.2" min="6" max="19" [(value)]="zoom"
+        <mat-slider  color="primary" tickInterval="auto" step="0.5" min="6" max="19" [(value)]="zoom" 
+            (change)="updateZoom()"
             aria-label="units"></mat-slider>
     </div>
     <div fxLayout="row" fxLayoutAlign="space-between center">
