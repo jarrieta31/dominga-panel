@@ -2,7 +2,7 @@
     <div class="contenedor_formulario">
         <h3>{{tituloUploader}}</h3>
         <p>Subir archivos a Cloud Storage</p>
-    <!--
+        <!--
         <p class="download" *ngIf="finalizado">
             URL de descarga: <a href="{{ URLPublica }}" target="_blank">Descargar</a>
         </p>
@@ -10,20 +10,41 @@
         <form [formGroup]="archivoForm" (ngSubmit)="subirArchivo()">
 
             <div>
-                <input class="botonFile" 
-                       type="file" 
-                       formControlName="archivo"
-                       multiple="false"
-                       accept=".jpg"
-                       (change)="cambioArchivo($event)">
+                <input class="botonFile" type="file" formControlName="archivo" multiple="false" accept=".jpg"
+                    #coverFilesInput (change)="cambioArchivo($event)">
             </div>
             <br>
+            <ng-container *ngIf="archivo.touched && disabledSubmit">
+                <mat-error *ngIf="!ancho &&  archivo.touched">
+                    El ancho de la imágen debe ser de {{widthAllowed}}px.
+                </mat-error>
+                <mat-error *ngIf="!alto  && ancho && archivo.touched">
+                    El alto de la imágen debe ser de {{heightAllowed}}px.
+                </mat-error>
+                <mat-error *ngIf="!peso && alto && ancho && archivo.touched">
+                    El peso de la imágen no puede superar los {{allowedSize}} kB.
+                </mat-error>
+                <mat-error *ngIf="!ruta && peso && alto && ancho && archivo.touched">
+                    El campo nombre del formulario es obligagorio para subir archivos.
+                </mat-error>
+            </ng-container>
+
+            <br>
             <div>
-                <mat-progress-bar  class="barra-progreso" mode="determinate" value="{{porcentaje}}"></mat-progress-bar>
+                <mat-progress-bar class="barra-progreso" mode="determinate" value="{{porcentaje}}"></mat-progress-bar>
             </div>
             <br>
 
-            <button mat-raised-button color="primary">
+
+            <ng-container *ngIf="uploadSuccess">
+                Imágen seleccionada: <br />
+                _ Peso : {{size}} kB <br>
+                _ Ancho: {{width}} px<br>
+                _ Alto : {{height}} px<br>
+            </ng-container>
+            <br>
+
+            <button mat-raised-button color="primary" [disabled]="disabledSubmit">
                 <mat-icon>file_upload</mat-icon>
                 Subir imágen
             </button>

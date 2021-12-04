@@ -21,7 +21,7 @@
 
                     <mat-form-field fxFlex="50%">
                         <mat-label>Nombre del Lugar</mat-label>
-                        <input matInput type="text" formControlName="nombre">
+                        <input matInput type="text" formControlName="nombre" (change)="quitarEspacios()">
                         <!-- La expresion "nombre" representa "lugarForm.get('nombre')" pero gracias al geter solo escribimos nombre -->
                         <ng-container *ngIf="!nombre.valid && nombre.touched">
                             <mat-error *ngIf="nombre.errors.required">El campo nombre es obligatorio.</mat-error>
@@ -135,7 +135,8 @@
                     </div>
                     <div fxLayout="row">
                         <div class="area">
-                            <angular-editor formControlName="descripcion" [config]="editorConfig"></angular-editor>
+                            <angular-editor formControlName="descripcion" [config]="editorConfig">
+                            </angular-editor>
                             <br>
                             <ng-container *ngIf="!descripcion.valid && descripcion.touched">
                                 <mat-error *ngIf="descripcion.errors.maxlength">
@@ -299,10 +300,15 @@
                         </button>
                     </mat-card-actions>
                 </mat-card>
-                <p>Tamaño de imágen: 600 x 353 px</p>
+                <p>Tamaño de imágen: {{widthAllowedHome}} x {{heightAllowedHome}} px</p>
             </div>
             <div fxFlex="50%" class="home">
-                <app-upload-files [tituloUploader]="tituloUploaderHome" [DirectorioUploader]="directorioHomeStorage"
+                <app-upload-files 
+                    [DirectorioPadre]="directorioPadre"
+                    [Directorio]="directorio"
+                    [widthAllowed]="widthAllowedHome"
+                    [heightAllowed]="heightAllowedHome"
+                    [allowedSize]="allowedSizeHome"
                     (imagenSubidaUploader)="setImagenHome($event)">
                 </app-upload-files>
             </div>
@@ -319,15 +325,19 @@
                     <mat-card>
                         <img mat-card-image [src]="lugarForm.value.imagenPrincipal.url" class="imagen-principal" alt="">
                         <mat-card-footer>
-                            Tamaño de imágen: 600 x 450 px
                         </mat-card-footer>
                     </mat-card>
+                    <p>Tamaño de imágen: {{widthAllowedGallery}} x {{heightAllowedGallery}} px</p>
                 </div>
 
                 <div fxFlex="50%" fxLayout="column" fxFlexAlign="space-around center">
                     <!-- Módulo para subir archivos -->
                     <app-upload-files [tituloUploader]="tituloUploaderGaleria"
-                        [DirectorioUploader]="directorioLugaresStorage"
+                        [DirectorioPadre]="directorioPadre"
+                        [Directorio]="directorio"
+                        [widthAllowed]="widthAllowedGallery"
+                        [heightAllowed]="heightAllowedGallery"
+                        [allowedSize]="allowedSizeGallery"
                         (imagenSubidaUploader)="agregarImagenSubida($event)">
                     </app-upload-files>
                     <h4>Imágen Principal</h4>

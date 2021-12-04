@@ -18,7 +18,6 @@ export class ListadoComponent implements OnInit, OnDestroy {
     private sourceDepartamentos: Subscription;
     lugares: Lugar[];
     lugares$: Observable<Lugar[]>;
-    private sourceLugares: Subscription;
     filtroDepartamento = false;
     filtroPublicado = false;
     departamentoSelec: string;
@@ -31,7 +30,6 @@ export class ListadoComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         //this.lugaresService.cargarLugares();
-        //this.sourceLugares = this.lugaresService.getObsLugares$().subscribe(lugares => this.lugares = lugares);
         this.lugares$ = this.lugaresService.getObsLugares$();
         this.sourceDepartamentos = this.localidadesService.getObsDepartamentos().subscribe(dpts => this.departamentos = dpts);
         this.lugaresService.emitirLugares();

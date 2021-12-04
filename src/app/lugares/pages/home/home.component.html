@@ -1,50 +1,94 @@
-
 <mat-sidenav-container fullscreen>
 
     <mat-sidenav #sidenav mode="over">
 
-        <mat-toolbar  color="primary">
+        <mat-toolbar color="primary">
             <span>Menú</span>
             <span class="spacer"></span>
-            <button mat-icon-button 
-                (click)=sidenav.toggle()>
+            <button mat-icon-button (click)=sidenav.toggle()>
                 <mat-icon>menu</mat-icon>
             </button>
         </mat-toolbar>
 
-        <mat-nav-list>
-                    <a routerLink="./listado" mat-list-item (click)=sidenav.toggle()>
-                        <mat-icon mat-list-icon>label</mat-icon>
-                        <span>Listado de Lugares</span>
-                    </a>
-        <!--
-            <mat-tree>
-                <mat-tree-node>
-                </mat-tree-node>
-            </mat-tree>
-        -->            
-            
-            <a routerLink="./agregar" 
-                mat-list-item
-                (click)=sidenav.toggle()>
-                <mat-icon mat-list-icon>add</mat-icon>
-                <span>Añadir Lugar</span>
-            </a>
 
-            <a routerLink="./buscar" 
-                mat-list-item
-                (click)=sidenav.toggle()>
-                <mat-icon mat-list-icon>search</mat-icon>
-                <span>Búscar Lugar</span>
-            </a>
+        <mat-nav-list>
+            <h2 matSubheader>Artistas</h2>
+            <mat-list-item>
+                <mat-icon mat-list-icon>list</mat-icon>
+                <a mat-line routerLink="/artistas/listado" routerLinkActive="link-active" (click)=sidenav.toggle()>
+                    <span>Listar Artistas</span>
+                </a>
+            </mat-list-item>
+            <mat-list-item>
+                <mat-icon mat-list-icon>add</mat-icon>
+                <a mat-line routerLink="/artistas/agregar" routerLinkActive="link-active" (click)=sidenav.toggle()>
+                    Agregar Artista
+                </a>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <h2 matSubheader>Lugares</h2>
+            <mat-list-item>
+                <mat-icon mat-list-icon>list</mat-icon>
+                <a mat-line routerLink="/lugares/listado" routerLinkActive="link-active" (click)=sidenav.toggle()>
+                    <span>Listar Lugares</span>
+                </a>
+            </mat-list-item>
+            <mat-list-item>
+                <mat-icon mat-list-icon>add</mat-icon>
+                <a mat-line routerLink="/lugares/agregar" routerLinkActive="link-active" (click)=sidenav.toggle()>
+                    Agregar Lugar
+                </a>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <h2 matSubheader>Eventos</h2>
+            <mat-list-item>
+                <mat-icon mat-list-icon>list</mat-icon>
+                <a mat-line routerLink="/eventos/listado" routerLinkActive="link-active" (click)=sidenav.toggle()>
+                    <span>Listar Eventos</span>
+                </a>
+            </mat-list-item>
+            <mat-list-item>
+                <mat-icon mat-list-icon>add</mat-icon>
+                <a routerLink="/eventos/agregar" routerLinkActive="link-active" (click)=sidenav.toggle()>
+                    Agregar Evento
+                </a>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <h2 matSubheader>Donde Comer</h2>
+            <mat-list-item>
+                <mat-icon mat-list-icon>list</mat-icon>
+                <a mat-line routerLink="/donde-comer/listado" routerLinkActive="link-active" (click)=sidenav.toggle()>
+                    <span>Listar Lugares para comer</span>
+                </a>
+            </mat-list-item>
+            <mat-list-item>
+                <mat-icon mat-list-icon>add</mat-icon>
+                <a routerLink="/donde-comer/agregar" routerLinkActive="link-active" (click)=sidenav.toggle()>
+                    Agregar lugar a donde comer
+                </a>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <h2 matSubheader>Donde Dormir</h2>
+            <mat-list-item>
+                <mat-icon mat-list-icon>list</mat-icon>
+                <a mat-line routerLink="/donde-dormir/listado" routerLinkActive="link-active" (click)=sidenav.toggle()>
+                    <span>Listar Lugares para dormir</span>
+                </a>
+            </mat-list-item>
+            <mat-list-item>
+                <mat-icon mat-list-icon>add</mat-icon>
+                <a routerLink="/donde-dormir/agregar" routerLinkActive="link-active" (click)=sidenav.toggle()>
+                    Agregar lugar a donde dormir
+                </a>
+            </mat-list-item>
+            <mat-divider></mat-divider>
         </mat-nav-list>
 
     </mat-sidenav>
 
 
     <mat-toolbar color="primary">
-        <button mat-icon-button 
-            (click)=sidenav.toggle()>
+        <button mat-icon-button (click)=sidenav.toggle()>
             <mat-icon>menu</mat-icon>
         </button>
         <span> Panel de Administración</span>
@@ -57,4 +101,3 @@
     </div>
 
 </mat-sidenav-container>
-

@@ -30,14 +30,22 @@ export class AgregarComponent implements OnInit, OnDestroy {
     prioridadAnterior: number;
     tituloUploaderGaleria: string = "Subir imágenes a la galería";
     tituloUploaderHome: string = "Selecciona la imágen del Home";
-    directorioLugaresStorage: string = "lugares2";
-    directorioHomeStorage: string = "lugaresHome2";
+    directorio: string = ''; //subcarpeta con el nombre del lugar
+    directorioPadre: string = 'lugares'; //carpeta raíz donde se almacenan los lugares
     galeria: Imagen[] = [];
     imagenSubidaAgregar: Imagen;
     lugaresTipo = [{ tipo: "Urbano" }, { tipo: "Rural" }];
     opsPatrimonial = [{ texto: "Sí", valor: true }, { texto: "No", valor: false }];
     departamentos: string[] = [];
     localidades: string[] = [];
+
+    widthAllowedHome: number = 600;
+    heightAllowedHome: number = 353;
+    allowedSizeHome: number = 60; //kilo bytes
+    widthAllowedGallery: number = 600;
+    heightAllowedGallery: number = 450;
+    allowedSizeGallery: number = 150; //kilo bytes
+
     private sourceDepartamentos: Subscription;
     private sourceLocalidades: Subscription;
     private sourceMiniMapa: Subscription;
@@ -59,7 +67,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
         caminar: [false],
         patrimonial: [false],
         accesibilidad: [false],
-        descripcion: ['', [Validators.minLength(60), Validators.maxLength(4800)]],
+        descripcion: ['', [Validators.minLength(60), Validators.maxLength(4900)]],
         imagenHome: [this.imagenHomeDefault],
         imagenPrincipal: [this.imagenPrincipalDefault],
         ubicacion: [{ "lng": -56.4372197, "lat": -32.8246801 }],
@@ -175,6 +183,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
             if (lugarActual.id !== undefined) {//Si estamos editando un lugar
                 this.idLugar = lugarActual.id;
                 let prio = lugar.prioridad;
+                this.directorio = lugar.nombre;
                 this.prioridadAnterior = prio
                 delete lugarActual.id //para setear el formulario es necesario quitar el tatributo id
                 this.lugarForm.reset(lugarActual);
@@ -216,7 +225,15 @@ export class AgregarComponent implements OnInit, OnDestroy {
         this.mapaService.resetDataMapa();
     }
 
+
+    quitarEspacios(){
+       this.directorio = this.nombre.value;
+       this.directorio = this.directorio.trim();
+       this.nombre.setValue(this.directorio);
+    }
+
     agregarImagenSubida($event) {
+        
         //si el nombre de la imagen ya esta en el array la elimina
         this.galeria = this.galeria.filter((item) => {
             return item.name !== $event.name
@@ -244,7 +261,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
             return item.name !== $event;
         })
         /** Utilizando el servicio del FirebaseStorage local se borra la imagen */
-        this.fbStorage.borrarArchivoStorage(this.directorioLugaresStorage, $event);
+        this.fbStorage.borrarArchivoStorage(`${this.directorioPadre}/${this.directorio}`, $event);
     }
 
     /**
@@ -292,7 +309,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
             this.lugarForm.controls['imagenHome'].setValue($event);
         } else {
             // Si $event viene vacío se borra la imagen del storage y se asigna la imagen por defecto
-            this.fbStorage.borrarArchivoStorage(this.directorioHomeStorage, this.imagenHome.value.name);
+            this.fbStorage.borrarArchivoStorage(`${this.directorioPadre}/${this.directorio}`, this.imagenHome.value.name);
             this.lugarForm.controls['imagenHome'].setValue(this.imagenHomeDefault);
         }
     }

@@ -4,6 +4,7 @@ import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument,
 import { from, Observable, Subject, BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { LugarComponent } from '../pages/lugar/lugar.component';
+import { LocalStorageService } from '../../shared/services/local-storage.service';
 
 
 
@@ -11,18 +12,20 @@ import { LugarComponent } from '../pages/lugar/lugar.component';
     providedIn: 'root'
 })
 export class LugaresService {
-
+    
     private lugaresCollection: AngularFirestoreCollection<Lugar[]>;
     private lugares$: BehaviorSubject<Lugar[]>;
     private prioridades$: BehaviorSubject<number[]>;
     todosLosLugares: Lugar[] = []; //copia local de todos los lugares para trabajar con ella
-    private lugaresOriginal: Lugar[] = []; //copia local de todos los lugares que sirve de referecia paras ver cual cambió
     private idNuevoLugar:string = '';
+    departamento:string = "San José";
+    
 
-    constructor(private afs: AngularFirestore) {
+    constructor(private afs: AngularFirestore, private localStorageService: LocalStorageService) {
+
         this.lugaresCollection = afs.collection<Lugar[]>('lugares');
         this.lugares$ = new BehaviorSubject(this.todosLosLugares);
-        this.getLugaresFirestore();
+        this.getLugaresFirestore(this.localStorageService.getDepartamento());
         this.prioridades$ = new BehaviorSubject([]);
     }
 
@@ -37,7 +40,7 @@ export class LugaresService {
         this.afs.collection('lugares').add(lugar).then(documentReference => {
             lugar.id = documentReference.id;
             this.todosLosLugares.splice((lugar.prioridad-1),0,lugar);//inserta el lugar en el array todosLosLugares segun su prioridad
-            this.lugaresOriginal.splice((lugar.prioridad-1),0,lugar);//inserta el lugar en el array lugaresOriginal segun su prioridad
+        //    this.lugaresOriginal.splice((lugar.prioridad-1),0,lugar);//inserta el lugar en el array lugaresOriginal segun su prioridad
             this.corregirPrioridades();//corrige la prioridad de todos los elementos que debieron moverse.
         })
         .catch(error =>{
@@ -149,10 +152,11 @@ export class LugaresService {
     }
 
     /** 
-     * Obtiene todos los lugares desde firestor y los almacena en todosLosLugares[] para 
+     * Obtiene todos los lugares desde firestore y los almacena en todosLosLugares[] para 
      * no estar consultado la base y minimizar el traficio.
      */
-    getLugaresFirestore() {
+    getLugaresFirestore(departament:string) {
+        //this.afs.collection('lugares').ref.where('departamento',"==",departament).where('prioridad', ">", -1).orderBy('prioridad').get().then(
         this.afs.collection('lugares').ref.where('prioridad', ">", -1).orderBy('prioridad').get().then(
             querySnapshot => {
                 const arrLugares: any[] = [];
@@ -160,9 +164,9 @@ export class LugaresService {
                     const data: any = item.data()
                     arrLugares.push({ id: item.id, ...data });
                 })
-                console.log("todosLosLugares.length = " + this.todosLosLugares.length)
+                console.log(arrLugares)
                 this.todosLosLugares = arrLugares.slice();
-                this.lugaresOriginal = arrLugares.slice();
+             //   this.lugaresOriginal = arrLugares.slice();
                 //this.corregirPrioridades(); //actualiza cada prioridad segun el inidice
                 this.updateListaPrioridadesLocal(false);//
                 console.log("todosLosLugares.length = " + this.todosLosLugares.length)
