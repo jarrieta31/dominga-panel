@@ -1,6 +1,6 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Route } from '@angular/router';
-import { Lugar, Imagen, LugarTipo, DepartamentoEnum } from '../../interfaces/lugar.interface';
+import { Component, Input, OnDestroy, OnInit, ChangeDetectorRef } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Lugar, Imagen,   } from '../../interfaces/lugar.interface';
 import { FormBuilder, Validators, FormGroup, FormControl, FormArray } from '@angular/forms';
 import { StorageService } from '../../../shared/services/storage.service';
 import { Observable, pipe, Subscription, zip } from 'rxjs';
@@ -32,20 +32,18 @@ export class AgregarComponent implements OnInit, OnDestroy {
     tituloUploaderHome: string = "Selecciona la imágen del Home";
     directorio: string = ''; //subcarpeta con el nombre del lugar
     directorioPadre: string = 'lugares'; //carpeta raíz donde se almacenan los lugares
-    galeria: Imagen[] = [];
-    imagenSubidaAgregar: Imagen;
+    //    imagenSubidaAgregar: Imagen;
+    cambiosConfirmados: boolean = false;
     lugaresTipo = [{ tipo: "Urbano" }, { tipo: "Rural" }];
     opsPatrimonial = [{ texto: "Sí", valor: true }, { texto: "No", valor: false }];
     departamentos: string[] = [];
     localidades: string[] = [];
-
     widthAllowedHome: number = 600;
     heightAllowedHome: number = 353;
-    allowedSizeHome: number = 60; //kilo bytes
+    allowedSizeHome: number = 80; //kilo bytes
     widthAllowedGallery: number = 600;
     heightAllowedGallery: number = 450;
     allowedSizeGallery: number = 150; //kilo bytes
-
     private sourceDepartamentos: Subscription;
     private sourceLocalidades: Subscription;
     private sourceMiniMapa: Subscription;
@@ -54,8 +52,9 @@ export class AgregarComponent implements OnInit, OnDestroy {
     prioridades: number[] = [];
     private imagenHomeDefault = { "name": "imagen-default", "url": "assets/default-home.jpg" };
     private imagenPrincipalDefault = { "name": "imagen-default", "url": "assets/default-lugar-galeria.jpg" };
-
-
+    home: Imagen = this.imagenHomeDefault;
+    galeria: Imagen[] = [];
+    galeriaAgregar: Imagen[] = []; //solo guarda las imagenes que se agregan a la galeria
     public lugarForm: FormGroup = this.fb.group({
         nombre: ['', [Validators.required, Validators.minLength(2)]],
         prioridad: [1, [Validators.required]],
@@ -65,13 +64,14 @@ export class AgregarComponent implements OnInit, OnDestroy {
         auto: [false],
         bicicleta: [false],
         caminar: [false],
+        carpeta: [null],
         patrimonial: [false],
         accesibilidad: [false],
         descripcion: ['', [Validators.minLength(60), Validators.maxLength(4900)]],
         imagenHome: [this.imagenHomeDefault],
         imagenPrincipal: [this.imagenPrincipalDefault],
         ubicacion: [{ "lng": -56.4372197, "lat": -32.8246801 }],
-        tipo: [LugarTipo.urbano],
+        tipo: [''],
         imagenes: [[]],
         facebook: [null, [this.vs.validarFacebook]],
         instagram: [null, [this.vs.validarInstagram]],
@@ -119,6 +119,8 @@ export class AgregarComponent implements OnInit, OnDestroy {
     };
 
     constructor(
+        private cdRef: ChangeDetectorRef,
+        private router: Router,
         private vs: ValidatorService,
         private activatedRoute: ActivatedRoute,
         public lugaresService: LugaresService,
@@ -131,8 +133,8 @@ export class AgregarComponent implements OnInit, OnDestroy {
 
 
         /** Observable que se dispara al cambiar el valor del minimapa.
-     *  Los datos del formulario cambian en funcion del valor del mimimapa
-     */
+        *  Los datos del formulario cambian en funcion del valor del mimimapa
+        */
         this.sourceMiniMapa = this.mapaService.getObsMiniMapa().subscribe(res => {
             //si los datos del minimapa son validos y tiene marcado en true
             if (res !== undefined && res.marcador == true) {
@@ -156,7 +158,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         const lugarGuardado = localStorage.getItem('lugar');
-        //this.lugaresService.cargarLugares()
+        this.lugaresService.cargarLugares()
         //si lugarGuardado no esta vacio lo asigna al formulario
         if (lugarGuardado) {
             //descomentar cuando este enviando bien los datos
@@ -183,12 +185,31 @@ export class AgregarComponent implements OnInit, OnDestroy {
             if (lugarActual.id !== undefined) {//Si estamos editando un lugar
                 this.idLugar = lugarActual.id;
                 let prio = lugar.prioridad;
-                this.directorio = lugar.nombre;
                 this.prioridadAnterior = prio
                 delete lugarActual.id //para setear el formulario es necesario quitar el tatributo id
                 this.lugarForm.reset(lugarActual);
                 this.titulo = `Editando ${this.lugarForm.controls['nombre'].value}`;
+                this.home = lugar.imagenHome;
                 this.galeria = this.lugarForm.controls['imagenes'].value;
+                this.home = this.lugarForm.controls['imagenHome'].value;
+                //si esto se cumple no se ha subido nada todavía.
+                if (this.home.url === "assets/default-home.jpg" && this.galeria.length === 0) {
+                    this.directorio = this.fbStorage.quitarAcentos(lugar.nombre);
+                    console.log("directorio desde nombre: " + this.directorio);
+                } else {// Si ya hay alguna imagen guardada se obtiene el nombre de la carpeta 
+                    if (this.home.url !== "assets/default-home.jpg") {
+                        console.log(this.home.url)
+                        let indice1: number = (this.home.url.indexOf('%') + 3);
+                        let indice2: number = (this.home.url.indexOf('%2F', indice1));
+                        this.directorio = this.home.url.substring(indice1, indice2);
+                        console.log("directorio de home: " + this.directorio);
+                    } else if (this.galeria.length > 0 && this.home.url === "assets/default-home.jpg") {
+                        let indice1: number = (this.galeria[0].url.indexOf('%') + 3);
+                        let indice2: number = (this.galeria[0].url.indexOf('%2F', indice1));
+                        this.directorio = this.galeria[0].url.substring(indice1, indice2);
+                        console.log("directorio de galeria: " + this.directorio)
+                    }
+                }
                 this.localidadesService.getLocadidadesDepartamento(lugarActual.departamento);
                 this.mapaService.dMiniMapa = { centro: lugarActual.ubicacion, zoom: 15, marcador: true };
                 this.mapaService.emitirMiniMapa();
@@ -206,7 +227,23 @@ export class AgregarComponent implements OnInit, OnDestroy {
         })
     }
 
+    ngAfterViewInit(): void {
+        //es para que no se vea el error de cambio
+        this.cdRef.detectChanges();
+    }
+
     ngOnDestroy(): void {
+        //Si las imagenes agregadas no se guardaron debe ser eliminadas de Firebase Storage. 
+        if (this.cambiosConfirmados === false) {
+            this.galeriaAgregar.forEach(img => {
+                console.log("delete de la galeria: " + img.name)
+                this.fbStorage.borrarArchivoStorage(`${this.directorioPadre}/${this.directorio}`, img.name);
+            });
+            if (this.home.name !== "imagen-default" && this.home !== this.imagenHome.value) {
+                console.log("delete home: " + this.home.name)
+                this.fbStorage.borrarArchivoStorage(`${this.directorioPadre}/${this.directorio}`, this.home.name);
+            }
+        }
         this.sourceDepartamentos.unsubscribe();
         this.sourceLocalidades.unsubscribe();
         this.sourceMiniMapa.unsubscribe();
@@ -226,20 +263,38 @@ export class AgregarComponent implements OnInit, OnDestroy {
     }
 
 
-    quitarEspacios(){
-       this.directorio = this.nombre.value;
-       this.directorio = this.directorio.trim();
-       this.nombre.setValue(this.directorio);
+    /**
+     * Función para quitar los espacios en blanco del campo nombre cuando. Al salir del campo
+     * toma el nombre y se lo asigna a la variable directorio, para luego poder subir las imagnes
+     * a dicho directorio. 
+     * Nota: Solo setea el nombre del directorio la primera vez, dado que el usuario lo podria cambiar. 
+     */
+    quitarEspacios() {
+        let _nombre: string = this.nombre.value;
+        _nombre = _nombre.trim();
+        if (this.directorio === '' && _nombre.length >= 2) {
+            this.directorio = _nombre;
+        }
+        this.nombre.setValue(_nombre);
     }
 
-    agregarImagenSubida($event) {
-        
+    /**
+     * Recibe la imágen que se agregó a la galería y se subió a Firebase Storage desde el componente upload-files.  
+     * Al recibirla la agrega al array galeria y al array galeriaAgregar para saber cuales se agregaron.
+     * @param $event Es la imágen que se sube a la galería
+     */
+    agregarImagenSubidaAGaleria($event) {
         //si el nombre de la imagen ya esta en el array la elimina
         this.galeria = this.galeria.filter((item) => {
             return item.name !== $event.name
         });
+        this.galeriaAgregar = this.galeriaAgregar.filter((item) => {
+            return item.name !== $event.name
+        });
         //agrega la nueva imagen al array
         this.galeria.push($event);
+        //agrea la nueva imagen al galeriaAgragar
+        this.galeriaAgregar.push($event);
         this.lugarForm.controls['imagenes'].setValue(this.galeria);
     }
 
@@ -260,6 +315,11 @@ export class AgregarComponent implements OnInit, OnDestroy {
         this.galeria = this.galeria.filter((item) => {
             return item.name !== $event;
         })
+        let principal: Imagen = this.imagenPrincipal.value;
+        if (principal.name === $event) {
+            this.lugarForm.controls['imagenPrincipal'].setValue(this.imagenPrincipalDefault);
+        }
+
         /** Utilizando el servicio del FirebaseStorage local se borra la imagen */
         this.fbStorage.borrarArchivoStorage(`${this.directorioPadre}/${this.directorio}`, $event);
     }
@@ -306,11 +366,13 @@ export class AgregarComponent implements OnInit, OnDestroy {
      */
     setImagenHome($event) {
         if ($event != "") {
-            this.lugarForm.controls['imagenHome'].setValue($event);
+            this.home = $event;
+            //this.lugarForm.controls['imagenHome'].setValue($event);
         } else {
             // Si $event viene vacío se borra la imagen del storage y se asigna la imagen por defecto
-            this.fbStorage.borrarArchivoStorage(`${this.directorioPadre}/${this.directorio}`, this.imagenHome.value.name);
-            this.lugarForm.controls['imagenHome'].setValue(this.imagenHomeDefault);
+            //          this.fbStorage.borrarArchivoStorage(`${this.directorioPadre}/${this.directorio}`, this.imagenHome.value.name);
+            //this.lugarForm.controls['imagenHome'].setValue(this.imagenHomeDefault);
+            this.home = this.imagenHomeDefault;
         }
     }
 
@@ -330,7 +392,6 @@ export class AgregarComponent implements OnInit, OnDestroy {
      * Abre el dialog con para el mapa
      */
     openDialog() {
-
         if (this.submitHabilitado) {
             this.submitHabilitado = false;
         }
@@ -357,7 +418,10 @@ export class AgregarComponent implements OnInit, OnDestroy {
     /** Enviar en formulario a firebase */
     async submitLugar() {
         //envia el formulario
+        this.lugarForm.controls['imagenHome'].setValue(this.home);
+        this.lugarForm.controls['imagenes'].setValue(this.galeria);
         if (this.lugarForm.valid && this.submitHabilitado) {
+            this.cambiosConfirmados = true;
             //verifica si es una actualización o un lugar nuevo
             if (this.idLugar !== undefined) {//si se esta editando un lugar
                 //this.lugaresService.updateLugar(this.lugarForm.value, this.idLugar);
@@ -368,29 +432,31 @@ export class AgregarComponent implements OnInit, OnDestroy {
                     this.lugaresService.updateLugarFirestore(this.lugarForm.value, this.idLugar)
                         .then(res => {
                             this.openSnackBarSubmit('¡El lugar se ha actualizado correctamente!');
+                            this.regresar();
                         })
                         .catch(error => {
                             this.openSnackBarSubmit('¡Error, no se ha podido actualizar el lugar en Firestore!');
-                            console.error('¡Error, no se ha podido actualizar el lugar en Firestore!. Error: '+ error);
+                            console.error('¡Error, no se ha podido actualizar el lugar en Firestore!. Error: ' + error);
                         });
-                    this.lugaresService.corregirPrioridadesFirestore(lugar.id,'edit');
+                    this.lugaresService.corregirPrioridadesFirestore(lugar.id, 'edit');
                 } else { //Sí la prioridad no cambio
                     this.lugaresService.updateLugarLocal(lugar);
                     this.lugaresService.updateLugarFirestore(this.lugarForm.value, this.idLugar)
                         .then(res => {
                             this.openSnackBarSubmit('¡El lugar se ha actualizado correctamente!');
+                            this.regresar();
                         })
                         .catch(error => {
                             this.openSnackBarSubmit('¡Error, no se ha podido actualizar el lugar en Firestore!');
-                            console.error('¡Error, no se ha podido actualizar el lugar en Firestore!. Error: '+ error);
+                            console.error('¡Error, no se ha podido actualizar el lugar en Firestore!. Error: ' + error);
                         });
                 }
             } else { //Si el lugar es nuevo
                 let nuevoId = this.lugaresService.addLugar(this.lugarForm.value);
-                if(nuevoId !== ''){
+                if (nuevoId !== '') {
                     this.openSnackBarSubmit('¡El nuevo lugar se ha guardado correctamente!');
-                    this.lugaresService.corregirPrioridadesFirestore(nuevoId,'add');
-                }else{
+                    this.lugaresService.corregirPrioridadesFirestore(nuevoId, 'add');
+                } else {
                     this.openSnackBarSubmit('¡Por algún motivo el nuevo lugar no se pudo gardar!');
                 }
                 this.openSnackBarSubmit('¡Se a guardado el nuevo lugar!');
@@ -408,6 +474,10 @@ export class AgregarComponent implements OnInit, OnDestroy {
                 this.mapaService.resetDataMapa();
             }
         }
+    }
+
+    regresar() {
+        this.router.navigate(['/lugares/listado']);
     }
 
 
@@ -448,14 +518,21 @@ export class AgregarComponent implements OnInit, OnDestroy {
     get web() {
         return this.lugarForm.get('web');
     }
+
     get whatsapp() {
         return this.lugarForm.get('whatsapp');
     }
+
     get instagram() {
         return this.lugarForm.get('instagram');
     }
+
     get facebook() {
         return this.lugarForm.get('facebook');
+    }
+
+    get imagenPrincipal() {
+        return this.lugarForm.get('imagenPrincipal');
     }
 
     get prioridad() {

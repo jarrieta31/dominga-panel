@@ -1,4 +1,6 @@
 import { Posicion } from '../../shared/interfaces/datosMapa.interface';
+import { FolderStorage } from '../../shared/interfaces/folderStorage';
+
 
 
 export interface Lugar {
@@ -6,8 +8,9 @@ export interface Lugar {
     auto?: boolean;
     bicicleta?: boolean;
     caminar?: boolean;
-    departamento: DepartamentoEnum;
+    departamento: string;
     descripcion?: string;
+    carpeta?:FolderStorage;
     facebook?: string;
     id?: string;
     imagenHome?: Imagen;
@@ -20,10 +23,10 @@ export interface Lugar {
     prioridad: number;
     publicado: boolean;
     telefonos?: string[];
-    tipo: LugarTipo;
+    tipo: string;
     ubicacion: Posicion;
     valoraciones?: Valoracion[];
-    videos?: string[];
+    videos?: Video[];
     web?: string;
     whatsapp?: string;
 }
@@ -43,29 +46,3 @@ export interface Video {
     url: string;
 }
 
-export enum LugarTipo {
-    urbano = 'Urbano',
-    rural = 'Rural',
-}
-
-export enum DepartamentoEnum {
-    artigas = "Artigas",
-    canelones = "Canelones",
-    cerroLargo = "Cerro Largo",
-    colonia = "Colonia",
-    durazno = "Durazno",
-    flores = "Flores",
-    florida = "Florida",
-    lavalleja = "Lavalleja",
-    maldonado = "Maldonado",
-    montevideo = "Montevideo",
-    paysandu = "Paysandú",
-    rioNegro = "Río Negro",
-    rivera = "Rivera",
-    rocha = "Rocha",
-    salto = "Salto",
-    sanJose = "San José",
-    soriano = "Soriano",
-    tacuarembo = "Tacuarembó",
-    treintaYTres = "Treinta y Tres"
-}

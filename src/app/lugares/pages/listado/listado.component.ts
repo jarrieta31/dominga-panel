@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { LugaresService } from '../../services/lugares.service';
-import { Lugar, DepartamentoEnum } from '../../interfaces/lugar.interface';
+import { Lugar, } from '../../interfaces/lugar.interface';
 import { Observable, Subscription } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { LocalidadesService } from '../../../shared/services/localidades.service';
@@ -16,6 +16,7 @@ export class ListadoComponent implements OnInit, OnDestroy {
     panelOpenState = false;
     public departamentos: string[] = [];
     private sourceDepartamentos: Subscription;
+    private sourceLugares: Subscription;
     lugares: Lugar[];
     lugares$: Observable<Lugar[]>;
     filtroDepartamento = false;
@@ -31,14 +32,15 @@ export class ListadoComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         //this.lugaresService.cargarLugares();
         this.lugares$ = this.lugaresService.getObsLugares$();
-        this.sourceDepartamentos = this.localidadesService.getObsDepartamentos().subscribe(dpts => this.departamentos = dpts);
+        this.sourceLugares = this.lugaresService.getObsLugares$().subscribe(lug => this.lugares = lug);
         this.lugaresService.emitirLugares();
+        this.sourceDepartamentos = this.localidadesService.getObsDepartamentos().subscribe(dpts => this.departamentos = dpts);
         this.localidadesService.emitirDepartamentosActivos();
     }
 
     ngOnDestroy(): void {
         this.sourceDepartamentos.unsubscribe();
-        
+        this.sourceLugares.unsubscribe();
     }
 
     /** LLama al metodo correspondiente del servicio lugares para hacer el filtro.

@@ -12,14 +12,14 @@ import { LocalStorageService } from '../../shared/services/local-storage.service
     providedIn: 'root'
 })
 export class LugaresService {
-    
+
     private lugaresCollection: AngularFirestoreCollection<Lugar[]>;
     private lugares$: BehaviorSubject<Lugar[]>;
     private prioridades$: BehaviorSubject<number[]>;
     todosLosLugares: Lugar[] = []; //copia local de todos los lugares para trabajar con ella
-    private idNuevoLugar:string = '';
-    departamento:string = "San José";
-    
+    private idNuevoLugar: string = '';
+    departamento: string = "San José";
+
 
     constructor(private afs: AngularFirestore, private localStorageService: LocalStorageService) {
 
@@ -35,21 +35,21 @@ export class LugaresService {
      * @param lugar Contiene la información del nuevo lugar.
      * @returns Retorna el ID del lugar obtenido de firestore
      */
-    addLugar(lugar: Lugar):string {
-        let respuesta:string = '';
+    addLugar(lugar: Lugar): string {
+        let respuesta: string = '';
         this.afs.collection('lugares').add(lugar).then(documentReference => {
             lugar.id = documentReference.id;
-            this.todosLosLugares.splice((lugar.prioridad-1),0,lugar);//inserta el lugar en el array todosLosLugares segun su prioridad
-        //    this.lugaresOriginal.splice((lugar.prioridad-1),0,lugar);//inserta el lugar en el array lugaresOriginal segun su prioridad
+            this.todosLosLugares.splice((lugar.prioridad - 1), 0, lugar);//inserta el lugar en el array todosLosLugares segun su prioridad
+            //    this.lugaresOriginal.splice((lugar.prioridad-1),0,lugar);//inserta el lugar en el array lugaresOriginal segun su prioridad
             this.corregirPrioridades();//corrige la prioridad de todos los elementos que debieron moverse.
         })
-        .catch(error =>{
-            console.error("Se produjo un error al agregar un nuevo lugar. ");
-        });
-        return lugar.id;     
+            .catch(error => {
+                console.error("Se produjo un error al agregar un nuevo lugar. ");
+            });
+        return lugar.id;
     }
 
-    getIdNuevoLugar():string{
+    getIdNuevoLugar(): string {
         return this.idNuevoLugar;
     }
 
@@ -81,7 +81,7 @@ export class LugaresService {
     modificarPrioridadDeLugar(lugar: Lugar) {
         let index1 = this.todosLosLugares.findIndex(item => lugar.id === item.id);
         this.todosLosLugares.splice(index1, 1);//Elimina el lugar de su posición anterior
-        this.todosLosLugares.splice((lugar.prioridad-1), 0, lugar);//Inserta el lugar en su nueva posición
+        this.todosLosLugares.splice((lugar.prioridad - 1), 0, lugar);//Inserta el lugar en su nueva posición
         this.corregirPrioridades(); //actualiza la prioridades del array todosLosLugares para que correspondan con el indice
     }
 
@@ -89,9 +89,9 @@ export class LugaresService {
      * Cambia la prioridad de cada lugar del array todosLosLugares en base a su posicón actual, dicha prioridad debe ser 1 + 
      * que el indice en el que está el lugar.
      */
-    corregirPrioridades(){
-        for(let i=0; i < this.todosLosLugares.length; i ++){
-            this.todosLosLugares[i].prioridad = (i+1);
+    corregirPrioridades() {
+        for (let i = 0; i < this.todosLosLugares.length; i++) {
+            this.todosLosLugares[i].prioridad = (i + 1);
         }
         this.emitirLugares()
     }
@@ -101,16 +101,16 @@ export class LugaresService {
      * Asigna la prioridad basandose en el indice actual del array local mas 1.
      * @param idLugarEditado Es el ID del lugar editado.
      */
-    corregirPrioridadesFirestore(idLugarEditado:string, accion:string){
-        let index:number =  this.todosLosLugares.findIndex(item => item.id === idLugarEditado);
-        let prio:number; let id:string;
-        if(accion === 'edit' || accion === 'add'){
+    corregirPrioridadesFirestore(idLugarEditado: string, accion: string) {
+        let index: number = this.todosLosLugares.findIndex(item => item.id === idLugarEditado);
+        let prio: number; let id: string;
+        if (accion === 'edit' || accion === 'add') {
             for (let i = (index + 1); i < this.todosLosLugares.length; i++) {
                 prio = (i + 1);
                 id = this.todosLosLugares[i].id;
                 this.updatePrioridadLugarFirestore(id, prio);
             }
-        }else if(accion === 'delete') {
+        } else if (accion === 'delete') {
             for (let i = 0; i < this.todosLosLugares.length; i++) {
                 prio = (i + 1);
                 id = this.todosLosLugares[i].id;
@@ -126,7 +126,7 @@ export class LugaresService {
      * @param lugar Contiene todos los datos del lugar menos el ID.
      * @returns 
      */
-    updateLugarFirestore(lugar: Lugar, id: string):Promise<any> {
+    updateLugarFirestore(lugar: Lugar, id: string): Promise<any> {
         return this.afs.doc<Lugar>(`lugares/${id}`).set(lugar); //en ves de pasar el lugar completo se puede poner campo por campo        
     }
 
@@ -134,9 +134,10 @@ export class LugaresService {
      * Actualiza la información de un lugar ya existente en el array local todosLosLugares.
      * @param data Es la data con toda la información del lugar includio el ID
      */
-    updateLugarLocal(data: Lugar){
+    updateLugarLocal(data: Lugar) {
         let i = this.todosLosLugares.findIndex(lugar => lugar.id === data.id);
         this.todosLosLugares[i] = data;
+        // this.lugares$.next(this.todosLosLugares);
     }
 
     /**
@@ -145,17 +146,17 @@ export class LugaresService {
      * @param idLugar Es el ID del lugar a actulizar la prioridad.
      * @param prio Prioridad que tendrá el lugar.
      */
-    updatePrioridadLugarFirestore(idLugar: string, prio:  number){
-        this.afs.doc<Lugar>(`lugares/${idLugar}`).update({prioridad: prio})
-        .then(res => console.log("Se actualizó la prioridad"))
-        .catch(error => { console.error("Se produjo un error al actualizar la prioridad. Error: "+error)  })
+    updatePrioridadLugarFirestore(idLugar: string, prio: number) {
+        this.afs.doc<Lugar>(`lugares/${idLugar}`).update({ prioridad: prio })
+            .then(res => console.log("Se actualizó la prioridad"))
+            .catch(error => { console.error("Se produjo un error al actualizar la prioridad. Error: " + error) })
     }
 
     /** 
      * Obtiene todos los lugares desde firestore y los almacena en todosLosLugares[] para 
      * no estar consultado la base y minimizar el traficio.
      */
-    getLugaresFirestore(departament:string) {
+    getLugaresFirestore(departament: string) {
         //this.afs.collection('lugares').ref.where('departamento',"==",departament).where('prioridad', ">", -1).orderBy('prioridad').get().then(
         this.afs.collection('lugares').ref.where('prioridad', ">", -1).orderBy('prioridad').get().then(
             querySnapshot => {
@@ -166,7 +167,7 @@ export class LugaresService {
                 })
                 console.log(arrLugares)
                 this.todosLosLugares = arrLugares.slice();
-             //   this.lugaresOriginal = arrLugares.slice();
+                //   this.lugaresOriginal = arrLugares.slice();
                 //this.corregirPrioridades(); //actualiza cada prioridad segun el inidice
                 this.updateListaPrioridadesLocal(false);//
                 console.log("todosLosLugares.length = " + this.todosLosLugares.length)
@@ -194,9 +195,9 @@ export class LugaresService {
     }
 
     /** Retorna un observable de un lugar obtenido localmente del array lugares */
-  //  getObsLugar$(): Observable<Lugar> {
-  //      return this.lugar$.asObservable();
-  //  }
+    //  getObsLugar$(): Observable<Lugar> {
+    //      return this.lugar$.asObservable();
+    //  }
 
     emitirLugares() {
         this.lugares$.next(this.todosLosLugares);
@@ -257,9 +258,9 @@ export class LugaresService {
 
     /** Elimina correctamente el lugar */
     deleteLugar(id: string) {
-        let indiceEliminar = this.todosLosLugares.findIndex(item => item.id === id );
+        let indiceEliminar = this.todosLosLugares.findIndex(item => item.id === id);
         this.lugaresCollection.doc(id).delete().then(res => {
-            this.todosLosLugares.splice(indiceEliminar,1); 
+            this.todosLosLugares.splice(indiceEliminar, 1);
             this.corregirPrioridades();
             this.corregirPrioridadesFirestore(id, 'delete')
             this.emitirLugares();
@@ -271,7 +272,7 @@ export class LugaresService {
 
     cargarLugares(): void {
 
-        const datos = [{
+        const datos:Lugar[] = [{
             "nombre": "Finca Piedra",
             "prioridad": 1,
             "publicado": true,
@@ -513,31 +514,24 @@ export class LugaresService {
             },
             "tipo": "Urbano",
             "imagenes": [{
-                "nombre": "museo-1",
                 "name": "museo-1",
                 "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fmuseo-1.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
             }, {
-                "nombre": "museo-2",
                 "name": "museo-2",
                 "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fmuseo-2.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
             }, {
-                "nombre": "museo-3",
                 "name": "museo-3",
                 "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fmuseo-3.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
             }, {
-                "nombre": "museo-4",
                 "name": "museo-4",
                 "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fmuseo-4.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
             }, {
-                "nombre": "museo-5",
                 "name": "museo-5",
                 "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fmuseo-5.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
             }, {
-                "nombre": "museo-6",
                 "name": "museo-6",
                 "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fmuseo-6.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
             }, {
-                "nombre": "museo-7",
                 "name": "museo-7",
                 "url": "https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/lugares%2Fmuseo-7.jpg?alt=media&token=7cbc502b-13fc-4b19-b1b5-6bf30aea69c3"
             }],
@@ -546,7 +540,7 @@ export class LugaresService {
             "web": "https://www.sanjose.gub.uy/departamento/turismo/museo-san-jose/",
             "whatsapp": null,
             "telefonos": [
-                { "numero": "43423672" }
+                 "43423672" 
             ],
             "valoraciones": [],
             "videos": []
@@ -742,10 +736,8 @@ export class LugaresService {
             "instagram": null,
             "web": null,
             "whatsapp": null,
-            "telefonos": [
-                {
-                    "numero": "43426344"
-                }
+            "telefonos": [ 
+                "43426344"                
             ],
             "valoraciones": [],
             "videos": []
@@ -804,10 +796,7 @@ export class LugaresService {
             "web": "http://www.ecie.com.uy/",
             "whatsapp": "https://api.whatsapp.com/send?phone=59898779524",
             "telefonos": [
-                {
-                    "numero": "43434659"
-                }
-
+                "43434659"
             ],
             "valoraciones": [],
             "videos": []
@@ -986,9 +975,6 @@ export class LugaresService {
             "web": "https://www.sanjose.gub.uy/departamento/turismo/capilla-nuestra-senora-del-huerto/",
             "whatsapp": null,
             "telefonos": [],
-            "valoraciones": [
-                { "user": 0 }
-            ],
             "videos": []
         }, {
             "nombre": "ICE",
@@ -1014,7 +1000,6 @@ export class LugaresService {
                 "lng": -56.712545,
                 "lat": -34.341574
             },
-            "phone": "43441081",
             "tipo": "Urbano",
             "imagenes": [{
                 "name": "espa%C3%B1ola-1",
@@ -1030,10 +1015,7 @@ export class LugaresService {
             "instagram": "https://instagram.com/icesanjose?igshid=1m6jvf2kus26k",
             "web": null,
             "whatsapp": null,
-            "telefonos": [],
-            "valoraciones": [
-                { "user": 0 }
-            ],
+            "telefonos": ["43441081"],
             "videos": []
         }, {
             "nombre": "Quinta del Horno",
@@ -1077,11 +1059,8 @@ export class LugaresService {
             "instagram": null,
             "web": "https://www.sanjose.gub.uy/departamento/turismo/quinta-del-horno/",
             "whatsapp": null,
-            "telefonos": [{
-                "numero": "43431314"
-            }],
-            "valoraciones": [
-                { "user": 0 }
+            "telefonos": [
+                "43431314"
             ],
             "videos": []
         }, {
@@ -1135,9 +1114,6 @@ export class LugaresService {
             "instagram": null,
             "web": "https://utec.edu.uy/itr-centrosur/un-edificio-con-pasado-y-futuro/",
             "whatsapp": null,
-            "valoraciones": [{
-                "user": 0
-            }],
             "videos": []
         }, {
             "nombre": "Sierra de Mahoma",
@@ -1200,9 +1176,6 @@ export class LugaresService {
             "web": null,
             "whatsapp": null,
             "telefonos": [],
-            "valoraciones": [
-                { "user": 0 }
-            ],
             "videos": []
         }, {
             "nombre": "Boliche de Campaña",
@@ -1249,14 +1222,13 @@ export class LugaresService {
             "instagram": null,
             "web": null,
             "whatsapp": null,
-            "telefonos": [{
-                "numero": "43401558"
-            }],
-            "valoraciones": [
-                { "user": 0 }
+            "telefonos": [
+                "43401558"
             ],
             "videos": [
-                { "url": "https://www.youtube.com/embed/WEn3eSV-hvw" }
+                { 
+                    "name": "", 
+                    "url": "https://www.youtube.com/embed/WEn3eSV-hvw" }
             ]
         }, {
             "nombre": "Teatro Maccio",
@@ -1315,9 +1287,9 @@ export class LugaresService {
             "instagram": null,
             "web": "https://www.sanjose.gub.uy/departamento/turismo/teatro-maccio/",
             "whatsapp": null,
-            "telefonos": [{
-                "phone": "43422723"
-            }],
+            "telefonos": [
+                 "43422723"
+            ],
             "valoraciones": [],
             "videos": []
         }, {
@@ -1371,9 +1343,9 @@ export class LugaresService {
             "instagram": null,
             "web": "https://www.sanjose.gub.uy/",
             "whatsapp": null,
-            "telefonos": [{
-                "numero": "43429000"
-            }],
+            "telefonos": [
+                 "43429000"
+            ],
             "valoraciones": [],
             "videos": []
         }, {
@@ -1511,9 +1483,9 @@ export class LugaresService {
             "instagram": null,
             "web": null,
             "whatsapp": "https://api.whatsapp.com/send?phone=59899191099",
-            "telefonos": [{
-                "numero": "43431702"
-            }],
+            "telefonos": [
+                 "43431702"
+            ],
             "valoraciones": [],
             "videos": []
         }, {
@@ -1553,13 +1525,30 @@ export class LugaresService {
             "web": null,
             "whatsapp": null,
             "telefonos": [],
-            "valoracioneses": [],
             "videos": []
         }];
 
-        for (let i = 0; i < datos.length; i++) {
-            this.afs.collection('lugares').add(datos[i]);
+
+        //   for (let i = 0; i < datos.length; i++) {
+        //       this.afs.collection('lugares').add(datos[i]);
+        //   }
+
+        datos.forEach(item => {
+            let texto: string = this.randomString(7);
+            item.carpeta = {"name": texto, "enabled": false};
+        })
+
+        console.log(datos);
+    }
+
+    randomString(length):string {
+
+        var randomChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var result = '';
+        for (var i = 0; i < length; i++) {
+            result += randomChars.charAt(Math.floor(Math.random() * randomChars.length));
         }
+        return result;
     }
 
 

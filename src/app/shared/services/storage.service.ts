@@ -11,7 +11,7 @@ export class StorageService {
     constructor(
         private storage: AngularFireStorage) {
         //this.pageTokenExample();
-        console.log( this.quitarAcentos("Acentos ortográficos ñiñod gráficas Métodos") )
+        console.log(this.quitarAcentos("Acentos ortográficos ñiñod gráficas Métodos"))
     }
 
     /**
@@ -35,7 +35,7 @@ export class StorageService {
      */
     public referenciaCloudStorage(directorio: string, nombreArchivo: string) {
         directorio = this.quitarAcentos(directorio);
-        let ruta =  `${directorio}/${nombreArchivo}`;
+        let ruta = `${directorio}/${nombreArchivo}`;
         return this.storage.ref(ruta);
     }
 
@@ -47,9 +47,13 @@ export class StorageService {
      * @param {string} nombreArchivo - Nombre del archivo que queremos borrar.
      */
     public borrarArchivoStorage(directorio: string, nombreArchivo: string) {
-        directorio = this.quitarAcentos(directorio);
-        const storageRef = this.storage.ref(directorio);
-        storageRef.child(nombreArchivo).delete();
+        try {
+            directorio = this.quitarAcentos(directorio);
+            const storageRef = this.storage.ref(directorio);
+            storageRef.child(nombreArchivo).delete();
+        } catch (error) {
+            console.error("Se produjó un error al intentar borrar la imágen de Firebase Storage. Error: " + error );
+        }
     }
 
 
@@ -64,6 +68,8 @@ export class StorageService {
         name = name.replace(/\s/g, "_");
         name = name.replace(/ñ/g, "n");
         name = name.replace(/Ñ/g, "N");
+        name = name.replace(/\//g, "-");
+        name = name.replace(/:/g, "");
         return name
             .normalize('NFD')
             .replace(/([^n\u0300-\u036f]|n(?!\u0303(?![\u0300-\u036f])))[\u0300-\u036f]+/gi, "$1")

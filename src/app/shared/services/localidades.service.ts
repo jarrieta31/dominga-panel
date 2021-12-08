@@ -3,7 +3,6 @@ import { AngularFirestore, AngularFirestoreCollection, DocumentChangeAction, Doc
 import { Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Departamento } from '../interfaces/departamento';
-import { DepartamentoEnum } from '../../lugares/interfaces/lugar.interface';
 
 
 

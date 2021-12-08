@@ -1,66 +1,71 @@
-<h1>Listado de Lugares</h1>
+<div fxLayout='row' fxLayoutAlign="space-between center">
+    <div></div>
+    <h1>Listado de Lugares</h1>
+    <div></div>
+</div>
 <mat-divider></mat-divider>
 <br>
 
 <div fxLayout="row" fxLayoutAlign="center center">
-  <mat-accordion style="width: 1730px;">
-    <mat-expansion-panel>
-      <mat-expansion-panel-header>
-        <mat-panel-title>
-          <mat-icon>filter_alt</mat-icon>
-          Filtros
-        </mat-panel-title>
-        <mat-panel-description>
-          Puedes aplicar filtros para ver solo lo que necesitas
-        </mat-panel-description>
-      </mat-expansion-panel-header>
+    <mat-accordion style="width: 1730px;">
+        <mat-expansion-panel>
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    <mat-icon>filter_alt</mat-icon>
+                    Filtros
+                </mat-panel-title>
+                <mat-panel-description>
+                    Puedes aplicar filtros para ver solo lo que necesitas
+                </mat-panel-description>
+            </mat-expansion-panel-header>
 
-      <div fxLayout="column" fxLayoutAlign="center" fxLayoutGap="40px">
-        <!-- ======================================= filtro por departamentos ======================================-->
-        <div fxLayout="row" fxLayoutAlign="space-evenly start" fxLayoutGap="40px" style="width: 1000px;">
-          <div fxFlex.gt="20%">
-            <mat-slide-toggle [(ngModel)]="filtroDepartamento">Filtro por Departamento: </mat-slide-toggle>
-          </div>
-          <div fxFlex=80%>
-           <mat-radio-group [(ngModel)]="departamentoSelec" color="primary" [disabled]="!filtroDepartamento" labelPosition="after">
-              <mat-radio-button style="width: 20%; height: 34px;" 
-                                *ngFor="let departamento of departamentos; let i=index"
-                                [value]="departamento">
-                {{departamento}}
-              </mat-radio-button>
-           </mat-radio-group> 
-          </div>
-        </div>
-        <!-- ======================================= Fin filtro por departamentos ======================================-->
+            <div fxLayout="column" fxLayoutAlign="center" fxLayoutGap="40px">
+                <!-- ======================================= filtro por departamentos ======================================-->
+                <div fxLayout="row" fxLayoutAlign="space-evenly start" fxLayoutGap="40px" style="width: 1000px;">
+                    <div fxFlex.gt="20%">
+                        <mat-slide-toggle [(ngModel)]="filtroDepartamento">Filtro por Departamento: </mat-slide-toggle>
+                    </div>
+                    <div fxFlex=80%>
+                        <mat-radio-group [(ngModel)]="departamentoSelec" color="primary"
+                            [disabled]="!filtroDepartamento" labelPosition="after">
+                            <mat-radio-button style="width: 20%; height: 34px;"
+                                *ngFor="let departamento of departamentos; let i=index" [value]="departamento">
+                                {{departamento}}
+                            </mat-radio-button>
+                        </mat-radio-group>
+                    </div>
+                </div>
+                <!-- ======================================= Fin filtro por departamentos ======================================-->
 
-        <!-- ======================================= filtro por estado de Publicacion ======================================-->
-        <div fxLayout="row" fxLayoutAlign="space-evenly start" fxLayoutGap="40px" style="width: 1000px;">
-          <div fxFlex.gt="20%">
-            <mat-slide-toggle [(ngModel)]="filtroPublicado" >Filtro por estado de publiación: </mat-slide-toggle>
-          </div>
-          <mat-radio-group [(ngModel)]="publicadoSelec" [disabled]="!filtroPublicado" fxFlex="80%">
-              <mat-radio-button *ngFor="let estado of published" [value]="estado.valor">
-                {{estado.estado}} &nbsp;
-              </mat-radio-button>
-          </mat-radio-group>
-        </div>
-        <!-- ======================================= Fin filtro por estado de Publicacion ======================================-->
-      </div>
-      
-        <!-- ======================================= Aplicar Filtros ======================================-->
-        <br>
-      <div fxLayout="row" fxLayoutAlign="start center">
-        <button mat-raised-button color="primary" (click)="filtrarLugares()" >Aplicar filtros</button>
-      </div>
-        <!-- ======================================= Fin Aplicar Filtros ======================================-->
-    </mat-expansion-panel>
-  </mat-accordion>
+                <!-- ======================================= filtro por estado de Publicacion ======================================-->
+                <div fxLayout="row" fxLayoutAlign="space-evenly start" fxLayoutGap="40px" style="width: 1000px;">
+                    <div fxFlex.gt="20%">
+                        <mat-slide-toggle [(ngModel)]="filtroPublicado">Filtro por estado de publiación:
+                        </mat-slide-toggle>
+                    </div>
+                    <mat-radio-group [(ngModel)]="publicadoSelec" [disabled]="!filtroPublicado" fxFlex="80%">
+                        <mat-radio-button *ngFor="let estado of published" [value]="estado.valor">
+                            {{estado.estado}} &nbsp;
+                        </mat-radio-button>
+                    </mat-radio-group>
+                </div>
+                <!-- ======================================= Fin filtro por estado de Publicacion ======================================-->
+            </div>
+
+            <!-- ======================================= Aplicar Filtros ======================================-->
+            <br>
+            <div fxLayout="row" fxLayoutAlign="start center">
+                <button mat-raised-button color="primary" (click)="filtrarLugares()">Aplicar filtros</button>
+            </div>
+            <!-- ======================================= Fin Aplicar Filtros ======================================-->
+        </mat-expansion-panel>
+    </mat-accordion>
 </div>
 
 <div style="width: 1750px; margin: auto;" fxLayout="row" fxLayoutAlign="center start">
-  <div fxLayout="row wrap" fxLayout.xs="column" fxLayoutAlign="start start" fxLayoutGap="20px">
-    <div *ngFor="let lugar of lugares$ | async" style="min-height: 390px;">
-      <app-lugar-tarjeta [lugar]="lugar"></app-lugar-tarjeta>
+    <div fxLayout="row wrap" fxLayout.xs="column" fxLayoutAlign="start start" fxLayoutGap="20px">
+        <div *ngFor="let lugar of lugares" style="min-height: 390px;">
+            <app-lugar-tarjeta [lugar]="lugar"></app-lugar-tarjeta>
+        </div>
     </div>
-  </div>
 </div>

@@ -1,5 +1,11 @@
-<div class="mat-typography" style="text-align: center;">
+<div fxLayout='row' fxLayoutAlign="space-between center">
+
+    <button mat-button color="primary" (click)="regresar()">
+        <mat-icon>arrow_back_ios</mat-icon>
+        Atras
+    </button>
     <h1>{{titulo}}</h1>
+    <div></div>
 </div>
 <pre>
     {{ this.lugarForm.valid }}
@@ -143,7 +149,7 @@
                                     La descripción del lugar no puede superar los 4000 caracteres.
                                 </mat-error>
                                 <mat-error *ngIf="descripcion.errors.minlength">
-                                    La descripción del lugar no puede ser menor a 50 carcacteres.                                    caracteres.
+                                    La descripción del lugar no puede ser menor a 50 carcacteres. caracteres.
                                 </mat-error>
                             </ng-container>
                         </div>
@@ -293,8 +299,8 @@
             </div>
             <div fxFlex="50%" class="home" fxLayout="column" fxLayoutAlign="space-around center">
                 <mat-card class="container-img">
-                    <img mat-card-image [src]="lugarForm.value.imagenHome.url" class="imagen-home">
-                    <mat-card-actions *ngIf="imagenHome.value.name != 'imagen-default'">
+                    <img mat-card-image [src]="home.url" class="imagen-home">
+                    <mat-card-actions *ngIf="home.name != 'imagen-default'">
                         <button mat-stroked-button color="warn" (click)="setImagenHome('')">
                             <mat-icon>delete</mat-icon> Eliminar
                         </button>
@@ -303,13 +309,9 @@
                 <p>Tamaño de imágen: {{widthAllowedHome}} x {{heightAllowedHome}} px</p>
             </div>
             <div fxFlex="50%" class="home">
-                <app-upload-files 
-                    [DirectorioPadre]="directorioPadre"
-                    [Directorio]="directorio"
-                    [widthAllowed]="widthAllowedHome"
-                    [heightAllowed]="heightAllowedHome"
-                    [allowedSize]="allowedSizeHome"
-                    (imagenSubidaUploader)="setImagenHome($event)">
+                <app-upload-files [DirectorioPadre]="directorioPadre" [Directorio]="directorio"
+                    [widthAllowed]="widthAllowedHome" [heightAllowed]="heightAllowedHome"
+                    [allowedSize]="allowedSizeHome" (imagenSubidaUploader)="setImagenHome($event)">
                 </app-upload-files>
             </div>
         </div>
@@ -332,13 +334,10 @@
 
                 <div fxFlex="50%" fxLayout="column" fxFlexAlign="space-around center">
                     <!-- Módulo para subir archivos -->
-                    <app-upload-files [tituloUploader]="tituloUploaderGaleria"
-                        [DirectorioPadre]="directorioPadre"
-                        [Directorio]="directorio"
-                        [widthAllowed]="widthAllowedGallery"
-                        [heightAllowed]="heightAllowedGallery"
-                        [allowedSize]="allowedSizeGallery"
-                        (imagenSubidaUploader)="agregarImagenSubida($event)">
+                    <app-upload-files [tituloUploader]="tituloUploaderGaleria" [DirectorioPadre]="directorioPadre"
+                        [Directorio]="directorio" [widthAllowed]="widthAllowedGallery"
+                        [heightAllowed]="heightAllowedGallery" [allowedSize]="allowedSizeGallery"
+                        (imagenSubidaUploader)="agregarImagenSubidaAGaleria($event)">
                     </app-upload-files>
                     <h4>Imágen Principal</h4>
                     <mat-form-field id="camp-principal">
@@ -355,15 +354,20 @@
         <!-- ============================== Imagen Principal ==================================== -->
 
     </div>
+    <mat-divider></mat-divider>
 
     <!-- ============================== Galería de Imágenes ==================================== -->
     <div fxLayout="column" class="contenedor_galeria">
-        <div>
+        <div fxLayout="row" fxLayoutAlign="space-between center">
+            <div></div>
             <h2>Galería de imágenes</h2>
+            <div></div>
         </div>
         <div fxLayout='row' fxLayoutAlign="center center">
             <div class="galeria">
-
+                <div *ngIf="galeria.length < 1">
+                    <h3>No hay imágenes en la galería</h3>
+                </div>
                 <div fxFlex fxLayout="row wrapDirection" fxLayoutAlign="space-around start" fxLayoutGap="10px"
                     *ngIf="galeria.length > 0">
                     <!-- Módulo para mostrar las imagenes de la galeria -->
@@ -375,25 +379,25 @@
         </div>
     </div>
 
+    <mat-divider></mat-divider>
 
-    <div fxLayout="row" fxLayoutAlign="end start" fxLayoutGap="30px" style="padding-right: 50px;">
-        <button mat-raised-button color="primary">
-            Cancelar
-        </button>
+    <div fxLayout="row" fxLayoutAlign="center start" fxLayoutGap="30px" style="padding-right: 50px;">
         <button mat-raised-button color="accent" type="submit" [disabled]="lugarForm.invalid">
             Guardar Lugar
         </button>
     </div>
+
+    <br><br>
     <!-- 
             <div fxFlex>
                 <pre>{{ this.imagenes | json }}</pre>
             </div>
 -->
 
-    <!-- 
+
     <div style="overflow: scroll; width: 100%;height: 200px;">
         <span>Valores</span>
         <pre>{{ this.lugarForm.value | json }}</pre>
     </div>
--->
+
 </form>

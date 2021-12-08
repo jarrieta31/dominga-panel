@@ -2,8 +2,6 @@ import { Component, Input, Output, EventEmitter, OnInit, ViewChild, ElementRef, 
 import { FormControl, FormGroup, Validators, ValidationErrors, AbstractControl, FormBuilder } from '@angular/forms';
 import { StorageService } from '../../../shared/services/storage.service';
 import { Imagen, Video } from 'src/app/lugares/interfaces/lugar.interface';
-import { ValidatorService } from '../../services/validator.service';
-import { MatGridTileHeaderCssMatStyler } from '@angular/material/grid-list';
 
 @Component({
     selector: 'app-upload-files',
@@ -123,6 +121,7 @@ export class UploadFilesComponent implements OnInit {
     //Sube el archivo a Cloud Storage
     public subirArchivo() {
         let archivo = this.datosFormulario.get('archivo');
+        this.DirectorioUploader = `${this.DirectorioPadre}/${this.Directorio}`
         let referencia = this.fbStorage.referenciaCloudStorage(this.DirectorioUploader, this.nombreArchivo);
         let tarea = this.fbStorage.subirArchivoCloudStorage(this.DirectorioUploader, this.nombreArchivo, archivo);
         //Cambia el porcentaje

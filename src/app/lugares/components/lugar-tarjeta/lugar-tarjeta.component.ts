@@ -27,9 +27,9 @@ export class LugarTarjetaComponent {
      * Abre el diaglogo para confimar la eliminación de un lugar
      * @param lugar 
      */
-    openDialog(lugar: Lugar) {
+    openDialog() {
         const dialogRef = this.dialog.open(DialogEliminarComponent, {
-            data: lugar
+            data: this.lugar
         });
 
         dialogRef.afterClosed().pipe(

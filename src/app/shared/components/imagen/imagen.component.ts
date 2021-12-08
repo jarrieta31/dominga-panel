@@ -1,24 +1,24 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { Lugar, Imagen  } from 'src/app/lugares/interfaces/lugar.interface';
+import { Lugar, Imagen } from 'src/app/lugares/interfaces/lugar.interface';
 
 @Component({
-  selector: 'app-imagen',
-  templateUrl: './imagen.component.html',
-  styleUrls: ['./imagen.component.css']
+    selector: 'app-imagen',
+    templateUrl: './imagen.component.html',
+    styleUrls: ['./imagen.component.css']
 })
 export class ImagenComponent implements OnInit {
 
-  constructor() { }
+    constructor() { }
 
-  @Input() imagen: Imagen;
-  @Output() imagenABorrar:EventEmitter<string> = new EventEmitter<string>();
+    @Input() imagen: Imagen;
+    @Output() imagenABorrar: EventEmitter<string> = new EventEmitter<string>();
 
-  ngOnInit(): void {
-  }
+    ngOnInit(): void {
+    }
 
-  removerImagen(imagen:string){
+    removerImagen(imagen: string) {
 
-    this.imagenABorrar.emit(imagen);
-  }
+        this.imagenABorrar.emit(imagen);
+    }
 
 }
