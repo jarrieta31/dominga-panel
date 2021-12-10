@@ -22,9 +22,9 @@ export class StorageService {
      * @param datos - El es propio archivo.
      * @returns 
      */
-    public subirArchivoCloudStorage(ruta: string, nombreArchivo: string, datos: any) {
-        ruta = this.quitarAcentos(ruta);//
-        return this.storage.upload(`/${ruta}/${nombreArchivo}`, datos);
+    public subirArchivoCloudStorage(directorio: string, nombreArchivo: string, datos: any) {
+        //directorio = this.quitarAcentos(directorio);//
+        return this.storage.upload(`/${directorio}/${nombreArchivo}`, datos);
     }
 
     /**
@@ -34,7 +34,7 @@ export class StorageService {
      * @returns - Refercia al archivo.
      */
     public referenciaCloudStorage(directorio: string, nombreArchivo: string) {
-        directorio = this.quitarAcentos(directorio);
+        //directorio = this.quitarAcentos(directorio);
         let ruta = `${directorio}/${nombreArchivo}`;
         return this.storage.ref(ruta);
     }
@@ -48,7 +48,7 @@ export class StorageService {
      */
     public borrarArchivoStorage(directorio: string, nombreArchivo: string) {
         try {
-            directorio = this.quitarAcentos(directorio);
+            //directorio = this.quitarAcentos(directorio);
             const storageRef = this.storage.ref(directorio);
             storageRef.child(nombreArchivo).delete();
         } catch (error) {

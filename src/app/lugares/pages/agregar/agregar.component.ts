@@ -1,6 +1,6 @@
 import { Component, Input, OnDestroy, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Lugar, Imagen,   } from '../../interfaces/lugar.interface';
+import { Lugar, Imagen, } from '../../interfaces/lugar.interface';
 import { FormBuilder, Validators, FormGroup, FormControl, FormArray } from '@angular/forms';
 import { StorageService } from '../../../shared/services/storage.service';
 import { Observable, pipe, Subscription, zip } from 'rxjs';
@@ -158,7 +158,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         const lugarGuardado = localStorage.getItem('lugar');
-        this.lugaresService.cargarLugares()
+        //this.lugaresService.cargarLugares()
         //si lugarGuardado no esta vacio lo asigna al formulario
         if (lugarGuardado) {
             //descomentar cuando este enviando bien los datos
@@ -177,45 +177,34 @@ export class AgregarComponent implements OnInit, OnDestroy {
         * A partir de la ruta y el id recibido obtiene el lugar para mostrar 
         */
         this.activatedRoute.params.pipe(
-            //tap(res => console.log("hola mundo")),
             switchMap(({ id }) => this.lugaresService.getLugarId(id)),
+        //    tap(res => console.log(res))
         ).subscribe(lugar => {
             let lugarActual: Lugar = JSON.parse(JSON.stringify(lugar));
-            //console.log("Lugar  " + lugar)
             if (lugarActual.id !== undefined) {//Si estamos editando un lugar
                 this.idLugar = lugarActual.id;
-                let prio = lugar.prioridad;
+                let prio = lugarActual.prioridad;
                 this.prioridadAnterior = prio
                 delete lugarActual.id //para setear el formulario es necesario quitar el tatributo id
                 this.lugarForm.reset(lugarActual);
                 this.titulo = `Editando ${this.lugarForm.controls['nombre'].value}`;
-                this.home = lugar.imagenHome;
-                this.galeria = this.lugarForm.controls['imagenes'].value;
-                this.home = this.lugarForm.controls['imagenHome'].value;
-                //si esto se cumple no se ha subido nada todavía.
-                if (this.home.url === "assets/default-home.jpg" && this.galeria.length === 0) {
-                    this.directorio = this.fbStorage.quitarAcentos(lugar.nombre);
-                    console.log("directorio desde nombre: " + this.directorio);
-                } else {// Si ya hay alguna imagen guardada se obtiene el nombre de la carpeta 
-                    if (this.home.url !== "assets/default-home.jpg") {
-                        console.log(this.home.url)
-                        let indice1: number = (this.home.url.indexOf('%') + 3);
-                        let indice2: number = (this.home.url.indexOf('%2F', indice1));
-                        this.directorio = this.home.url.substring(indice1, indice2);
-                        console.log("directorio de home: " + this.directorio);
-                    } else if (this.galeria.length > 0 && this.home.url === "assets/default-home.jpg") {
-                        let indice1: number = (this.galeria[0].url.indexOf('%') + 3);
-                        let indice2: number = (this.galeria[0].url.indexOf('%2F', indice1));
-                        this.directorio = this.galeria[0].url.substring(indice1, indice2);
-                        console.log("directorio de galeria: " + this.directorio)
-                    }
-                }
+                this.home = lugarActual.imagenHome;
+                this.galeria = JSON.parse(JSON.stringify(lugarActual.imagenes));
+                console.log(lugarActual.imagenes)
+                this.directorio = this.carpeta.value;
                 this.localidadesService.getLocadidadesDepartamento(lugarActual.departamento);
                 this.mapaService.dMiniMapa = { centro: lugarActual.ubicacion, zoom: 15, marcador: true };
                 this.mapaService.emitirMiniMapa();
                 this.lugaresService.updateListaPrioridadesLocal(false);
+            } else {
             }
         });
+
+        if (this.carpeta.value === null) {
+            this.directorio = this.lugaresService.randomString(7);
+            this.carpeta.setValue(this.directorio);
+        }
+
 
         /**Si el formuario es válido lo guarda en el storage local */
         zip(this.lugarForm.statusChanges, this.lugarForm.valueChanges).pipe(
@@ -223,7 +212,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
             map(([stado, valor]) => valor),//descarta el estado y solo toma el valor
             //tap(data => console.log(data))//solo es para ver
         ).subscribe(formValue => {
-            localStorage.setItem('lugar', JSON.stringify(formValue));
+            // localStorage.setItem('lugar', JSON.stringify(formValue));
         })
     }
 
@@ -236,11 +225,9 @@ export class AgregarComponent implements OnInit, OnDestroy {
         //Si las imagenes agregadas no se guardaron debe ser eliminadas de Firebase Storage. 
         if (this.cambiosConfirmados === false) {
             this.galeriaAgregar.forEach(img => {
-                console.log("delete de la galeria: " + img.name)
                 this.fbStorage.borrarArchivoStorage(`${this.directorioPadre}/${this.directorio}`, img.name);
             });
-            if (this.home.name !== "imagen-default" && this.home !== this.imagenHome.value) {
-                console.log("delete home: " + this.home.name)
+            if (this.home.name !== "imagen-default" && this.home.url !== this.imagenHome.value.url) {
                 this.fbStorage.borrarArchivoStorage(`${this.directorioPadre}/${this.directorio}`, this.home.name);
             }
         }
@@ -264,17 +251,12 @@ export class AgregarComponent implements OnInit, OnDestroy {
 
 
     /**
-     * Función para quitar los espacios en blanco del campo nombre cuando. Al salir del campo
-     * toma el nombre y se lo asigna a la variable directorio, para luego poder subir las imagnes
-     * a dicho directorio. 
-     * Nota: Solo setea el nombre del directorio la primera vez, dado que el usuario lo podria cambiar. 
+     * Función para quitar los espacios en blanco del campo nombre. Al salir del campo
+     * toma el nombre y quita los espacios de los extremos. 
      */
     quitarEspacios() {
         let _nombre: string = this.nombre.value;
         _nombre = _nombre.trim();
-        if (this.directorio === '' && _nombre.length >= 2) {
-            this.directorio = _nombre;
-        }
         this.nombre.setValue(_nombre);
     }
 
@@ -348,7 +330,8 @@ export class AgregarComponent implements OnInit, OnDestroy {
         )
     }
 
-    /**Función para prevenir la publicación de un lugar sin los datos indispensables
+    /**
+     * Función para prevenir la publicación de un lugar sin los datos indispensables
      * para la app
      */
     openSnackBar() {
@@ -360,7 +343,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * Asigna el valor recibido al campo imagenHome del formulario.
+     * Al cambiar la imagen home asigna el valor recibido al campo imagenHome del formulario.
      * @param $event - Contiene los datos de la imágen subida para lugaresHome.
      * Los datos son la url y el nombre del archivo. 
      */
@@ -416,7 +399,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
     }
 
     /** Enviar en formulario a firebase */
-    async submitLugar() {
+    submitLugar() {
         //envia el formulario
         this.lugarForm.controls['imagenHome'].setValue(this.home);
         this.lugarForm.controls['imagenes'].setValue(this.galeria);
@@ -541,5 +524,9 @@ export class AgregarComponent implements OnInit, OnDestroy {
 
     get descripcion() {
         return this.lugarForm.get('descripcion');
+    }
+
+    get carpeta() {
+        return this.lugarForm.get('carpeta');
     }
 }

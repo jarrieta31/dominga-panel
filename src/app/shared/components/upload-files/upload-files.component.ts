@@ -86,8 +86,6 @@ export class UploadFilesComponent implements OnInit {
                     } else if (this.width == this.widthAllowed && this.height == this.heightAllowed && this.size <= this.allowedSize && this.Directorio.length >= 2) {
                         this.disabledSubmit = false;
                     }
-                    //valida que venga un nombre de directorio
-                    this.Directorio.length >= 2 ? this.ruta = true : this.ruta = false;
                     //valida el ancho mostrar el mensaje de error
                     if (this.width !== this.widthAllowed && this.width > 0) {
                         this.ancho = false;

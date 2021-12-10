@@ -24,9 +24,6 @@
                 <mat-error *ngIf="!peso && alto && ancho && archivo.touched">
                     El peso de la imágen no puede superar los {{allowedSize}} kB.
                 </mat-error>
-                <mat-error *ngIf="!ruta && peso && alto && ancho && archivo.touched">
-                    El campo nombre del formulario es obligagorio para subir archivos.
-                </mat-error>
             </ng-container>
 
             <br>

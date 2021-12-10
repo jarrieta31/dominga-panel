@@ -23,7 +23,7 @@
                 <div>
                     <h2>Nombre/estado de publicación</h2>
                 </div>
-                <div fxLayout="row" fxLayoutGap="40px">
+                <div fxLayout="row" fxLayoutGap="30px">
 
                     <mat-form-field fxFlex="50%">
                         <mat-label>Nombre del Lugar</mat-label>
@@ -36,11 +36,16 @@
                         </ng-container>
                     </mat-form-field>
 
-                    <div fxFlex="50%">
-                        Debes activar este lugar para que sea visible en la app: &nbsp; &nbsp;
+                    <div fxFlex="35%">
+                        Activar para que sea visible en la app: &nbsp; &nbsp;
                         <mat-slide-toggle (click)="openSnackBar()" formControlName="publicado">Publicado
                         </mat-slide-toggle>
                     </div>
+
+                    <mat-form-field fxFlex="15%">
+                        <mat-label>Carperta Cloud Storage</mat-label>
+                        <input matInput type="text" formControlName="carpeta" [readonly]="true">
+                    </mat-form-field>
                 </div>
                 <!-- ============================== Fin  Nombre/Publicado ==================================== -->
 
@@ -364,11 +369,14 @@
             <div></div>
         </div>
         <div fxLayout='row' fxLayoutAlign="center center">
-            <div class="galeria">
+            <div class="galeria" style="width: 1000px;">
                 <div *ngIf="galeria.length < 1">
-                    <h3>No hay imágenes en la galería</h3>
+                    <div  fxLayout="row" fxLayoutAlign="center center">
+                        <br>
+                        <h3>No hay imágenes en la galería</h3>
+                    </div>
                 </div>
-                <div fxFlex fxLayout="row wrapDirection" fxLayoutAlign="space-around start" fxLayoutGap="10px"
+                <div fxLayout="row wrapDirection" fxLayoutAlign="start start" fxLayoutGap="10px"
                     *ngIf="galeria.length > 0">
                     <!-- Módulo para mostrar las imagenes de la galeria -->
                     <app-imagen *ngFor="let foto of galeria" [imagen]="foto"
@@ -394,10 +402,10 @@
             </div>
 -->
 
-
+    <!--
     <div style="overflow: scroll; width: 100%;height: 200px;">
         <span>Valores</span>
         <pre>{{ this.lugarForm.value | json }}</pre>
     </div>
-
+-->
 </form>

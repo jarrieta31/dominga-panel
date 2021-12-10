@@ -1,5 +1,4 @@
 import { Posicion } from '../../shared/interfaces/datosMapa.interface';
-import { FolderStorage } from '../../shared/interfaces/folderStorage';
 
 
 
@@ -10,7 +9,7 @@ export interface Lugar {
     caminar?: boolean;
     departamento: string;
     descripcion?: string;
-    carpeta?:FolderStorage;
+    carpeta:string;
     facebook?: string;
     id?: string;
     imagenHome?: Imagen;
@@ -22,7 +21,7 @@ export interface Lugar {
     patrimonial: boolean;
     prioridad: number;
     publicado: boolean;
-    telefonos?: string[];
+    telefonos?: Telefono[];
     tipo: string;
     ubicacion: Posicion;
     valoraciones?: Valoracion[];
@@ -42,7 +41,10 @@ export interface Valoracion {
 }
 
 export interface Video {
-    name: string;
     url: string;
+}
+
+export interface Telefono{
+    numero: string;
 }
 
