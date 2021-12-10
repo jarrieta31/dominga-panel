@@ -64,7 +64,7 @@
 
 <div style="width: 1750px; margin: auto;" fxLayout="row" fxLayoutAlign="center start">
     <div fxLayout="row wrap" fxLayout.xs="column" fxLayoutAlign="start start" fxLayoutGap="20px">
-        <div *ngFor="let lugar of lugares" style="min-height: 390px;">
+        <div *ngFor="let lugar of lugares$ | async" style="min-height: 390px;">
             <app-lugar-tarjeta [lugar]="lugar"></app-lugar-tarjeta>
         </div>
     </div>
