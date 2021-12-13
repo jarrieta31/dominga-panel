@@ -3,6 +3,7 @@ import { AngularFirestore, AngularFirestoreCollection, DocumentChangeAction, Doc
 import { Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Departamento } from '../interfaces/departamento';
+import { LocalStorageService } from './local-storage.service';
 
 
 
@@ -17,20 +18,21 @@ export class LocalidadesService {
     listDptosActivos: string[] = [];
     departamentos: Departamento[] = [];
 
-
-    constructor(private afs: AngularFirestore) {
+    constructor(
+        private localStorageService: LocalStorageService,
+        private afs: AngularFirestore) {
         this.localidades$ = new Subject();
         this.departamentos$ = new Subject();
         this.getDepartamentosFirestore();
     }
 
     /** retorna el observable de localidades */
-    getObsLocalidades():Observable<string[]> {
+    getObsLocalidades(): Observable<string[]> {
         return this.localidades$.asObservable();
     }
 
     /** retorna el observable de departamentos */
-    getObsDepartamentos():Observable<string[]> {
+    getObsDepartamentos(): Observable<string[]> {
         return this.departamentos$.asObservable();
     }
 
@@ -45,31 +47,36 @@ export class LocalidadesService {
                     const data: any = item.data()
                     arrDepartamentos.push({ id: item.id, ...data });
                 })
-                this.departamentos = arrDepartamentos;
+                this.departamentos = JSON.parse(JSON.stringify(arrDepartamentos));
                 this.departamentos.forEach(dpto => {
                     this.listDptosActivos.push(dpto.nombre);
                 });
+                this.reordenarDepartamentoPorNombre();
+                this.emitirDepartamentosActivos();
+                this.getLocadidadesDepartamento(this.localStorageService.departamento);
             }
         ).catch(error => {
             console.error("Error en getDepartamentosFirestore(). error:" + error);
-        }).finally(() => console.info("Corriendo getDepartamentosFirestore() en localidades.services!"))
+        })
+
     }
 
     /** cargar el subject localidades$ con las localidades
      * del departamento seleccionado y emite sus valores
      */
     getLocadidadesDepartamento(departamento: string) {
-        let arrLocalidades:string[] = [];
+        let arrLocalidades: string[] = [];
         this.departamentos.forEach(dep => {
-            if(dep.nombre === departamento){
-               arrLocalidades = dep.localidades
+            if (dep.nombre === departamento) {
+                let dpto = JSON.parse(JSON.stringify(dep));
+                arrLocalidades = dpto.localidades
             }
         });
         this.listLocalidades = arrLocalidades;
         this.localidades$.next(arrLocalidades);
     }
 
-    emitirDepartamentosActivos():void {
+    emitirDepartamentosActivos(): void {
         this.departamentos$.next(this.listDptosActivos);
     }
 
@@ -77,8 +84,8 @@ export class LocalidadesService {
         this.localidades$.next(this.listLocalidades);
     }
 
-//    update(id: string, data: any): Promise<void> {
-  //      return this.afs.collection('departamentos').doc(id).update(data);
+    //    update(id: string, data: any): Promise<void> {
+    //      return this.afs.collection('departamentos').doc(id).update(data);
     //}
 
     delete(id: string): Promise<void> {
@@ -822,5 +829,26 @@ export class LocalidadesService {
             this.afs.collection('departamentos').add(departamento);
         });
     }
+
+    /**
+     * Ordena el array local todosLosLugares(no se usa porque corregir prioridades ya lo soluciona )
+     * Ojo puede servir para ordenar por orden alfabético
+     */
+    reordenarDepartamentoPorNombre() {
+        this.listDptosActivos.sort(this.compararNombre);
+    }
+
+    /** Función para comparar las prioridades de los lugares, funciona como auxiliar de la función reordenarLugaresPorPrioridad() */
+    compararNombre(a: string, b: string): number {
+        if (a < b) {
+            return -1;
+        }
+        if (a > b) {
+            return 1;
+        }
+        // a debe ser igual b
+        return 0;
+    }
+
 
 }

@@ -32,7 +32,6 @@ export class ValidatorService {
 
     //Falta crear la expresion regular
     validarFacebook(control: FormControl): ValidationErrors | null {
-
         //console.log(control.value)
         if (control.value === "" || control.value === null) {
             return null;
@@ -50,7 +49,6 @@ export class ValidatorService {
 
     //revisar
     valididarWhatsapp(control: FormControl): ValidationErrors | null {
-
         //console.log(control.value)
         if (control.value === "" || control.value === null) {
             return null;
@@ -78,6 +76,18 @@ export class ValidatorService {
             }
             return { whatsapp: true };
         }
+    }
+
+    validarUbicacion(control: FormControl): ValidationErrors | null{
+        if( control.value === null){
+            return { ubicacion: true };
+        }else if(control.value.lng === -56.4372197 && control.value.lat === -32.8246801 ){
+            return { ubicacion: true };
+        }else{
+
+            return null;
+        }
+
     }
 
 

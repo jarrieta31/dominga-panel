@@ -23,27 +23,26 @@ import { ValidatorService } from '../../../shared/services/validator.service';
 })
 export class AgregarComponent implements OnInit, OnDestroy {
 
-    submitHabilitado = true;
-    idNuevoLugar: string = "";
-    titulo: string = "Nuevo Lugar";
-    idLugar: string;
-    prioridadAnterior: number;
-    tituloUploaderGaleria: string = "Subir imágenes a la galería";
-    tituloUploaderHome: string = "Selecciona la imágen del Home";
+    allowedSizeGallery: number = 150; //kilo bytes
+    allowedSizeHome: number = 80; //kilo bytes
+    cambiosConfirmados: boolean = false;
+    departamentos: string[] = [];
     directorio: string = ''; //subcarpeta con el nombre del lugar
     directorioPadre: string = 'lugares'; //carpeta raíz donde se almacenan los lugares
-    //    imagenSubidaAgregar: Imagen;
-    cambiosConfirmados: boolean = false;
-    lugaresTipo = [{ tipo: "Urbano" }, { tipo: "Rural" }];
-    opsPatrimonial = [{ texto: "Sí", valor: true }, { texto: "No", valor: false }];
-    departamentos: string[] = [];
-    localidades: string[] = [];
-    widthAllowedHome: number = 600;
-    heightAllowedHome: number = 353;
-    allowedSizeHome: number = 80; //kilo bytes
-    widthAllowedGallery: number = 600;
     heightAllowedGallery: number = 450;
-    allowedSizeGallery: number = 150; //kilo bytes
+    heightAllowedHome: number = 353;
+    idLugar: string;
+    idNuevoLugar: string = "";
+    localidades: string[] = [];
+    lugaresTipo = [{ tipo: "Urbano" }, { tipo: "Rural" }];
+    mapaTouched:boolean = false;
+    opsPatrimonial = [{ texto: "Sí", valor: true }, { texto: "No", valor: false }];
+    prioridadAnterior: number;
+    titulo: string = "Nuevo Lugar";
+    tituloUploaderGaleria: string = "Subir imágenes a la galería";
+    tituloUploaderHome: string = "Selecciona la imágen del Home";
+    widthAllowedGallery: number = 600;
+    widthAllowedHome: number = 600;
     private sourceDepartamentos: Subscription;
     private sourceLocalidades: Subscription;
     private sourceMiniMapa: Subscription;
@@ -56,32 +55,32 @@ export class AgregarComponent implements OnInit, OnDestroy {
     galeria: Imagen[] = [];
     galeriaAgregar: Imagen[] = []; //solo guarda las imagenes que se agregan a la galeria
     public lugarForm: FormGroup = this.fb.group({
-        nombre: ['', [Validators.required, Validators.minLength(2)]],
-        prioridad: [1, [Validators.required]],
-        publicado: [false, Validators.required],
-        departamento: ['', Validators.required],
-        localidad: ['', Validators.required],
+        accesibilidad: [false],
         auto: [false],
         bicicleta: [false],
         caminar: [false],
         carpeta: [null],
-        patrimonial: [false],
-        accesibilidad: [false],
+        departamento: ['', Validators.required],
         descripcion: ['', [Validators.minLength(60), Validators.maxLength(4900)]],
+        facebook: [null, [this.vs.validarFacebook]],
         imagenHome: [this.imagenHomeDefault],
         imagenPrincipal: [this.imagenPrincipalDefault],
-        ubicacion: [{ "lng": -56.4372197, "lat": -32.8246801 }],
-        tipo: [''],
         imagenes: [[]],
-        facebook: [null, [this.vs.validarFacebook]],
         instagram: [null, [this.vs.validarInstagram]],
-        web: [null, [this.vs.validarWeb]],
-        whatsapp: [null, [this.vs.valididarWhatsapp]],
+        localidad: ['', Validators.required],
+        nombre: ['', [Validators.required, Validators.minLength(2)]],
+        patrimonial: [false],
+        prioridad: [1, [Validators.required]],
+        publicado: [false, Validators.required],
+        tipo: [''],
         telefonos: this.fb.array([
             this.fb.group({
                 numero: ['', [Validators.minLength(8), Validators.maxLength(9)]]
             })
         ]),
+        ubicacion: [null, [this.vs.validarUbicacion, Validators.required]],
+        web: [null, [this.vs.validarWeb]],
+        whatsapp: [null, [this.vs.valididarWhatsapp]],
         videos: this.fb.array([
             this.fb.group({
                 url: ['']
@@ -137,23 +136,16 @@ export class AgregarComponent implements OnInit, OnDestroy {
         */
         this.sourceMiniMapa = this.mapaService.getObsMiniMapa().subscribe(res => {
             //si los datos del minimapa son validos y tiene marcado en true
-            if (res !== undefined && res.marcador == true) {
+            if (res !== undefined && res.marcador === true) {
                 this.ubicacion.setValue(res.centro);
             }
-            else {
-                this.ubicacion.setValue(0);
+            else if(res.marcador === false){
+                this.ubicacion.setValue(null);
             }
-            /** Aca hay que chequearlo bien porque iria el caso en que el formulrio biene con los datos
-             */
-            if (this.ubicacion.value !== 0) {
-                //this.mapaService.dMiniMapa = this.ubicacion.value();
-            }
-
+            console.log(JSON.stringify(res));
         });
 
-        if (this.ubicacion.value !== { "lng": -56.43721973207522, "lat": -32.824680163553545 }) {
-            //this.mapaService.dMiniMapa.centro = this.ubicacion.value();
-        }
+        
     }
 
     ngOnInit(): void {
@@ -178,7 +170,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
         */
         this.activatedRoute.params.pipe(
             switchMap(({ id }) => this.lugaresService.getLugarId(id)),
-        //    tap(res => console.log(res))
+            //    tap(res => console.log(res))
         ).subscribe(lugar => {
             let lugarActual: Lugar = JSON.parse(JSON.stringify(lugar));
             if (lugarActual.id !== undefined) {//Si estamos editando un lugar
@@ -190,7 +182,6 @@ export class AgregarComponent implements OnInit, OnDestroy {
                 this.titulo = `Editando ${this.lugarForm.controls['nombre'].value}`;
                 this.home = lugarActual.imagenHome;
                 this.galeria = JSON.parse(JSON.stringify(lugarActual.imagenes));
-                console.log(lugarActual.imagenes)
                 this.directorio = this.carpeta.value;
                 this.localidadesService.getLocadidadesDepartamento(lugarActual.departamento);
                 this.mapaService.dMiniMapa = { centro: lugarActual.ubicacion, zoom: 15, marcador: true };
@@ -318,6 +309,11 @@ export class AgregarComponent implements OnInit, OnDestroy {
         )
     }
 
+    eliminarTelefonoDelFormulario(i: number) {
+        const telefonosControl = this.lugarForm.get('telefonos') as FormArray;
+        telefonosControl.removeAt(i);
+    }
+
     /**
      * Función que agrega un nuevo formControl de tipo video
      */
@@ -328,6 +324,11 @@ export class AgregarComponent implements OnInit, OnDestroy {
                 url: ['']
             })
         )
+    }
+
+    eliminarVideoDelFormulario(i: number) {
+        const videosControl = this.lugarForm.get('videos') as FormArray;
+        videosControl.removeAt(i);
     }
 
     /**
@@ -374,10 +375,8 @@ export class AgregarComponent implements OnInit, OnDestroy {
     /**
      * Abre el dialog con para el mapa
      */
-    openDialog() {
-        if (this.submitHabilitado) {
-            this.submitHabilitado = false;
-        }
+    abrirMapa() {
+        this.mapaTouched = true;
         const dialogConfig = new MatDialogConfig();
         dialogConfig.disableClose = false;
         dialogConfig.autoFocus = true;
@@ -387,14 +386,14 @@ export class AgregarComponent implements OnInit, OnDestroy {
         dialogConfig.data = 0;
         const dialogRef = this.dialog.open(DialogMapaComponent, dialogConfig);
 
-        dialogRef.afterClosed().pipe(
-            tap(res => {
-                this.submitHabilitado = true;
-            })
-        ).subscribe(result => {
-            console.log(`Dialog result: ${result}`);
-            //this.mapaService.emitirDataMap(this.mapaService.dataTemporal);
-        });
+    //    dialogRef.afterClosed().pipe(
+    //        tap(res => {
+    //            this.submitHabilitado = true;
+    //        })
+    //    ).subscribe(result => {
+    //        console.log(`Dialog result: ${result}`);
+    //        //this.mapaService.emitirDataMap(this.mapaService.dataTemporal);
+    //    });
 
     }
 
@@ -403,7 +402,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
         //envia el formulario
         this.lugarForm.controls['imagenHome'].setValue(this.home);
         this.lugarForm.controls['imagenes'].setValue(this.galeria);
-        if (this.lugarForm.valid && this.submitHabilitado) {
+        if (this.lugarForm.valid ) {
             this.cambiosConfirmados = true;
             //verifica si es una actualización o un lugar nuevo
             if (this.idLugar !== undefined) {//si se esta editando un lugar
@@ -415,34 +414,33 @@ export class AgregarComponent implements OnInit, OnDestroy {
                     this.lugaresService.updateLugarFirestore(this.lugarForm.value, this.idLugar)
                         .then(res => {
                             this.openSnackBarSubmit('¡El lugar se ha actualizado correctamente!');
-                            this.regresar();
                         })
                         .catch(error => {
                             this.openSnackBarSubmit('¡Error, no se ha podido actualizar el lugar en Firestore!');
                             console.error('¡Error, no se ha podido actualizar el lugar en Firestore!. Error: ' + error);
                         });
                     this.lugaresService.corregirPrioridadesFirestore(lugar.id, 'edit');
+                    this.regresar();
                 } else { //Sí la prioridad no cambio
                     this.lugaresService.updateLugarLocal(lugar);
                     this.lugaresService.updateLugarFirestore(this.lugarForm.value, this.idLugar)
                         .then(res => {
                             this.openSnackBarSubmit('¡El lugar se ha actualizado correctamente!');
-                            this.regresar();
                         })
                         .catch(error => {
                             this.openSnackBarSubmit('¡Error, no se ha podido actualizar el lugar en Firestore!');
                             console.error('¡Error, no se ha podido actualizar el lugar en Firestore!. Error: ' + error);
                         });
+                    this.regresar();
                 }
             } else { //Si el lugar es nuevo
                 let nuevoId = this.lugaresService.addLugar(this.lugarForm.value);
                 if (nuevoId !== '') {
-                    this.openSnackBarSubmit('¡El nuevo lugar se ha guardado correctamente!');
+                    this.openSnackBarSubmit('¡El nuevo lugar se ha guardado correctamente con el ID: ' + nuevoId);
                     this.lugaresService.corregirPrioridadesFirestore(nuevoId, 'add');
                 } else {
                     this.openSnackBarSubmit('¡Por algún motivo el nuevo lugar no se pudo gardar!');
                 }
-                this.openSnackBarSubmit('¡Se a guardado el nuevo lugar!');
                 //limpia el formulario y setea los valores inicales con el metodo reset
                 this.lugarForm.reset({
                     imagenHome: this.imagenHomeDefault,
@@ -455,6 +453,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
                 //Limpia el minimapa y el mapa
                 this.mapaService.emitirMiniMapa();
                 this.mapaService.resetDataMapa();
+               // this.regresar();
             }
         }
     }

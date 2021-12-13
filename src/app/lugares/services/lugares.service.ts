@@ -16,16 +16,19 @@ export class LugaresService {
     private lugaresCollection: AngularFirestoreCollection<Lugar[]>;
     private lugares$: BehaviorSubject<Lugar[]>;
     private prioridades$: BehaviorSubject<number[]>;
-    todosLosLugares: Lugar[] = []; //copia local de todos los lugares para trabajar con ella
+    private todosLosLugares: Lugar[] = []; //copia local de todos los lugares para trabajar con ella
+    private lugaresOriginal: Lugar[] = [];
     private idNuevoLugar: string = '';
     departamento: string = "San José";
 
 
-    constructor(private afs: AngularFirestore, private localStorageService: LocalStorageService) {
+    constructor(
+        private afs: AngularFirestore,
+        private localStorageService: LocalStorageService) {
 
         this.lugaresCollection = afs.collection<Lugar[]>('lugares');
         this.lugares$ = new BehaviorSubject(this.todosLosLugares);
-        this.getLugaresFirestore(this.localStorageService.getDepartamento());
+        //this.getLugaresFirestore(this.localStorageService.departamento);
         this.prioridades$ = new BehaviorSubject([]);
     }
 
@@ -36,15 +39,13 @@ export class LugaresService {
      * @returns Retorna el ID del lugar obtenido de firestore
      */
     addLugar(lugar: Lugar): string {
-        let respuesta: string = '';
         this.afs.collection('lugares').add(lugar).then(documentReference => {
             lugar.id = documentReference.id;
             this.todosLosLugares.splice((lugar.prioridad - 1), 0, lugar);//inserta el lugar en el array todosLosLugares segun su prioridad
-            //    this.lugaresOriginal.splice((lugar.prioridad-1),0,lugar);//inserta el lugar en el array lugaresOriginal segun su prioridad
             this.corregirPrioridades();//corrige la prioridad de todos los elementos que debieron moverse.
         })
             .catch(error => {
-                console.error("Se produjo un error al agregar un nuevo lugar. ");
+                console.error("Se produjo un error al agregar un nuevo lugar. Error: " + error);
             });
         return lugar.id;
     }
@@ -136,7 +137,6 @@ export class LugaresService {
      */
     updateLugarLocal(data: Lugar) {
         let i = this.todosLosLugares.findIndex(lugar => lugar.id === data.id);
-
         this.todosLosLugares[i] = JSON.parse(JSON.stringify(data));
         this.lugares$.next(this.todosLosLugares);
     }
@@ -149,7 +149,7 @@ export class LugaresService {
      */
     updatePrioridadLugarFirestore(idLugar: string, prio: number) {
         this.afs.doc<Lugar>(`lugares/${idLugar}`).update({ prioridad: prio })
-            .then(res => console.log("Se actualizó la prioridad"))
+            .then(res => console.log("Se actualizó la prioridad en firestore"))
             .catch(error => { console.error("Se produjo un error al actualizar la prioridad. Error: " + error) })
     }
 
@@ -158,8 +158,8 @@ export class LugaresService {
      * no estar consultado la base y minimizar el traficio.
      */
     getLugaresFirestore(departament: string) {
-        //this.afs.collection('lugares').ref.where('departamento',"==",departament).where('prioridad', ">", -1).orderBy('prioridad').get().then(
-        this.afs.collection('lugares').ref.where('prioridad', ">", -1).orderBy('prioridad').get().then(
+        this.afs.collection('lugares').ref.where('departamento', "==", departament).where('prioridad', ">", -1).orderBy('prioridad').get().then(
+            //this.afs.collection('lugares').ref.where('prioridad', ">", -1).orderBy('prioridad').get().then(
             querySnapshot => {
                 const arrLugares: any[] = [];
                 querySnapshot.forEach(item => {
@@ -168,14 +168,14 @@ export class LugaresService {
                 })
                 //console.log(arrLugares)
                 this.todosLosLugares = arrLugares.slice();
-                //   this.lugaresOriginal = arrLugares.slice();
-                //this.corregirPrioridades(); //actualiza cada prioridad segun el inidice
+                //this.lugaresOriginal = arrLugares.slice();
+                // this.corregirPrioridades(); //actualiza cada prioridad segun el inidice
                 this.updateListaPrioridadesLocal(false);//
                 this.lugares$.next(this.todosLosLugares); //el subject lugares$ emite los lugares
             }
         ).catch(error => {
             console.error("Error en getLugaresFirestore(). error:" + error);
-        }).finally(() => console.info("Corriendo getLugaresFirestore() en lugares.services!"))
+        });
     }
 
     /**
@@ -193,11 +193,6 @@ export class LugaresService {
     getObsPrioridades$(): Observable<number[]> {
         return this.prioridades$.asObservable();
     }
-
-    /** Retorna un observable de un lugar obtenido localmente del array lugares */
-    //  getObsLugar$(): Observable<Lugar> {
-    //      return this.lugar$.asObservable();
-    //  }
 
     emitirLugares() {
         this.lugares$.next(this.todosLosLugares);
@@ -221,7 +216,13 @@ export class LugaresService {
     getLugaresPorDepartamento(departamento: string): void {
         //si uso la consulta a firestore retorna un observable
         //return this.afs.collection('lugares', ref => ref.where('departamento', '==', departamento)).valueChanges({ idField: 'id' });
-        this.lugares$.next(this.todosLosLugares.filter(lugar => lugar.departamento == departamento));
+        let lugaresDepartamento = this.todosLosLugares.filter(lugar => lugar.departamento === departamento);
+        this.lugares$.next(lugaresDepartamento);
+    }
+
+    getLugaresLocalidad(loc: string) {
+        let lugaresLocalidad = this.todosLosLugares.filter(lugar => lugar.localidad === loc);
+        this.lugares$.next(lugaresLocalidad);
     }
 
     /** OK: Filtra por el estado de publicacion y retorna un obserbave  */
@@ -234,25 +235,27 @@ export class LugaresService {
     /** OK: Filtra por el estado de publicacion y por el departamento, luego 
      * actualiza el Subject  lugares$
       */
-    getLugaresPublicadoYDepartamento(publicado: boolean, departamento: string): void {
-        //si uso la consulta a firestore retorna un observable
-        /*return this.afs.collection('lugares', ref => ref.where('publicado', '==', publicado)
-        .where('departamento','==',departamento)).valueChanges({ idField: 'id' });
-        */
-        this.lugares$.next(this.todosLosLugares.filter(lugar => {
-            if (lugar.publicado === publicado && lugar.departamento === departamento) {
-                return true;
-            } else {
-                return false;
-            }
-        })
+    getLugaresPublicadoYDepartamento(pub: boolean, depto: string): void {
+        this.lugares$.next(
+            this.todosLosLugares.filter(lugar => {
+                if (lugar.publicado === pub && lugar.departamento === depto) {
+                    return true;
+                } else {
+                    return false;
+                }
+            })
         );
     }
 
-    //Falta hacer este metodo funcione, tiene que devolver un observable con un array de lugares que coinsidan con el termino de busqueda
-    getSugerencias(termino: string): Observable<any> {
-        return from(
-            this.afs.doc(`lugares`).snapshotChanges()
+    getLugaresPublicadoDepartamentoLocalidad(pub: boolean, dpto: string, loc: string) {
+        this.lugares$.next(
+            this.todosLosLugares.filter(lugar => {
+                if (lugar.publicado === pub && lugar.departamento === dpto && lugar.localidad === loc) {
+                    return true;
+                } else {
+                    return false;
+                }
+            })
         );
     }
 

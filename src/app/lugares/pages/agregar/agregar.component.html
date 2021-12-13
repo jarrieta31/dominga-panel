@@ -1,6 +1,6 @@
 <div fxLayout='row' fxLayoutAlign="space-between center">
 
-    <button mat-button color="primary" (click)="regresar()">
+    <button mat-button type="button" color="primary" (click)="regresar()">
         <mat-icon>arrow_back_ios</mat-icon>
         Atras
     </button>
@@ -21,13 +21,13 @@
             <!-- ==============================  Nombre/Publicado ==================================== -->
             <div class="container" style="height: 124px;">
                 <div>
-                    <h2>Nombre/estado de publicación</h2>
+                    <h2>Nombre */Estado de publicación</h2>
                 </div>
                 <div fxLayout="row" fxLayoutGap="30px">
 
                     <mat-form-field fxFlex="50%">
                         <mat-label>Nombre del Lugar</mat-label>
-                        <input matInput type="text" formControlName="nombre" (change)="quitarEspacios()">
+                        <input required matInput type="text" formControlName="nombre" (change)="quitarEspacios()">
                         <!-- La expresion "nombre" representa "lugarForm.get('nombre')" pero gracias al geter solo escribimos nombre -->
                         <ng-container *ngIf="!nombre.valid && nombre.touched">
                             <mat-error *ngIf="nombre.errors.required">El campo nombre es obligatorio.</mat-error>
@@ -53,21 +53,21 @@
                 <!-- ============================== Fin Departamento y Localidad ==================================== -->
                 <div class="container" style="height: 124px;">
                     <div>
-                        <h2>Departamento/Localidad</h2>
+                        <h2>Departamento */Localidad *</h2>
                     </div>
                     <div fxLayout="row" fxLayoutGap="40px">
                         <mat-form-field id="camp-principal" fxFlex="50%">
                             <mat-label>Selecciona el Departamento</mat-label>
-                            <mat-select formControlName="departamento"
+                            <mat-select formControlName="departamento" required
                                 (selectionChange)="getLocalidadesPorDepartamento()">
-                                <mat-option *ngFor="let departamento of departamentos" [value]="departamento">{{
-                                    departamento }}
+                                <mat-option *ngFor="let departamento of departamentos" [value]="departamento">
+                                    {{ departamento }}
                                 </mat-option>
                             </mat-select>
                         </mat-form-field>
                         <mat-form-field id="camp-principal2" fxFlex="50%">
                             <mat-label>Selecciona la Localidad</mat-label>
-                            <mat-select formControlName="localidad" (selectionChange)="setImagenPrincipal()">
+                            <mat-select formControlName="localidad" required>
                                 <mat-option *ngFor="let localidad of localidades" [value]="localidad">{{ localidad }}
                                 </mat-option>
                             </mat-select>
@@ -174,22 +174,29 @@
                 <div fxFlex="100%">
                     <h2 class="subtitulo">Teléfonos</h2>
                 </div>
-                <div fxLayout="row" formArrayName="telefonos">
-                    <div style="width: 50%;">
-                        <mat-form-field fxLayout="column" fxLayoutAlign="space-between none"
-                            *ngFor="let telefono of telefonos.controls; let i=index" [formGroupName]="i"
-                            style="width: 300px;">
-                            <input matInput type="tel" formControlName="numero" placeholder="43401234 o 099123456">
+                <div fxLayout="column" formArrayName="telefonos">
+                    <div *ngFor="let telefono of telefonos.controls; let i=index" [formGroupName]="i"
+                        style="width: 100%;" fxLayout="row" fxLayoutAling="space-between center" fxLayoutGap="40px">
+                        <mat-form-field style="width: 50%;">
+                            <input matInput type="tel" formControlName="numero" placeholder="43401234 o 099123456"
+                                style="width: 400px;">
                             <mat-icon matSuffix>phone</mat-icon>
                             <mat-label>Inserte el teléfono {{ i + 1}}</mat-label>
                         </mat-form-field>
+                        <div *ngIf="i > 0">
+                            <button type="button" mat-stroked-button color="warn" (click)="eliminarTelefonoDelFormulario(i)">
+                                <mat-icon>delete</mat-icon>
+                                Eliminar
+                            </button>
+                        </div>
+                        <div  *ngIf="i == 0">
+                            <button type="button" mat-raised-button color="primary" (click)="agregarNuevoTelefonoAlFormulario()">
+                                <mat-icon>add</mat-icon>
+                                Agregar Teléfono
+                            </button>
+                        </div>
                     </div>
-                    <div fxLayout="row" fxLayoutAlign="center center" style=" width: 50%; ">
-                        <button mat-raised-button color="primary" (click)="agregarNuevoTelefonoAlFormulario()">
-                            <mat-icon>add</mat-icon>
-                            Agregar otro teléfono
-                        </button>
-                    </div>
+
                 </div>
             </div>
             <!-- ============================== Fin Telefonos ==================================== -->
@@ -199,21 +206,27 @@
                 <div fxFlex="100%">
                     <h2 class="subtitulo">Videos en Youtube</h2>
                 </div>
-                <div fxLayout="row" formArrayName="videos">
-                    <div style="width: 50%;">
-                        <mat-form-field fxLayout="column" fxLayoutAlign="space-between none"
-                            *ngFor="let video of videos.controls;let j=index" [formGroupName]="j" style="width: 400px;">
+                <div fxLayout="column" formArrayName="videos">
+                    <div *ngFor="let video of videos.controls;let j=index" [formGroupName]="j" style="width: 100%;"
+                        fxLayout="row" fxLayoutAling="space-between center" fxLayoutGap="40px">
+                        <mat-form-field style="width: 50%;">
                             <input matInput type="url" formControlName="url"
-                                placeholder="https://www.youtube.com/watch?v=df021jGEmPM">
+                                placeholder="https://www.youtube.com/watch?v=df021jGEmPM" style="width: 400px;">
                             <mat-icon matSuffix>add_link</mat-icon>
                             <mat-label>Inserte la url del video </mat-label>
                         </mat-form-field>
-                    </div>
-                    <div fxLayout="row" fxLayoutAlign="center center" style=" width: 50%; ">
-                        <button mat-raised-button color="primary" (click)="agregarNuevoVideoAlFormulario()">
-                            <mat-icon>add</mat-icon>
-                            Agregar otro video
-                        </button>
+                        <div *ngIf="j > 0">
+                            <button type="button" mat-stroked-button color="warn" (click)="eliminarVideoDelFormulario(j)">
+                                <mat-icon>delete</mat-icon>
+                                Eliminar
+                            </button>
+                        </div>
+                        <div *ngIf="j == 0">
+                            <button type="button" mat-raised-button color="primary" (click)="agregarNuevoVideoAlFormulario()">
+                                <mat-icon>add</mat-icon>
+                                Agregar Video 
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -266,7 +279,7 @@
 
             <!-- ============================== Mapa ==================================== -->
             <div fxLayout="column" class="container">
-                <h2>Ubicación del Lugar</h2>
+                <h2>Ubicación del Lugar *</h2>
                 <div fxLayout="row">
                     <div fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="30px">
                         <div style="width: 70%;">
@@ -275,13 +288,20 @@
                         </div>
 
                         <div>
-                            <button mat-raised-button color="primary" (click)="openDialog()">
+                            <button type="button" mat-raised-button color="primary" (click)="abrirMapa()">
                                 <mat-icon>map</mat-icon>
                                 Abrir Mapa
                             </button>
                         </div>
-                        <div>
+                        <div *ngIf="ubicacion.value !== null">
+                            Longitud: {{ ubicacion.value.lng }}, Latidud: {{ ubicacion.value.lat }}
                         </div>
+                        <div *ngIf="ubicacion.value === null">
+                            Longitud: 0, Latidud: 0
+                        </div>
+                        <ng-container *ngIf="!ubicacion.valid && mapaTouched">
+                            <mat-error>¡Debe seleccionar la ubicación del lugar creando un marcador en el mapa!</mat-error>
+                        </ng-container>
                     </div>
                     <div fxLayout="column">
                         <app-mini-mapa></app-mini-mapa>
@@ -306,7 +326,7 @@
                 <mat-card class="container-img">
                     <img mat-card-image [src]="home.url" class="imagen-home">
                     <mat-card-actions *ngIf="home.name != 'imagen-default'">
-                        <button mat-stroked-button color="warn" (click)="setImagenHome('')">
+                        <button type="button" mat-stroked-button color="warn" (click)="setImagenHome('')">
                             <mat-icon>delete</mat-icon> Eliminar
                         </button>
                     </mat-card-actions>
@@ -371,7 +391,7 @@
         <div fxLayout='row' fxLayoutAlign="center center">
             <div class="galeria" style="width: 1000px;">
                 <div *ngIf="galeria.length < 1">
-                    <div  fxLayout="row" fxLayoutAlign="center center">
+                    <div fxLayout="row" fxLayoutAlign="center center">
                         <br>
                         <h3>No hay imágenes en la galería</h3>
                     </div>
@@ -402,10 +422,8 @@
             </div>
 -->
 
-    <!--
     <div style="overflow: scroll; width: 100%;height: 200px;">
         <span>Valores</span>
         <pre>{{ this.lugarForm.value | json }}</pre>
     </div>
--->
 </form>

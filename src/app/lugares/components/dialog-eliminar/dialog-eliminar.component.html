@@ -4,10 +4,18 @@
     <p>¿Está seguro que quiere eliminar el lugar <em>"{{data.nombre}}"</em> de la APP?</p>
 </mat-dialog-content>
 <mat-dialog-actions align="end">
-    <button mat-stroked-button color="primary" mat-dialog-close (click)="closeDialog()">
+    <button type="button"
+        mat-stroked-button 
+        color="primary" 
+        mat-dialog-close 
+        (click)="closeDialog()">
         Cancelar
     </button>
-    <button mat-stroked-button color="warn" [mat-dialog-close]="true" cdkFocusInitial (click)="eliminarLugar(data.id)">
+    <button type="button"
+        mat-stroked-button color="warn" 
+        [mat-dialog-close]="true" 
+        cdkFocusInitial 
+        (click)="eliminarLugar(data.id)">
         Eliminar
     </button>
 </mat-dialog-actions>

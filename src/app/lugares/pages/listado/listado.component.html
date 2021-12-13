@@ -6,39 +6,50 @@
 <mat-divider></mat-divider>
 <br>
 
+
+<form [formGroup]="filtrosForm">
+    <div fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="40px">
+        <div fxFlex="15">
+            <h3>Departamento:</h3>
+        </div>
+        <mat-form-field fxFlex="20%">
+            <mat-label>Selecciona el Departamento</mat-label>
+            <mat-select formControlName="departamento" (selectionChange)="getLocalidadesPorDepartamento()">
+                <mat-option *ngFor="let dpto of departamentos" [value]="dpto">
+                    {{ dpto }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <div fxFlex="15">
+            <h3>Localidad:</h3>
+        </div>
+        <mat-form-field fxFlex="20%">
+            <mat-label>Selecciona la Localidad</mat-label>
+            <mat-select formControlName="localidad" (selectionChange)="getLugaresPorLocalidad()">
+                <mat-option *ngFor="let loc of localidades" [value]="loc">{{ loc }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+
+</form>
+
 <div fxLayout="row" fxLayoutAlign="center center">
     <mat-accordion style="width: 1730px;">
         <mat-expansion-panel>
             <mat-expansion-panel-header>
                 <mat-panel-title>
                     <mat-icon>filter_alt</mat-icon>
-                    Filtros
+                    &nbsp; Otros Filtros
                 </mat-panel-title>
                 <mat-panel-description>
-                    Puedes aplicar filtros para ver solo lo que necesitas
+                    Puedes aplicar más filtros para ver solo lo que necesitas
                 </mat-panel-description>
             </mat-expansion-panel-header>
 
-            <div fxLayout="column" fxLayoutAlign="center" fxLayoutGap="40px">
-                <!-- ======================================= filtro por departamentos ======================================-->
-                <div fxLayout="row" fxLayoutAlign="space-evenly start" fxLayoutGap="40px" style="width: 1000px;">
-                    <div fxFlex.gt="20%">
-                        <mat-slide-toggle [(ngModel)]="filtroDepartamento">Filtro por Departamento: </mat-slide-toggle>
-                    </div>
-                    <div fxFlex=80%>
-                        <mat-radio-group [(ngModel)]="departamentoSelec" color="primary"
-                            [disabled]="!filtroDepartamento" labelPosition="after">
-                            <mat-radio-button style="width: 20%; height: 34px;"
-                                *ngFor="let departamento of departamentos; let i=index" [value]="departamento">
-                                {{departamento}}
-                            </mat-radio-button>
-                        </mat-radio-group>
-                    </div>
-                </div>
-                <!-- ======================================= Fin filtro por departamentos ======================================-->
-
+            <div fxLayout="column" fxLayoutAlign="center" fxLayoutGap="20px">
                 <!-- ======================================= filtro por estado de Publicacion ======================================-->
-                <div fxLayout="row" fxLayoutAlign="space-evenly start" fxLayoutGap="40px" style="width: 1000px;">
+                <div fxLayout="row" fxLayoutAlign="space-evenly start" fxLayoutGap="20px" style="width: 1000px;">
                     <div fxFlex.gt="20%">
                         <mat-slide-toggle [(ngModel)]="filtroPublicado">Filtro por estado de publiación:
                         </mat-slide-toggle>
@@ -55,7 +66,7 @@
             <!-- ======================================= Aplicar Filtros ======================================-->
             <br>
             <div fxLayout="row" fxLayoutAlign="start center">
-                <button mat-raised-button color="primary" (click)="filtrarLugares()">Aplicar filtros</button>
+                <button type="button" mat-raised-button color="primary" (click)="filtrarLugares()">Aplicar filtros</button>
             </div>
             <!-- ======================================= Fin Aplicar Filtros ======================================-->
         </mat-expansion-panel>

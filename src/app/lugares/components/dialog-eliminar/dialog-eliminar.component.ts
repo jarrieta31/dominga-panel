@@ -32,20 +32,27 @@ export class DialogEliminarComponent implements OnInit {
      * Función que elimina un lugar de la base de datos 
      * @param id Es el id del lugar a eliminar
      */
-    eliminarLugar(id: string) {
-        try {
-            let directorio = this.fbStorage.quitarAcentos(this.data.nombre);
-            //borra la imagen del home de fire storage
-            if (this.data.imagenHome.name !== "imagen-default") {
-                this.fbStorage.borrarArchivoStorage(`lugares/${directorio}`, this.data.imagenHome.name);
-            }
-            //borra todas las imágenes de la galeria de fire storage
-            this.data.imagenes.forEach(img => {
-                this.fbStorage.borrarArchivoStorage(`lugares/${directorio}`, img.name);
-            })
+    async eliminarLugar(id: string) {
+        let directorio = this.data.carpeta;
+        if (this.data.imagenHome.url === 'assets/default-home.jpg' && this.data.imagenes.length === 0) {
             this.lugaresService.deleteLugar(id);
-        } catch (error) {
-           console.error("Se produjó un error en dialog-eliminar Lugar")
         }
+        //borra la imagen del home de fire storage
+        else if (this.data.imagenHome.url !== "assets/default-home.jpg") {
+            try {
+                const clearHome = await this.fbStorage.borrarArchivoStorage(`lugares/${directorio}`, this.data.imagenHome.name);
+            } catch (error) {
+               console.log('Se produjo un error al intentar eliminar la imágen '+this.data.imagenHome.name+'. Error: '+error); 
+            }
+        }
+        //borra todas las imágenes de la galeria de fire storage
+        for await (const img of this.data.imagenes) {
+            try {
+                const deleteImagen = await this.fbStorage.borrarArchivoStorage(`lugares/${directorio}`, img.name);
+            } catch (error) {
+               console.log('Se produjo un error al intentar eliminar la imágen '+img.name+'. Error: '+error); 
+            }
+        }
+        this.lugaresService.deleteLugar(id);
     }
 }

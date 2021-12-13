@@ -28,15 +28,6 @@ export class MapaComponent implements OnInit {
     }
 
     ngOnDestroy(): void {
-        // Guarda los datos del marcador en mapa-service para obtenerlos desde agregar lugar
-        //   if(this.marcador !== undefined){
-        //     this.mapaService.dataTemporal.marcador = true;
-        //     this.mapaService.dataTemporal.centro = this.marcador.getLngLat();
-        //     this.mapaService.dataTemporal.zoom = 16;
-        //     //Luego de guardar el dato emite el vento antes de cerrarse
-        //     //this.mapaService.emitirDataMap();
-        //   }
-        
         /** Deja de escuchar los eventos zoom del mapa */
         this.mapa.off('zoom', () => {});
     }
@@ -58,7 +49,6 @@ export class MapaComponent implements OnInit {
         });
 
         this.zoom = this.mapa.getZoom();
-        console.log(this.zoomIn);
 
         //Si dMapa tiene marcador en true se crea el marcador y se centra en el
         if (this.mapaService.dMapa.marcador) {
@@ -94,7 +84,9 @@ export class MapaComponent implements OnInit {
         this.cdRef.detectChanges();
     }
 
-    /**Agrega un marcador y actualiza la información del mapa en el servicio mapa-service */
+    /**
+     * Agrega un marcador y actualiza la información del mapa en el servicio mapa-service.
+     */
     addMarker() {
         if (this.marcador === undefined) {
             this.marcador = new mapboxgl.Marker({
@@ -112,7 +104,9 @@ export class MapaComponent implements OnInit {
         }
     }
 
-    /**Eliminar el marcador actual y aleja el zoom del mapa */
+    /** 
+     * Eliminar el marcador actual y aleja el zoom del mapa
+     */
     deleteMarker() {
         if (this.marcador !== undefined) {
             this.marcador.off('dragend', () => { });
@@ -125,11 +119,14 @@ export class MapaComponent implements OnInit {
             this.mapaService.resetDataMapa();
             this.refreshButtons();
             this.zoom = this.mapa.getZoom();
+            this.mapaService.resetDataMiniMapa();
         }
     }
 
 
-    /** Mueve el mapa hasta la posición del marcador */
+    /** 
+     * Mueve el mapa hasta la posición del marcador
+     */
     flyToMarker() {
         if (this.marcador !== undefined) {
             this.mapa.flyTo({
@@ -138,9 +135,11 @@ export class MapaComponent implements OnInit {
                 essential: true
             });
         }
-
     }
 
+    /**
+     * Actualiza el estado de los botones en función de sí existe marcador o no. 
+     */
     refreshButtons() {
         if (this.marcador === undefined) {
             this.delete_btn = true;

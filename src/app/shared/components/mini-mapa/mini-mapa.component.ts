@@ -25,13 +25,11 @@ export class MiniMapaComponent implements OnInit, AfterViewInit {
     }
 
     ngOnDestroy(): void {
-        //Called once, before the instance is destroyed.
-        //Add 'implements OnDestroy' to the class.
         this.sourceMiniMapa.unsubscribe();
     }
 
     ngAfterViewInit(): void {
-
+        //crear el mini-mapa
         this.mapa = new mapboxgl.Map({
             container: this.divMiniMapa.nativeElement,
             style: 'mapbox://styles/mapbox/streets-v11',
@@ -39,9 +37,8 @@ export class MiniMapaComponent implements OnInit, AfterViewInit {
             zoom: this.mapaService.dMiniMapa.zoom,
             interactive: false
         });
-
+        //Subscripción a mapaService para obtener los datos del mini-mapa
         this.sourceMiniMapa = this.mapaService.getObsMiniMapa().subscribe(res => {
-
             if (res !== undefined && res.marcador == true) {
                 // Si el marcador no existe lo crea, de lo contrario cambia su ubicacion
                 if (this.marcador === undefined) {// si no existe lo crea
@@ -49,7 +46,6 @@ export class MiniMapaComponent implements OnInit, AfterViewInit {
                 } else {
                     this.marcador.setLngLat(res.centro)
                 }
-                console.log("minimapa centro: " + res.centro.lat )
                 this.flyToMarker()
             } else {
                 this.deleteMarker();
@@ -58,7 +54,9 @@ export class MiniMapaComponent implements OnInit, AfterViewInit {
         this.mapaService.emitirMiniMapa();
     }
 
-    /**Agrega un marcador y actualiza la información del mapa en el servicio mapa-service */
+    /**
+     * Agrega un marcador y actualiza la información del mapa en el servicio mapa-service 
+     */
     addMarker() {
         this.marcador = new mapboxgl.Marker({
             color: "red",
@@ -69,9 +67,10 @@ export class MiniMapaComponent implements OnInit, AfterViewInit {
         this.mapaService.dMiniMapa.marcador = true;
     }
 
-    /**Eliminar el marcador actual y aleja el zoom del mapa */
+    /**
+     * Eliminar el marcador actual y aleja el zoom del mapa
+     */
     deleteMarker() {
-
         if (this.marcador !== undefined) {
             this.mapa.flyTo({
                 center: this.marcador.getLngLat(),
@@ -81,8 +80,6 @@ export class MiniMapaComponent implements OnInit, AfterViewInit {
             this.marcador = undefined;
             this.mapaService.resetDataMiniMapa();
         }
-
-
     }
 
     /** Mueve el mapa hasta la posición del marcador */

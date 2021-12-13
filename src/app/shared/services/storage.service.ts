@@ -11,7 +11,6 @@ export class StorageService {
     constructor(
         private storage: AngularFireStorage) {
         //this.pageTokenExample();
-        console.log(this.quitarAcentos("Acentos ortográficos ñiñod gráficas Métodos"))
     }
 
     /**
@@ -23,7 +22,6 @@ export class StorageService {
      * @returns 
      */
     public subirArchivoCloudStorage(directorio: string, nombreArchivo: string, datos: any) {
-        //directorio = this.quitarAcentos(directorio);//
         return this.storage.upload(`/${directorio}/${nombreArchivo}`, datos);
     }
 
@@ -46,14 +44,9 @@ export class StorageService {
      * @param directorio Es el nombre del directorio donde está guardada la imágen.
      * @param {string} nombreArchivo - Nombre del archivo que queremos borrar.
      */
-    public borrarArchivoStorage(directorio: string, nombreArchivo: string) {
-        try {
-            //directorio = this.quitarAcentos(directorio);
-            const storageRef = this.storage.ref(directorio);
-            storageRef.child(nombreArchivo).delete();
-        } catch (error) {
-            console.error("Se produjó un error al intentar borrar la imágen de Firebase Storage. Error: " + error );
-        }
+    public async borrarArchivoStorage(directorio: string, nombreArchivo: string): Promise<any> {
+            const storageRef = await this.storage.ref(`${directorio}/${nombreArchivo}`);
+            return storageRef.delete().toPromise();
     }
 
 
