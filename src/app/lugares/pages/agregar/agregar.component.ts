@@ -35,7 +35,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
     idNuevoLugar: string = "";
     localidades: string[] = [];
     lugaresTipo = [{ tipo: "Urbano" }, { tipo: "Rural" }];
-    mapaTouched:boolean = false;
+    mapaTouched: boolean = false;
     opsPatrimonial = [{ texto: "Sí", valor: true }, { texto: "No", valor: false }];
     prioridadAnterior: number;
     titulo: string = "Nuevo Lugar";
@@ -139,13 +139,13 @@ export class AgregarComponent implements OnInit, OnDestroy {
             if (res !== undefined && res.marcador === true) {
                 this.ubicacion.setValue(res.centro);
             }
-            else if(res.marcador === false){
+            else if (res.marcador === false) {
                 this.ubicacion.setValue(null);
             }
             console.log(JSON.stringify(res));
         });
 
-        
+
     }
 
     ngOnInit(): void {
@@ -386,23 +386,23 @@ export class AgregarComponent implements OnInit, OnDestroy {
         dialogConfig.data = 0;
         const dialogRef = this.dialog.open(DialogMapaComponent, dialogConfig);
 
-    //    dialogRef.afterClosed().pipe(
-    //        tap(res => {
-    //            this.submitHabilitado = true;
-    //        })
-    //    ).subscribe(result => {
-    //        console.log(`Dialog result: ${result}`);
-    //        //this.mapaService.emitirDataMap(this.mapaService.dataTemporal);
-    //    });
+        //    dialogRef.afterClosed().pipe(
+        //        tap(res => {
+        //            this.submitHabilitado = true;
+        //        })
+        //    ).subscribe(result => {
+        //        console.log(`Dialog result: ${result}`);
+        //        //this.mapaService.emitirDataMap(this.mapaService.dataTemporal);
+        //    });
 
     }
 
     /** Enviar en formulario a firebase */
-    submitLugar() {
+    async submitLugar() {
         //envia el formulario
         this.lugarForm.controls['imagenHome'].setValue(this.home);
         this.lugarForm.controls['imagenes'].setValue(this.galeria);
-        if (this.lugarForm.valid ) {
+        if (this.lugarForm.valid) {
             this.cambiosConfirmados = true;
             //verifica si es una actualización o un lugar nuevo
             if (this.idLugar !== undefined) {//si se esta editando un lugar
@@ -434,13 +434,17 @@ export class AgregarComponent implements OnInit, OnDestroy {
                     this.regresar();
                 }
             } else { //Si el lugar es nuevo
-                let nuevoId = this.lugaresService.addLugar(this.lugarForm.value);
-                if (nuevoId !== '') {
-                    this.openSnackBarSubmit('¡El nuevo lugar se ha guardado correctamente con el ID: ' + nuevoId);
-                    this.lugaresService.corregirPrioridadesFirestore(nuevoId, 'add');
-                } else {
-                    this.openSnackBarSubmit('¡Por algún motivo el nuevo lugar no se pudo gardar!');
-                }
+                let nuevoId: string;
+                this.lugaresService.addLugar(this.lugarForm.value).then(id => {
+                    nuevoId = id
+                    if (nuevoId !== '' && nuevoId !== undefined) {
+                        this.openSnackBarSubmit('¡El nuevo lugar se ha guardado correctamente con el ID: ' + nuevoId);
+                        this.lugaresService.corregirPrioridadesFirestore(nuevoId, 'add');
+                    }
+                }).catch(error => { 
+                    console.log(error); 
+                        this.openSnackBarSubmit('¡Por algún motivo el nuevo lugar no se pudo gardar!');
+                })
                 //limpia el formulario y setea los valores inicales con el metodo reset
                 this.lugarForm.reset({
                     imagenHome: this.imagenHomeDefault,
@@ -453,7 +457,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
                 //Limpia el minimapa y el mapa
                 this.mapaService.emitirMiniMapa();
                 this.mapaService.resetDataMapa();
-               // this.regresar();
+                this.regresar();
             }
         }
     }

@@ -87,8 +87,26 @@ export class ValidatorService {
 
             return null;
         }
-
     }
 
+    /**
+     * Está sin hacer 
+     * @param control FormControl del video
+     * @returns 
+     */
+    validarVideo(control: FormControl): ValidationErrors | null{
+        //console.log(control.value)
+        if (control.value === "" || control.value === null) {
+            return null;
+        } else {
+            const valor: string = control.value?.trim().toLowerCase();
+            //Ejemplo: https://www.facebook.com/museodepartamentaldesanjose/
+            let regExPersonal = /^https:\/\/(?:www\.)?instagram\.com\/\b([-a-zA-Z0-9()@:%_\+.~#?&//=]{3,})$/g;
+            if (regExPersonal.test(valor)) {
+                return null;
+            }
+            return { whatsapp: true };
+        }
+    }
 
 }

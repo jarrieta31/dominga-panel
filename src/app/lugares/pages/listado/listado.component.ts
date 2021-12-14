@@ -53,8 +53,14 @@ export class ListadoComponent implements OnInit, OnDestroy {
         this.departamento.setValue(this.localStorageService.departamento);
         this.localidadesService.emitirLocalidades();
         //this.sourceLugares = this.lugaresService.getObsLugares$().subscribe(lugares => this.lugares = lugares);
-        this.lugares$ = this.lugaresService.getObsLugares$()
-        this.lugaresService.getLugaresFirestore(this.departamento.value);
+        this.lugares$ = this.lugaresService.getObsLugares$();
+        //Chequea si los lugares del departamento actual estan en cache.
+        if (!this.lugaresService.checkCache(this.departamento.value)) {
+            console.log(this.departamento.value + " descargando de la nube")
+            this.lugaresService.getLugaresFirestore(this.departamento.value);
+        }else{
+            console.log(this.departamento.value + " ya está descargado")
+        }
     }
 
     ngAfterViewInit(): void {
@@ -79,10 +85,10 @@ export class ListadoComponent implements OnInit, OnDestroy {
         this.localStorageService.setDepartamento(this.departamento.value);
         this.localidadesService.getLocadidadesDepartamento(this.departamento.value);
         this.lugaresService.getLugaresFirestore(this.departamento.value);
-        
+
     }
 
-    getLugaresPorLocalidad(){
+    getLugaresPorLocalidad() {
         this.lugaresService.getLugaresLocalidad(this.localidad.value);
     }
 
