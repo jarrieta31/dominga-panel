@@ -90,7 +90,7 @@ export class ValidatorService {
     }
 
     /**
-     * Está sin hacer 
+     * Valida el link de un video de youtube con el formato listo para embeber en al app. 
      * @param control FormControl del video
      * @returns 
      */
@@ -101,13 +101,34 @@ export class ValidatorService {
         if ( control.value === null || control.value === '') {
             return null;
         } else {
-            const valor: string = control.value?.trim().toLowerCase();
-            //Ejemplo: https://www.facebook.com/museodepartamentaldesanjose/
+            const valor: string = control.value;
             let regExPersonal = /^https:\/\/(?:www\.)?youtube\.com\/embed\/\b([-a-zA-Z0-9_]{11,})$/g;
             if (regExPersonal.test(valor)) {
                 return null;
             }
             return { video: true };
+        }
+    }
+
+
+    /**
+     * Valida el link de un video de youtube con el formato listo para embeber en al app. 
+     * @param control FormControl del video
+     * @returns 
+     */
+    validarTelefono(control: FormControl): ValidationErrors | null{
+        // puede aceptar : 43422835 o 43422835-36 o 099123456   
+        console.log(control.value)
+        if ( control.value === null || control.value === '') {
+            return null;
+        } else {
+            const valor: string = control.value;
+            let regExPersonal = /^\b([0-9]{8,8})(?:-[0-9]{2,2})$/g;
+            let regExPersonal2 = /^\b([0-9]{9,9})$/g;
+            if (regExPersonal.test(valor) || regExPersonal2.test(valor)) {
+                return null;
+            }
+            return { telefono: true };
         }
     }
 

@@ -79,7 +79,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
         tipo: [''],
         telefonos: this.fb.array([
             this.fb.group({
-                numero: ['', [Validators.minLength(8), Validators.maxLength(9)]]
+                numero: ['', [this.vs.validarTelefono]]
             })
         ]),
         ubicacion: [null, [this.vs.validarUbicacion, Validators.required]],
@@ -261,18 +261,18 @@ export class AgregarComponent implements OnInit, OnDestroy {
      * Por ultimo sustitye el valor en el control del formulario.
      * @param i Es el indice que ocupa el FormControl que quiero modificar en el FormArray de videos.
      */
-    parseLinkYoutube(i){
+    parseLinkYoutube(i) {
         let controls = this.videos as FormArray;
-        let control =  controls.at(i);
-        let link:string = control.value.url;
+        let control = controls.at(i);
+        let link: string = control.value.url;
         //link = link.replace(/\s/g, "");
         link = link.replace('watch?v=', 'embed/');
         let fin = link.indexOf('&list=');
-        if(fin !== -1){
+        if (fin !== -1) {
             link = link.slice(0, fin);// si hay una lista al final la quita
-        } 
+        }
         console.log(link)
-        control.setValue({url: link})
+        control.setValue({ url: link })
     }
 
     /**
@@ -365,11 +365,11 @@ export class AgregarComponent implements OnInit, OnDestroy {
      */
     switchPublicar() {
         let test: boolean = true;
-        let _galeria:string = "OK";
-        let _home:string = "OK";
-        let _principal:string = "OK";
-        let _ubicacion:string = "OK";
-        let _descripcion:string = "OK";
+        let _galeria: string = "OK";
+        let _home: string = "OK";
+        let _principal: string = "OK";
+        let _ubicacion: string = "OK";
+        let _descripcion: string = "OK";
         if (this.home.url === 'assets/default-home.jpg') {
             this.publicado.setValue(false);
             _home = `No válida`;
@@ -385,12 +385,12 @@ export class AgregarComponent implements OnInit, OnDestroy {
             this.publicado.setValue(false);
             _galeria = "No válida"
         }
-        if(this.descripcion.value.length < 100){
+        if (this.descripcion.value.length < 100) {
             test = false;
             this.publicado.setValue(false);
             _descripcion = "No válida"
         }
-        if(this.ubicacion.value === null){
+        if (this.ubicacion.value === null) {
             test = false;
             this.publicado.setValue(false);
             _ubicacion = "No válida"
@@ -398,11 +398,11 @@ export class AgregarComponent implements OnInit, OnDestroy {
         if (!test) {
             this.dialog.open(DialogPublicarComponent, {
                 data: {
-                     home: _home,
-                     principal: _principal,
-                     galeria: _galeria,
-                     ubicacion: _ubicacion,
-                     descripcion: _descripcion
+                    home: _home,
+                    principal: _principal,
+                    galeria: _galeria,
+                    ubicacion: _ubicacion,
+                    descripcion: _descripcion
                 },
             });
         }
@@ -454,7 +454,9 @@ export class AgregarComponent implements OnInit, OnDestroy {
 
     /** Enviar en formulario a firebase */
     async submitLugar() {
-        this.switchPublicar();
+        if (this.publicado.value === true) {
+            this.switchPublicar();
+        }
         //envia el formulario
         this.lugarForm.controls['imagenHome'].setValue(this.home);
         this.lugarForm.controls['imagenes'].setValue(this.galeria);

@@ -177,11 +177,14 @@
                 <div fxLayout="column" formArrayName="telefonos">
                     <div *ngFor="let telefono of telefonos.controls; let i=index" [formGroupName]="i"
                         style="width: 100%;" fxLayout="row" fxLayoutAling="space-between center" fxLayoutGap="20px">
-                        <mat-form-field style="width: 30%;">
-                            <input matInput type="tel" formControlName="numero" placeholder="43401234 o 099123456"
+                        <mat-form-field style="width: 50%;">
+                            <input matInput type="tel" formControlName="numero" placeholder="43401234 o 43401234-36 o 099123456"
                                 style="width: 100%;">
                             <mat-icon matSuffix>phone</mat-icon>
                             <mat-label>Inserte el teléfono {{ i + 1}}</mat-label>
+                            <ng-container *ngIf="!telefonos.at(i).valid && telefonos.at(i).touched">
+                                <mat-error>Formato no válido. ej: 43422835 o 43422835-36 o 099123456</mat-error>
+                            </ng-container>
                         </mat-form-field>
                         <div *ngIf="i > 0">
                             <button type="button" mat-stroked-button color="warn"
@@ -216,7 +219,7 @@
                                 placeholder="https://www.youtube.com/watch?v=df021jGEmPM" style="width: 100%;">
                             <mat-icon matSuffix>add_link</mat-icon>
                             <mat-label>Inserte la url del video </mat-label>
-                            <ng-container *ngIf="!videos.at(j).valid">
+                            <ng-container *ngIf="!videos.at(j).valid && videos.at(j).touched">
                                 <mat-error>¡Link no válido! Copié y pegue el link del video desde youtube.</mat-error>
                                 <mat-error>La apliación la transformará al formato correcto.</mat-error>
                             </ng-container>
