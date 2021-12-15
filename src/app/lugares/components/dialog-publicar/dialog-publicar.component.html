@@ -1,0 +1,18 @@
+<h2 mat-dialog-title>No es posible publicar el lugar</h2>
+<mat-dialog-content class="mat-typography">
+    <h3>Importante: Al publicar el lugar este será visible en la APP.</h3>
+    <p>Además de tener todos los campos obligatorios completados, también es necesario cumplir algunas condiciones más.</p>
+    <p>Las condiciones que debe satisfacer para publicar son las siguientes:</p>
+    <mat-list>
+        <mat-list-item>1. Debe tener cargada una imágen para el home. {{data.home}} </mat-list-item>
+        <mat-list-item>2. La galería debe tener al menos 4 imágenes cargadas. {{data.galeria}} </mat-list-item>
+        <mat-list-item>3. La imágen principal debe tener seleccionada una imágen de la galería. {{data.principal}}</mat-list-item>
+        <mat-list-item>4. El lugar debe tener una descripción válida. {{data.descripcion}}</mat-list-item>
+        <mat-list-item>5. El mapa debe tener un marcador con la ubicacion del lugar. {{data.ubicacion}}</mat-list-item>
+    </mat-list>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button type="button" mat-stroked-button color="primary" mat-dialog-close (click)="closeDialog()">
+        Aceptar
+    </button>
+</mat-dialog-actions>

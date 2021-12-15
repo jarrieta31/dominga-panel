@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { FormControl, ValidationErrors } from '@angular/forms';
+import { FormControl, ValidationErrors, FormArray } from '@angular/forms';
 
 @Injectable({
     providedIn: 'root'
@@ -94,18 +94,20 @@ export class ValidatorService {
      * @param control FormControl del video
      * @returns 
      */
-    validarVideo(control: FormControl): ValidationErrors | null{
+    validarYoutube(control: FormControl): ValidationErrors | null{
         //console.log(control.value)
-        if (control.value === "" || control.value === null) {
+        // tiene que quedar:    https://www.youtube.com/embed/WEn3eSV-hvw
+        console.log(control.value)
+        if ( control.value === null || control.value === '') {
             return null;
         } else {
             const valor: string = control.value?.trim().toLowerCase();
             //Ejemplo: https://www.facebook.com/museodepartamentaldesanjose/
-            let regExPersonal = /^https:\/\/(?:www\.)?instagram\.com\/\b([-a-zA-Z0-9()@:%_\+.~#?&//=]{3,})$/g;
+            let regExPersonal = /^https:\/\/(?:www\.)?youtube\.com\/embed\/\b([-a-zA-Z0-9_]{11,})$/g;
             if (regExPersonal.test(valor)) {
                 return null;
             }
-            return { whatsapp: true };
+            return { video: true };
         }
     }
 

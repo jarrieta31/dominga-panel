@@ -23,6 +23,7 @@ import { ListadoComponent } from './pages/listado/listado.component';
 import { LugarComponent } from './pages/lugar/lugar.component';
 import { LugarTarjetaComponent } from './components/lugar-tarjeta/lugar-tarjeta.component';
 import { RecortarParrafoPipe } from './pipes/recortar-parrafo.pipe';
+import { DialogPublicarComponent } from './components/dialog-publicar/dialog-publicar.component';
 
 
 @NgModule({
@@ -37,6 +38,7 @@ import { RecortarParrafoPipe } from './pipes/recortar-parrafo.pipe';
         LugarComponent,
         LugarTarjetaComponent,
         RecortarParrafoPipe,
+        DialogPublicarComponent,
     ],
     imports: [
         AngularEditorModule,

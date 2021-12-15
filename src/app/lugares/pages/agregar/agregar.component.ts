@@ -13,6 +13,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { LugaresService } from '../../services/lugares.service';
 import { AngularEditorConfig } from '@kolkov/angular-editor';
 import { ValidatorService } from '../../../shared/services/validator.service';
+import { DialogPublicarComponent } from '../../components/dialog-publicar/dialog-publicar.component';
 
 
 
@@ -38,6 +39,8 @@ export class AgregarComponent implements OnInit, OnDestroy {
     mapaTouched: boolean = false;
     opsPatrimonial = [{ texto: "Sí", valor: true }, { texto: "No", valor: false }];
     prioridadAnterior: number;
+    publicadoChecked: boolean = false;
+    pubDisabled: boolean = false;
     titulo: string = "Nuevo Lugar";
     tituloUploaderGaleria: string = "Subir imágenes a la galería";
     tituloUploaderHome: string = "Selecciona la imágen del Home";
@@ -54,6 +57,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
     home: Imagen = this.imagenHomeDefault;
     galeria: Imagen[] = [];
     galeriaAgregar: Imagen[] = []; //solo guarda las imagenes que se agregan a la galeria
+    imagenesBorradas: Imagen[] = []; // solo guarda las imagenes que se eliminaron y no se guardo el formulario
     public lugarForm: FormGroup = this.fb.group({
         accesibilidad: [false],
         auto: [false],
@@ -83,7 +87,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
         whatsapp: [null, [this.vs.valididarWhatsapp]],
         videos: this.fb.array([
             this.fb.group({
-                url: ['']
+                url: ['', [this.vs.validarYoutube]]
             })
         ])
     });
@@ -252,6 +256,26 @@ export class AgregarComponent implements OnInit, OnDestroy {
     }
 
     /**
+     * Esta función transforma el link de youtube ingresado en un link para embeber en un sitio web o app.
+     * Al salir del campo lo parsea a la forma correcta ejem.: https://www.youtube.com/embed/WEn3eSV-hvw 
+     * Por ultimo sustitye el valor en el control del formulario.
+     * @param i Es el indice que ocupa el FormControl que quiero modificar en el FormArray de videos.
+     */
+    parseLinkYoutube(i){
+        let controls = this.videos as FormArray;
+        let control =  controls.at(i);
+        let link:string = control.value.url;
+        //link = link.replace(/\s/g, "");
+        link = link.replace('watch?v=', 'embed/');
+        let fin = link.indexOf('&list=');
+        if(fin !== -1){
+            link = link.slice(0, fin);// si hay una lista al final la quita
+        } 
+        console.log(link)
+        control.setValue({url: link})
+    }
+
+    /**
      * Recibe la imágen que se agregó a la galería y se subió a Firebase Storage desde el componente upload-files.  
      * Al recibirla la agrega al array galeria y al array galeriaAgregar para saber cuales se agregaron.
      * @param $event Es la imágen que se sube a la galería
@@ -272,6 +296,10 @@ export class AgregarComponent implements OnInit, OnDestroy {
     }
 
 
+    /** No se está usando ahora
+     * Función para mostrar un mensaje corto al usuario 
+     * @param message Es el texto que se muestra en el snackBar
+     */
     openSnackBarSubmit(message: string) {
         this._snackBar.open(message, "Aceptar", {
             duration: 5000
@@ -335,12 +363,49 @@ export class AgregarComponent implements OnInit, OnDestroy {
      * Función para prevenir la publicación de un lugar sin los datos indispensables
      * para la app
      */
-    openSnackBar() {
-        let message = "Mensaje de error al publicar el lugar"
-        this._snackBar.open(message, "Aceptar", {
-            horizontalPosition: 'center',
-            verticalPosition: 'top',
-        });
+    switchPublicar() {
+        let test: boolean = true;
+        let _galeria:string = "OK";
+        let _home:string = "OK";
+        let _principal:string = "OK";
+        let _ubicacion:string = "OK";
+        let _descripcion:string = "OK";
+        if (this.home.url === 'assets/default-home.jpg') {
+            this.publicado.setValue(false);
+            _home = `No válida`;
+            test = false;
+        }
+        if (this.imagenPrincipal.value.url === "assets/default-lugar-galeria.jpg") {
+            test = false;
+            this.publicado.setValue(false);
+            _principal = "No válida"
+        }
+        if (this.imagenes.value.length < 4) {
+            test = false;
+            this.publicado.setValue(false);
+            _galeria = "No válida"
+        }
+        if(this.descripcion.value.length < 100){
+            test = false;
+            this.publicado.setValue(false);
+            _descripcion = "No válida"
+        }
+        if(this.ubicacion.value === null){
+            test = false;
+            this.publicado.setValue(false);
+            _ubicacion = "No válida"
+        }
+        if (!test) {
+            this.dialog.open(DialogPublicarComponent, {
+                data: {
+                     home: _home,
+                     principal: _principal,
+                     galeria: _galeria,
+                     ubicacion: _ubicacion,
+                     descripcion: _descripcion
+                },
+            });
+        }
     }
 
     /**
@@ -384,21 +449,12 @@ export class AgregarComponent implements OnInit, OnDestroy {
         dialogConfig.minWidth = "900px";
         dialogConfig.id = "dialogMapa";
         dialogConfig.data = 0;
-        const dialogRef = this.dialog.open(DialogMapaComponent, dialogConfig);
-
-        //    dialogRef.afterClosed().pipe(
-        //        tap(res => {
-        //            this.submitHabilitado = true;
-        //        })
-        //    ).subscribe(result => {
-        //        console.log(`Dialog result: ${result}`);
-        //        //this.mapaService.emitirDataMap(this.mapaService.dataTemporal);
-        //    });
-
+        this.dialog.open(DialogMapaComponent, dialogConfig);
     }
 
     /** Enviar en formulario a firebase */
     async submitLugar() {
+        this.switchPublicar();
         //envia el formulario
         this.lugarForm.controls['imagenHome'].setValue(this.home);
         this.lugarForm.controls['imagenes'].setValue(this.galeria);
@@ -441,9 +497,9 @@ export class AgregarComponent implements OnInit, OnDestroy {
                         this.openSnackBarSubmit('¡El nuevo lugar se ha guardado correctamente con el ID: ' + nuevoId);
                         this.lugaresService.corregirPrioridadesFirestore(nuevoId, 'add');
                     }
-                }).catch(error => { 
-                    console.log(error); 
-                        this.openSnackBarSubmit('¡Por algún motivo el nuevo lugar no se pudo gardar!');
+                }).catch(error => {
+                    console.log(error);
+                    this.openSnackBarSubmit('¡Por algún motivo el nuevo lugar no se pudo gardar!');
                 })
                 //limpia el formulario y setea los valores inicales con el metodo reset
                 this.lugarForm.reset({
@@ -531,5 +587,9 @@ export class AgregarComponent implements OnInit, OnDestroy {
 
     get carpeta() {
         return this.lugarForm.get('carpeta');
+    }
+
+    get publicado() {
+        return this.lugarForm.get('publicado');
     }
 }

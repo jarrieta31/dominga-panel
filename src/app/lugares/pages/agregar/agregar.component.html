@@ -38,7 +38,7 @@
 
                     <div fxFlex="35%">
                         Activar para que sea visible en la app: &nbsp; &nbsp;
-                        <mat-slide-toggle (click)="openSnackBar()" formControlName="publicado">Publicado
+                        <mat-slide-toggle (change)="switchPublicar()" formControlName="publicado">Publicado
                         </mat-slide-toggle>
                     </div>
 
@@ -176,21 +176,23 @@
                 </div>
                 <div fxLayout="column" formArrayName="telefonos">
                     <div *ngFor="let telefono of telefonos.controls; let i=index" [formGroupName]="i"
-                        style="width: 100%;" fxLayout="row" fxLayoutAling="space-between center" fxLayoutGap="40px">
-                        <mat-form-field style="width: 50%;">
+                        style="width: 100%;" fxLayout="row" fxLayoutAling="space-between center" fxLayoutGap="20px">
+                        <mat-form-field style="width: 30%;">
                             <input matInput type="tel" formControlName="numero" placeholder="43401234 o 099123456"
-                                style="width: 400px;">
+                                style="width: 100%;">
                             <mat-icon matSuffix>phone</mat-icon>
                             <mat-label>Inserte el teléfono {{ i + 1}}</mat-label>
                         </mat-form-field>
                         <div *ngIf="i > 0">
-                            <button type="button" mat-stroked-button color="warn" (click)="eliminarTelefonoDelFormulario(i)">
+                            <button type="button" mat-stroked-button color="warn"
+                                (click)="eliminarTelefonoDelFormulario(i)">
                                 <mat-icon>delete</mat-icon>
                                 Eliminar
                             </button>
                         </div>
-                        <div  *ngIf="i == 0">
-                            <button type="button" mat-raised-button color="primary" (click)="agregarNuevoTelefonoAlFormulario()">
+                        <div *ngIf="i == 0">
+                            <button type="button" mat-raised-button color="primary"
+                                (click)="agregarNuevoTelefonoAlFormulario()">
                                 <mat-icon>add</mat-icon>
                                 Agregar Teléfono
                             </button>
@@ -208,23 +210,29 @@
                 </div>
                 <div fxLayout="column" formArrayName="videos">
                     <div *ngFor="let video of videos.controls;let j=index" [formGroupName]="j" style="width: 100%;"
-                        fxLayout="row" fxLayoutAling="space-between center" fxLayoutGap="40px">
-                        <mat-form-field style="width: 50%;">
-                            <input matInput type="url" formControlName="url"
-                                placeholder="https://www.youtube.com/watch?v=df021jGEmPM" style="width: 400px;">
+                        fxLayout="row" fxLayoutAling="space-between center" fxLayoutGap="20px">
+                        <mat-form-field style="width: 100%;">
+                            <input matInput type="url" formControlName="url" (change)="parseLinkYoutube(j)"
+                                placeholder="https://www.youtube.com/watch?v=df021jGEmPM" style="width: 100%;">
                             <mat-icon matSuffix>add_link</mat-icon>
                             <mat-label>Inserte la url del video </mat-label>
+                            <ng-container *ngIf="!videos.at(j).valid">
+                                <mat-error>¡Link no válido! Copié y pegue el link del video desde youtube.</mat-error>
+                                <mat-error>La apliación la transformará al formato correcto.</mat-error>
+                            </ng-container>
                         </mat-form-field>
                         <div *ngIf="j > 0">
-                            <button type="button" mat-stroked-button color="warn" (click)="eliminarVideoDelFormulario(j)">
+                            <button type="button" mat-stroked-button color="warn"
+                                (click)="eliminarVideoDelFormulario(j)">
                                 <mat-icon>delete</mat-icon>
                                 Eliminar
                             </button>
                         </div>
                         <div *ngIf="j == 0">
-                            <button type="button" mat-raised-button color="primary" (click)="agregarNuevoVideoAlFormulario()">
+                            <button type="button" mat-raised-button color="primary"
+                                (click)="agregarNuevoVideoAlFormulario()">
                                 <mat-icon>add</mat-icon>
-                                Agregar Video 
+                                Agregar Video
                             </button>
                         </div>
                     </div>
@@ -300,7 +308,8 @@
                             Longitud: 0, Latidud: 0
                         </div>
                         <ng-container *ngIf="!ubicacion.valid && mapaTouched">
-                            <mat-error>¡Debe seleccionar la ubicación del lugar creando un marcador en el mapa!</mat-error>
+                            <mat-error>¡Debe seleccionar la ubicación del lugar creando un marcador en el mapa!
+                            </mat-error>
                         </ng-container>
                     </div>
                     <div fxLayout="column">
