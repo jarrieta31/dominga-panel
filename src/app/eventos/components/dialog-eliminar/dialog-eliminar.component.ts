@@ -1,15 +1,53 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
+import { EventosService } from '../../services/eventos.service';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+
+//Interfaces
+import { Evento } from '../../interfaces/evento.interface';
+import { StorageService } from '../../../shared/services/storage.service';
 
 @Component({
-  selector: 'app-dialog-eliminar',
-  templateUrl: './dialog-eliminar.component.html',
-  styleUrls: ['./dialog-eliminar.component.css']
+    selector: 'app-dialog-eliminar',
+    templateUrl: './dialog-eliminar.component.html',
+    styleUrls: ['./dialog-eliminar.component.css']
 })
 export class DialogEliminarComponent implements OnInit {
 
-  constructor() { }
+    constructor(
+        private eventosService: EventosService,
+        private fbStorage: StorageService,
+        public dialogRef: MatDialogRef<DialogEliminarComponent>,
+        @Inject(MAT_DIALOG_DATA) public data: Evento
+    ) { }
 
-  ngOnInit(): void {
-  }
+    ngOnInit(): void {
+    }
+
+    /**
+     * Cierra el dialog que advierte cuando se va a eliminar un lugar
+     */
+    closeDialog() {
+        this.dialogRef.close();
+    }
+
+    /**
+     * Función que elimina un evento de la base de datos 
+     * @param id Es el id del evento a eliminar
+     */
+    async eliminarEvento(id: string) {
+        let directorio = this.data.carpeta;
+        if (this.data.imagen.url === "assets/default-lugar-galeria.jpg") {
+            this.eventosService.deleteEvento(id);
+        }
+        //borra la imagen del evento de fire storage
+        else {
+            try {
+                const clearImagen = await this.fbStorage.borrarArchivoStorage(`eventos/${directorio}`, this.data.imagen.name);
+            } catch (error) {
+                console.log('Se produjo un error al intentar eliminar la imágen ' + this.data.imagen.name + '. Error: ' + error);
+            }
+            this.eventosService.deleteEvento(id);
+        }
+    }
 
 }

@@ -1,5 +1,7 @@
 import { Posicion } from '../../shared/interfaces/datosMapa.interface';
-
+import { Imagen } from '../../shared/interfaces/imagen.interface';
+import { Telefono } from '../../shared/interfaces/telefono.interface';
+import { Video } from '../../shared/interfaces/video.interface';
 
 
 export interface Lugar {
@@ -30,21 +32,8 @@ export interface Lugar {
     whatsapp?: string;
 }
 
-export interface Imagen {
-    name: string;
-    url: string;
-}
 
 export interface Valoracion {
     usuario: string;
     valor: number;
 }
-
-export interface Video {
-    url: string;
-}
-
-export interface Telefono{
-    numero: string;
-}
-

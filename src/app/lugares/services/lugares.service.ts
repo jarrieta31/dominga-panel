@@ -1,7 +1,7 @@
 import { ComponentFactoryResolver, Injectable, OnInit } from '@angular/core';
 import { Lugar } from '../interfaces/lugar.interface';
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument, DocumentReference } from '@angular/fire/compat/firestore';
-import { from, Observable, Subject, BehaviorSubject } from 'rxjs';
+import { from, Observable, BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { LugarComponent } from '../pages/lugar/lugar.component';
 import { LocalStorageService } from '../../shared/services/local-storage.service';
@@ -13,7 +13,6 @@ import { LocalStorageService } from '../../shared/services/local-storage.service
 })
 export class LugaresService {
 
-    private lugaresCollection: AngularFirestoreCollection<Lugar[]>;
     private lugares$: BehaviorSubject<Lugar[]>;
     private prioridades$: BehaviorSubject<number[]>;
     private lugares: Lugar[] = []; //copia local de todos los lugares para trabajar con ella
@@ -25,8 +24,6 @@ export class LugaresService {
     constructor(
         private afs: AngularFirestore,
         private localStorageService: LocalStorageService) {
-
-        this.lugaresCollection = afs.collection<Lugar[]>('lugares');
         this.lugares$ = new BehaviorSubject(this.lugares);
         //this.getLugaresFirestore(this.localStorageService.departamento);
         this.prioridades$ = new BehaviorSubject([]);
@@ -182,14 +179,11 @@ export class LugaresService {
             //this.afs.collection('lugares').ref.where('prioridad', ">", -1).orderBy('prioridad').get().then(
             querySnapshot => {
                 const arrLugares: any[] = [];
-                
                 querySnapshot.forEach(item => {
                     const data: any = item.data()
                     arrLugares.push({ id: item.id, ...data });
                 })
                 this.mapCache.set(departament, arrLugares.slice());
-                console.log(this.mapCache.get(departament))
-                //console.log(arrLugares)
                 this.lugares = arrLugares.slice();
                 //this.lugaresOriginal = arrLugares.slice();
                 // this.corregirPrioridades(); //actualiza cada prioridad segun el inidice
@@ -285,7 +279,7 @@ export class LugaresService {
     /** Elimina correctamente el lugar */
     deleteLugar(id: string) {
         let indiceEliminar = this.lugares.findIndex(item => item.id === id);
-        this.lugaresCollection.doc(id).delete().then(res => {
+        this.afs.collection('lugares').doc(id).delete().then(res => {
             this.lugares.splice(indiceEliminar, 1);
             this.corregirPrioridades();
             this.corregirPrioridadesFirestore(id, 'delete')

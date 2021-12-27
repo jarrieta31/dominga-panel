@@ -1,6 +1,7 @@
 import { Component, Input, OnDestroy, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Lugar, Imagen, } from '../../interfaces/lugar.interface';
+import { Lugar } from '../../interfaces/lugar.interface';
+import { Imagen } from '../../../shared/interfaces/imagen.interface';
 import { FormBuilder, Validators, FormGroup, FormControl, FormArray } from '@angular/forms';
 import { StorageService } from '../../../shared/services/storage.service';
 import { Observable, pipe, Subscription, zip } from 'rxjs';
@@ -8,7 +9,7 @@ import { map, filter, tap, switchMap } from 'rxjs/operators';
 import { DialogMapaComponent } from '../../../shared/components/dialog-mapa/dialog-mapa.component';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MapaService } from '../../../shared/services/mapa.service';
-import { LocalidadesService } from '../../../shared/services/localidades.service';
+import { ConfigService } from '../../../shared/services/config.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { LugaresService } from '../../services/lugares.service';
 import { AngularEditorConfig } from '@kolkov/angular-editor';
@@ -57,7 +58,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
     home: Imagen = this.imagenHomeDefault;
     galeria: Imagen[] = [];
     galeriaAgregar: Imagen[] = []; //solo guarda las imagenes que se agregan a la galeria
-    imagenesBorradas: Imagen[] = []; // solo guarda las imagenes que se eliminaron y no se guardo el formulario
+    imagenesBorradas: string[] = []; // solo guarda las imagenes que se eliminaron y no se guardo el formulario
     public lugarForm: FormGroup = this.fb.group({
         accesibilidad: [false],
         auto: [false],
@@ -95,14 +96,27 @@ export class AgregarComponent implements OnInit, OnDestroy {
     editorConfig: AngularEditorConfig = {
         editable: true,
         spellcheck: true,
-        height: '15rem',
+        height: '20rem',
         minHeight: '5rem',
-        placeholder: 'Enter text here...',
+        placeholder: 'Ingresa la descripción del lugar...',
         translate: 'no',
         defaultParagraphSeparator: 'p',
         defaultFontName: 'Arial',
         toolbarHiddenButtons: [
-            //['bold']
+            [
+                'subscript',
+                'superscript',
+                'strikeThrough',
+            ],
+            [
+                'textColor',
+                'backgroundColor',
+               // 'link',
+                //'unlink',
+                'fontSize',
+                'insertImage',
+                'insertVideo',
+            ]
         ],
         customClasses: [
             {
@@ -131,9 +145,8 @@ export class AgregarComponent implements OnInit, OnDestroy {
         private fbStorage: StorageService,
         public dialog: MatDialog,
         private mapaService: MapaService,
-        private localidadesService: LocalidadesService,
+        private configService: ConfigService,
         private _snackBar: MatSnackBar) {
-
 
         /** Observable que se dispara al cambiar el valor del minimapa.
         *  Los datos del formulario cambian en funcion del valor del mimimapa
@@ -149,7 +162,6 @@ export class AgregarComponent implements OnInit, OnDestroy {
             console.log(JSON.stringify(res));
         });
 
-
     }
 
     ngOnInit(): void {
@@ -162,13 +174,13 @@ export class AgregarComponent implements OnInit, OnDestroy {
         }
 
         // cargando los datos de lugares, departamentos y localidades
-        this.sourceDepartamentos = this.localidadesService.getObsDepartamentos().subscribe(dptos => this.departamentos = dptos);
-        this.localidadesService.emitirDepartamentosActivos();
-        this.sourceLocalidades = this.localidadesService.getObsLocalidades().subscribe(locs => this.localidades = locs);
+        this.sourceDepartamentos = this.configService.getObsDepartamentos().subscribe(dptos => this.departamentos = dptos);
+        this.configService.emitirDepartamentosActivos();
+        this.sourceLocalidades = this.configService.getObsLocalidades().subscribe(locs => this.localidades = locs);
         //this.prioridades$ = this.lugaresService.getObsPrioridades$();
         this.sourcePrioridades = this.lugaresService.getObsPrioridades$().subscribe(prioridades => this.prioridades = prioridades);
-
         this.lugaresService.updateListaPrioridadesLocal(true);
+
         /**
         * A partir de la ruta y el id recibido obtiene el lugar para mostrar 
         */
@@ -187,7 +199,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
                 this.home = lugarActual.imagenHome;
                 this.galeria = JSON.parse(JSON.stringify(lugarActual.imagenes));
                 this.directorio = this.carpeta.value;
-                this.localidadesService.getLocadidadesDepartamento(lugarActual.departamento);
+                this.configService.getLocadidadesDepartamento(lugarActual.departamento);
                 this.mapaService.dMiniMapa = { centro: lugarActual.ubicacion, zoom: 15, marcador: true };
                 this.mapaService.emitirMiniMapa();
                 this.lugaresService.updateListaPrioridadesLocal(false);
@@ -195,6 +207,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
             }
         });
 
+        // Si es un lugar nuevo crear un nombre para la carpeta
         if (this.carpeta.value === null) {
             this.directorio = this.lugaresService.randomString(7);
             this.carpeta.setValue(this.directorio);
@@ -265,9 +278,9 @@ export class AgregarComponent implements OnInit, OnDestroy {
         let controls = this.videos as FormArray;
         let control = controls.at(i);
         let link: string = control.value.url;
-        //link = link.replace(/\s/g, "");
+        link = link.replace(/\s/g, "");
         link = link.replace('watch?v=', 'embed/');
-        let fin = link.indexOf('&list=');
+        let fin = link.indexOf('&');
         if (fin !== -1) {
             link = link.slice(0, fin);// si hay una lista al final la quita
         }
@@ -313,6 +326,8 @@ export class AgregarComponent implements OnInit, OnDestroy {
      * 
      */
     eliminarImagenGaleria($event: string) {
+        this.imagenesBorradas.push($event)
+        console.log($event)
         this.galeria = this.galeria.filter((item) => {
             return item.name !== $event;
         })
@@ -322,7 +337,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
         }
 
         /** Utilizando el servicio del FirebaseStorage local se borra la imagen */
-        this.fbStorage.borrarArchivoStorage(`${this.directorioPadre}/${this.directorio}`, $event);
+        //       this.fbStorage.borrarArchivoStorage(`${this.directorioPadre}/${this.directorio}`, $event);
     }
 
     /**
@@ -434,7 +449,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
      * Este método es llamado cada vez que se selecciona un departamento
      */
     getLocalidadesPorDepartamento() {
-        this.localidadesService.getLocadidadesDepartamento(this.departamento.value)
+        this.configService.getLocadidadesDepartamento(this.departamento.value)
     }
 
     /**
@@ -445,8 +460,10 @@ export class AgregarComponent implements OnInit, OnDestroy {
         const dialogConfig = new MatDialogConfig();
         dialogConfig.disableClose = false;
         dialogConfig.autoFocus = true;
-        dialogConfig.minHeight = "450px";
-        dialogConfig.minWidth = "900px";
+        dialogConfig.minHeight = "565px";
+        //dialogConfig.minHeight = "450px";
+        //dialogConfig.minWidth = "900px";
+        dialogConfig.minWidth = "1400px";
         dialogConfig.id = "dialogMapa";
         dialogConfig.data = 0;
         this.dialog.open(DialogMapaComponent, dialogConfig);
@@ -524,74 +541,23 @@ export class AgregarComponent implements OnInit, OnDestroy {
         this.router.navigate(['/lugares/listado']);
     }
 
-
     /** Getter que retorna el FormArray de imagenes */
-    get imagenes() {
-        return this.lugarForm.get('imagenes') as FormArray;
-    }
+    get imagenes() { return this.lugarForm.get('imagenes') as FormArray; }
+    get telefonos() { return this.lugarForm.get('telefonos') as FormArray; }
+    get videos() { return this.lugarForm.get('videos') as FormArray; }
+    get nombre() { return this.lugarForm.get('nombre'); }
+    get imagenHome() { return this.lugarForm.get('imagenHome'); }
+    get ubicacion() { return this.lugarForm.get('ubicacion'); }
+    get departamento() { return this.lugarForm.get('departamento'); }
+    get web() { return this.lugarForm.get('web'); }
+    get whatsapp() { return this.lugarForm.get('whatsapp'); }
+    get instagram() { return this.lugarForm.get('instagram'); }
+    get facebook() { return this.lugarForm.get('facebook'); }
+    get imagenPrincipal() { return this.lugarForm.get('imagenPrincipal'); }
+    get prioridad() { return this.lugarForm.get('prioridad'); }
+    get descripcion() { return this.lugarForm.get('descripcion'); }
+    get carpeta() { return this.lugarForm.get('carpeta'); }
+    get publicado() { return this.lugarForm.get('publicado'); }
 
-    /** Getter que retorna el FormArray de telefonos */
-    get telefonos() {
-        return this.lugarForm.get('telefonos') as FormArray;
-    }
 
-    /** Getter que retorna el FormArray de videos */
-    get videos() {
-        return this.lugarForm.get('videos') as FormArray;
-    }
-
-    /** Getter que retorna el FormControl del campo nombre */
-    get nombre() {
-        return this.lugarForm.get('nombre');
-    }
-
-    /** Getter que retorna el FormControl del campo imagenHome */
-    get imagenHome() {
-        return this.lugarForm.get('imagenHome');
-    }
-
-    /** Getter que retorna el FormControl del campo ubicacion */
-    get ubicacion() {
-        return this.lugarForm.get('ubicacion');
-    }
-
-    get departamento() {
-        return this.lugarForm.get('departamento');
-    }
-
-    get web() {
-        return this.lugarForm.get('web');
-    }
-
-    get whatsapp() {
-        return this.lugarForm.get('whatsapp');
-    }
-
-    get instagram() {
-        return this.lugarForm.get('instagram');
-    }
-
-    get facebook() {
-        return this.lugarForm.get('facebook');
-    }
-
-    get imagenPrincipal() {
-        return this.lugarForm.get('imagenPrincipal');
-    }
-
-    get prioridad() {
-        return this.lugarForm.get('prioridad');
-    }
-
-    get descripcion() {
-        return this.lugarForm.get('descripcion');
-    }
-
-    get carpeta() {
-        return this.lugarForm.get('carpeta');
-    }
-
-    get publicado() {
-        return this.lugarForm.get('publicado');
-    }
 }

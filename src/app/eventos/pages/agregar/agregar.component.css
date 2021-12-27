@@ -1,0 +1,38 @@
+mat-divider{
+    margin-bottom: 40px;
+}
+
+
+.imagen-home {
+    height: 217px;
+}
+
+.imagen-principal {
+    height: 277px;
+}
+
+.imagen {
+    height: 280px;
+}
+
+.container {
+    padding: 10px;
+    margin-bottom: 2px;
+}
+
+.container-home {
+    height: 402px;
+    padding-right: 40px;
+}
+
+.direccion {
+    min-width: 100%;
+}
+
+.lugar{
+    min-width: 100%;
+}
+
+.input{
+    min-width: 100%;
+}

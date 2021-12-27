@@ -3,7 +3,7 @@ import { LugaresService } from '../../services/lugares.service';
 import { Lugar, } from '../../interfaces/lugar.interface';
 import { Observable, Subscription } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { LocalidadesService } from '../../../shared/services/localidades.service';
+import { ConfigService } from '../../../shared/services/config.service';
 import { LocalStorageService } from '../../../shared/services/local-storage.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
@@ -17,7 +17,6 @@ export class ListadoComponent implements OnInit, OnDestroy {
 
     panelOpenState = false;
     //private sourceLugares: Subscription;
-    filtroDepartamento = false;
     filtroPublicado = false;
     departamentoSelec: string;
     publicadoSelec: boolean;
@@ -42,24 +41,21 @@ export class ListadoComponent implements OnInit, OnDestroy {
         private cdRef: ChangeDetectorRef,
         private fb: FormBuilder,
         private lugaresService: LugaresService,
-        private localidadesService: LocalidadesService,
+        private configService: ConfigService,
         private localStorageService: LocalStorageService) {
     }
 
     ngOnInit(): void {
-        this.sourceDepartamentos = this.localidadesService.getObsDepartamentos().subscribe(dptos => { this.departamentos = dptos });
-        this.localidadesService.emitirDepartamentosActivos();
-        this.sourceLocalidades = this.localidadesService.getObsLocalidades().subscribe(locs => this.localidades = locs);
+        this.sourceDepartamentos = this.configService.getObsDepartamentos().subscribe(dptos => { this.departamentos = dptos });
+        this.configService.emitirDepartamentosActivos();
+        this.sourceLocalidades = this.configService.getObsLocalidades().subscribe(locs => this.localidades = locs);
         this.departamento.setValue(this.localStorageService.departamento);
-        this.localidadesService.emitirLocalidades();
+        this.configService.emitirLocalidades();
         //this.sourceLugares = this.lugaresService.getObsLugares$().subscribe(lugares => this.lugares = lugares);
         this.lugares$ = this.lugaresService.getObsLugares$();
         //Chequea si los lugares del departamento actual estan en cache.
         if (!this.lugaresService.checkCache(this.departamento.value)) {
-            console.log(this.departamento.value + " descargando de la nube")
             this.lugaresService.getLugaresFirestore(this.departamento.value);
-        }else{
-            console.log(this.departamento.value + " ya está descargado")
         }
     }
 
@@ -83,13 +79,21 @@ export class ListadoComponent implements OnInit, OnDestroy {
     getLocalidadesPorDepartamento() {
         this.localidad.reset('');
         this.localStorageService.setDepartamento(this.departamento.value);
-        this.localidadesService.getLocadidadesDepartamento(this.departamento.value);
+        this.configService.getLocadidadesDepartamento(this.departamento.value);
         this.lugaresService.getLugaresFirestore(this.departamento.value);
 
     }
 
     getLugaresPorLocalidad() {
-        this.lugaresService.getLugaresLocalidad(this.localidad.value);
+            console.log("hola 1")
+        if (this.filtroPublicado && this.localidad.value !== "0") {
+            this.lugaresService.getLugaresPublicadoDepartamentoLocalidad(this.publicadoSelec, this.departamento.value, this.localidad.value);
+        } else if(this.localidad.value !== "0") {
+            this.lugaresService.getLugaresLocalidad(this.localidad.value);
+        }if(this.localidad.value === "0"){
+            this.localidad.reset();
+            this.getLocalidadesPorDepartamento()
+        }
     }
 
     /** LLama al metodo correspondiente del servicio lugares para hacer el filtro.
@@ -97,13 +101,13 @@ export class ListadoComponent implements OnInit, OnDestroy {
      * que debera enviar al hacer el llamado al servicio de lugares.service. 
      */
     filtrarLugares() {
-        if (this.filtroDepartamento && this.filtroPublicado) {
+        if (this.filtroPublicado) {
             this.lugaresService.getLugaresPublicadoYDepartamento(this.publicadoSelec, this.departamento.value);
         }
-        else if (this.filtroPublicado) {
-            this.lugaresService.getLugaresPorEstado(this.publicadoSelec);
-        }
-        else if (!this.filtroPublicado && !this.filtroDepartamento) {
+        //     else if (this.filtroPublicado) {
+        //         this.lugaresService.getLugaresPorEstado(this.publicadoSelec);
+        //     }
+        else if (!this.filtroPublicado) {
             this.lugaresService.emitirLugares();
         }
 

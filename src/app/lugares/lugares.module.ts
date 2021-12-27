@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { FlexLayoutModule } from '@angular/flex-layout';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 
 //otros
 import { AngularEditorModule } from '@kolkov/angular-editor';
+import { FlexLayoutModule } from '@angular/flex-layout';
 
 //Módulos propios
 import { LugaresRoutingModule } from './lugares-routing.module';

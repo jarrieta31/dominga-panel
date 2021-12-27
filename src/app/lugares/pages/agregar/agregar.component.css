@@ -8,9 +8,6 @@ mat-divider{
 }
 
 .area {
-    /*
-    background-color: aquamarine;
-    */
     padding: 10px;
     width: 100%;
     min-height: 23.125rem;
@@ -18,23 +15,7 @@ mat-divider{
     border-radius: 5px;
 }
 
-.main-column{
-    /*
-    min-height: 900px;
-    /*
-}
-
-.container-img {
-    /*width: 300px;*/
-    /*display: flex;
-    flex-direction: column;
-    align-items: center;
-    */
-    
-}
-
 .imagen-home {
-    /*width: 280px;*/
     height: 217px;
 }
 
@@ -46,25 +27,9 @@ mat-divider{
     height: 280px;
 }
 
-
-.app-upload {
-    /*
-    height: 100px;
-    
-    background-color: gold;
-    */
-}
-
 .container {
-    /*
-    border: rgba(0, 0, 0, 0.12) solid 1px;
-    border-radius: 5px;
-    */
     padding: 10px;
     margin-bottom: 2px;
-
-/*    height: 800px; */
- /*   background-color: gold;  */
 }
 
 .container-home {
@@ -72,25 +37,12 @@ mat-divider{
     padding-right: 40px;
 }
 
-.container-galeria {
-    /*border: red solid 1px;*/
-    /*background-color: darkgoldenrod;*/
-    /*height: 402px;*/
-}
 
 .contenedor_galeria {
     min-height: 315px;
     margin-bottom: 40px;
-    /*background-color: darksalmon; */
 }
 
 .galeria {
     max-width: 1600px;
-}
-
-#camp-principal {
-    
-    /*
-    background-color: aquamarine;
-    */
 }

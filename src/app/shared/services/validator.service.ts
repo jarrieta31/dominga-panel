@@ -123,7 +123,7 @@ export class ValidatorService {
             return null;
         } else {
             const valor: string = control.value;
-            let regExPersonal = /^\b([0-9]{8,8})(?:-[0-9]{2,2})$/g;
+            let regExPersonal = /^\b([0-9]{8,8})(?:-[0-9]{2,2})?$/g;
             let regExPersonal2 = /^\b([0-9]{9,9})$/g;
             if (regExPersonal.test(valor) || regExPersonal2.test(valor)) {
                 return null;

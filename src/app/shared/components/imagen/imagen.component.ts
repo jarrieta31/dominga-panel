@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { Lugar, Imagen } from 'src/app/lugares/interfaces/lugar.interface';
+import { Imagen } from '../../../shared/interfaces/imagen.interface';
 
 @Component({
     selector: 'app-imagen',

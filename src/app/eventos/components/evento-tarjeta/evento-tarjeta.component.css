@@ -1,0 +1,34 @@
+mat-card {
+    width:270px;
+    height: 443px;
+    margin-top: 20px;
+}
+
+mat-card img {
+    /**
+    width: 270px;
+    */
+    padding: 0px;
+    margin: 0px;
+    height: 120px;
+}
+
+mat-card-subtitle {
+    color: #006CD8;
+    font-size: 11px;
+}
+
+
+mat-card-content {
+    height: 60px;
+    margin-bottom: 12px;
+}
+
+mat-card-footer {
+    padding-bottom: 20px;
+    padding-left: 20px;
+}
+
+.icon-si {
+    color: green;
+}

@@ -62,7 +62,7 @@ export class MapaComponent implements OnInit {
         const map = document.getElementById("mapa").getBoundingClientRect();
         btnMarker.style.top = (map.top + 10) + "px";
         btnMarker.style.left = (map.left + 10) + "px";
-        btnZoom.style.top = (map.left + 100) + "px";
+        btnZoom.style.top = (map.left + 380) + "px";
         btnZoom.style.left = (map.left + 10) + "px";
         
         //Queda escuchando el evento zoom del mapa para ver cuando cuambia 

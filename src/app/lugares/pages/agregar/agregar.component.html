@@ -7,9 +7,6 @@
     <h1>{{titulo}}</h1>
     <div></div>
 </div>
-<pre>
-    {{ this.lugarForm.valid }}
-</pre>
 
 <form [formGroup]="lugarForm" (ngSubmit)="submitLugar()" id="formLugar">
 
@@ -30,8 +27,11 @@
                         <input required matInput type="text" formControlName="nombre" (change)="quitarEspacios()">
                         <!-- La expresion "nombre" representa "lugarForm.get('nombre')" pero gracias al geter solo escribimos nombre -->
                         <ng-container *ngIf="!nombre.valid && nombre.touched">
-                            <mat-error *ngIf="nombre.errors.required">El campo nombre es obligatorio.</mat-error>
-                            <mat-error *ngIf="nombre.errors.minlength">El nombre de tener un mínimo de 2 caracteres.
+                            <mat-error *ngIf="nombre.errors.required">
+                                El campo nombre es obligatorio.
+                            </mat-error>
+                            <mat-error *ngIf="nombre.errors.minlength">
+                                El nombre de tener un mínimo de 2 caracteres.
                             </mat-error>
                         </ng-container>
                     </mat-form-field>
@@ -249,7 +249,7 @@
                     <h2 class="subtitulo">Sitio Web y Redes Sociales</h2>
                 </div>
                 <div fxLayout="column" fxLayoutAlign="space-evenly" fxLayoutGap="30px">
-                    <mat-form-field appearance="fill">
+                    <mat-form-field >
                         <mat-label>Sitio Web</mat-label>
                         <input type="url" matInput formControlName="web" placeholder="http://www.mi-sitio-web.com/">
                         <mat-icon matSuffix>insert_link</mat-icon>
@@ -257,7 +257,7 @@
                             <mat-error>La URL ingresada no es válida!</mat-error>
                         </ng-container>
                     </mat-form-field>
-                    <mat-form-field appearance="fill">
+                    <mat-form-field >
                         <mat-label>Whatsapp</mat-label>
                         <input type="url" matInput formControlName="whatsapp"
                             placeholder="https://api.whatsapp.com/send?phone=598123456">
@@ -267,7 +267,7 @@
                             </mat-error>
                         </ng-container>
                     </mat-form-field>
-                    <mat-form-field appearance="fill">
+                    <mat-form-field >
                         <mat-label>Facebook</mat-label>
                         <input type="url" matInput formControlName="facebook"
                             placeholder="https://m.facebook.com/mi-perfil/">
@@ -276,7 +276,7 @@
                             <mat-error>URL no válida! Ejemplo: https://www.facebook.com/mi-perfil </mat-error>
                         </ng-container>
                     </mat-form-field>
-                    <mat-form-field appearance="fill">
+                    <mat-form-field >
                         <mat-label>Instagram</mat-label>
                         <input type="url" matInput formControlName="instagram" placeholder="http://www.instagram.com/">
                         <mat-icon matSuffix>insert_link</mat-icon>
@@ -355,7 +355,7 @@
         <!-- ============================== Fin Imagen Home ==================================== -->
 
         <!-- ==============================  Imagen Principal ==================================== -->
-        <div fxFlex="50%" class="container container-galeria" fxLayout="column" fxLayoutAling="space-around start">
+        <div fxFlex="50%" class="container" fxLayout="column" fxLayoutAling="space-around start">
             <div>
                 <h2 style="text-align: center;">Galería de Imágenes e Imágen Principal</h2>
             </div>
@@ -433,9 +433,10 @@
                 <pre>{{ this.imagenes | json }}</pre>
             </div>
 -->
-
+<!-- 
     <div style="overflow: scroll; width: 100%;height: 200px;">
         <span>Valores</span>
         <pre>{{ this.lugarForm.value | json }}</pre>
     </div>
+-->
 </form>

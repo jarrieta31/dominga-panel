@@ -1,2 +1,19 @@
 
-<h1>Lista de Eventos</h1>
+<div fxLayout='row' fxLayoutAlign="space-between center">
+
+    <button mat-button type="button" color="primary" (click)="regresar()">
+        <mat-icon>arrow_back_ios</mat-icon>
+        Atras
+    </button>
+    <h1>{{titulo}}</h1>
+    <div></div>
+</div>
+
+
+<div style="width: 1750px; margin: auto;" fxLayout="row" fxLayoutAlign="center start">
+    <div fxLayout="row wrap" fxLayout.xs="column" fxLayoutAlign="start start" fxLayoutGap="20px">
+        <div *ngFor="let evento of eventos$ | async" style="min-height: 390px;">
+            <app-evento-tarjeta [evento]="evento"></app-evento-tarjeta>
+        </div>
+    </div>
+</div>

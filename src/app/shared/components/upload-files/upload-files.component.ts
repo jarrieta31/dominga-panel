@@ -1,7 +1,8 @@
 import { Component, Input, Output, EventEmitter, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { FormControl, FormGroup, Validators, ValidationErrors, AbstractControl, FormBuilder } from '@angular/forms';
 import { StorageService } from '../../../shared/services/storage.service';
-import { Imagen, Video } from 'src/app/lugares/interfaces/lugar.interface';
+import { Imagen } from '../../../shared/interfaces/imagen.interface';
+import { Video } from '../../../shared/interfaces/video.interface';
 
 @Component({
     selector: 'app-upload-files',

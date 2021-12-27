@@ -5,6 +5,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion'; 
 import { MatFormFieldModule } from "@angular/material/form-field";
@@ -26,6 +27,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTreeModule } from '@angular/material/tree'; 
 import { NgxMatFileInputModule } from '@angular-material-components/file-input';
 
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatMomentDateModule } from '@angular/material-moment-adapter';
 
 @NgModule({
   declarations: [],
@@ -37,8 +40,10 @@ import { NgxMatFileInputModule } from '@angular-material-components/file-input';
     MatButtonModule,
     MatCardModule,
     MatCheckboxModule,
+    MatDatepickerModule,
     MatDialogModule,
     MatExpansionModule,
+    MatNativeDateModule,
     MatFormFieldModule,
     MatGridListModule,
     MatIconModule,
@@ -57,6 +62,7 @@ import { NgxMatFileInputModule } from '@angular-material-components/file-input';
     MatToolbarModule,
     MatTreeModule,
     NgxMatFileInputModule,
+    MatMomentDateModule,
   ]
 })
 export class MaterialModule { }

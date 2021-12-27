@@ -10,13 +10,16 @@ import { LocalStorageService } from './local-storage.service';
 @Injectable({
     providedIn: 'root'
 })
-export class LocalidadesService {
+export class ConfigService {
 
     localidades$: Subject<string[]>;
     departamentos$: Subject<string[]>
     listLocalidades: string[] = [];
     listDptosActivos: string[] = [];
     departamentos: Departamento[] = [];
+    tiposEventos: string[] = [];
+    tiposLugares: string[] = [];
+    
 
     constructor(
         private localStorageService: LocalStorageService,
