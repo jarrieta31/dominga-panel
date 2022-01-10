@@ -1,1 +1,39 @@
-<p>donde-comer-tarjeta works!</p>
+<mat-card>
+    <img mat-card-image [src]="restoran | imagen">
+    <mat-card-header >
+        <mat-card-title>{{ restoran.nombre }}</mat-card-title>
+        <!-- 
+        <mat-card-subtitle>Tipo: {{ evento.tipo }} </mat-card-subtitle>
+        -->
+    </mat-card-header>
+
+    <mat-card-content>
+        <!-- {{ lugar.descripcion | deleteHtml | recortarParrafo }} -->
+    </mat-card-content>
+
+    <mat-card-actions>
+        <mat-grid-list cols="3" rowHeight="50px">
+            <mat-grid-tile colspan="1" [rowspan]="1">
+                <button mat-button mat-stroked-button color="primary" [routerLink]="['/donde-comer/editar', restoran.id]">
+                    Editar
+                </button>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="1" [rowspan]="1">
+                <button mat-button mat-stroked-button color="warn" (click)="openDialog()">
+                    Eliminar
+                </button>
+            </mat-grid-tile>
+        </mat-grid-list>
+    </mat-card-actions>
+
+    <mat-card-footer>
+        Publicado:
+        <span *ngIf="restoran.publicado">
+            Sí <mat-icon class="icon-si">done</mat-icon>
+        </span>
+        <span *ngIf="!restoran.publicado">
+            No <mat-icon color="warn">close</mat-icon>
+        </span>
+    </mat-card-footer>
+
+</mat-card>

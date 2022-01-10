@@ -132,4 +132,19 @@ export class ValidatorService {
         }
     }
 
+    validarTickAntel(control: FormControl): ValidationErrors | null {
+        console.log(control.value)
+        if ( control.value === null || control.value === '') {
+            return null;
+        } else {
+            const valor: string = control.value;
+            let regExPersonal = /^https:\/\/tickantel.com.uy\/\b([-a-zA-Z0-9_]{11,})$/g;
+            if (regExPersonal.test(valor)) {
+                return null;
+            }
+            return { tickAntel: true };
+        }
+
+    }
+
 }

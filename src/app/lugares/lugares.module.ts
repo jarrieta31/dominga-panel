@@ -6,6 +6,7 @@ import { NgModule } from '@angular/core';
 //otros
 import { AngularEditorModule } from '@kolkov/angular-editor';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { NgxPaginationModule } from 'ngx-pagination'; 
 
 //Módulos propios
 import { LugaresRoutingModule } from './lugares-routing.module';
@@ -50,6 +51,7 @@ import { DialogPublicarComponent } from './components/dialog-publicar/dialog-pub
         MaterialModule,
         ReactiveFormsModule,
         SharedModule,
+        NgxPaginationModule,
     ]
 })
 export class LugaresModule { }

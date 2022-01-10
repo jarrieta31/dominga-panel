@@ -6,80 +6,63 @@
 <mat-divider></mat-divider>
 <br>
 
-
 <form [formGroup]="filtrosForm">
-    <div fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="40px">
-        <div fxFlex="15%"></div>
-        <div fxLayout="row" fxLayoutAlign="space-evenly end" fxLayoutGap="20px" style="width: 400px;">
+    <div fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="30px" class="rowFiltros">
+        <div fxLayout="row" fxLayoutAlign="space-between end" fxLayoutGap="10px" class="rowDepartamento row">
             <div fxFlex="20%">
                 <h3>Departamento:</h3>
             </div>
-            <mat-form-field fxFlex="50%">
+            <mat-form-field class="inputDepartamento">
                 <mat-label>Selecciona el Departamento</mat-label>
-                <mat-select formControlName="departamento" (selectionChange)="getLocalidadesPorDepartamento()">
+                <mat-select formControlName="departamento" (selectionChange)="setFiltroDepartamento()">
                     <mat-option *ngFor="let dpto of departamentos" [value]="dpto">
                         {{ dpto }}
                     </mat-option>
                 </mat-select>
             </mat-form-field>
         </div>
-        <div fxLayout="row" fxLayoutAlign="space-evenly end" fxLayoutGap="20px" style="width: 400px;">
-            <div fxFlex="20%">
+        <div fxLayout="row" fxLayoutAlign="space-between end" fxLayoutGap="10px" class="rowLocalidad row">
+            <div fxFlex="30%">
                 <h3>Localidad:</h3>
             </div>
-            <mat-form-field fxFlex="70%">
+            <mat-form-field class="inputLocalidad">
                 <mat-label>Selecciona la Localidad</mat-label>
-                <mat-select formControlName="localidad" (selectionChange)="getLugaresPorLocalidad()">
-                    <mat-option value="0">Seleccione una localidad</mat-option>
+                <mat-select formControlName="localidad" (selectionChange)="setFiltroLocalidad()">
+                    <mat-option value="">Ver todas</mat-option>
                     <mat-option *ngFor="let loc of localidades" [value]="loc">{{ loc }}</mat-option>
                 </mat-select>
             </mat-form-field>
         </div>
-        <div fxFlex="15%">
-
+        <div fxLayout="row" fxLayoutAlign="space-between end" fxLayoutGap="10px" class="rowPublicados row">
+            <div fxFlex="20%">
+                <h3>Publicados:</h3>
+            </div>
+            <mat-form-field class="inputPublicados">
+                <mat-label>Filtrar Publicados</mat-label>
+                <mat-select formControlName="publicado" (selectionChange)="setFiltroPublicados()">
+                    <mat-option *ngFor="let opcion of opcionesSlectPublicado" [value]="opcion.valor">{{ opcion.estado }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <div class="rowReset row">
+            <button type="button" mat-raised-button color="primary" (click)="resetFiltros()">Reset filtros</button>
         </div>
     </div>
-
 </form>
-<!--
-<div fxLayout="row" fxLayoutAlign="center center">
-    <mat-accordion style="width: 1730px;">
-        <mat-expansion-panel>
-            <mat-expansion-panel-header>
-                <mat-panel-title>
-                    <mat-icon>filter_alt</mat-icon>
-                    &nbsp; Otros Filtros
-                </mat-panel-title>
-                <mat-panel-description>
-                    Puedes aplicar más filtros para ver solo lo que necesitas
-                </mat-panel-description>
-            </mat-expansion-panel-header>
 
-            <div fxLayout="column" fxLayoutAlign="center" fxLayoutGap="20px">
-                <div fxLayout="row" fxLayoutAlign="space-evenly start" fxLayoutGap="20px" style="width: 1000px;">
-                    <div fxFlex.gt="20%">
-                        <mat-slide-toggle [(ngModel)]="filtroPublicado">
-                            Filtro por estado de publiación:
-                        </mat-slide-toggle>
-                    </div>
-                    <mat-radio-group [(ngModel)]="publicadoSelec" [disabled]="!filtroPublicado" fxFlex="80%">
-                        <mat-radio-button *ngFor="let estado of published" [value]="estado.valor">
-                            {{estado.estado}} &nbsp;
-                        </mat-radio-button>
-                    </mat-radio-group>
-                </div>
-            </div>
-
-            <br>
-        </mat-expansion-panel>
-    </mat-accordion>
-</div>
--->
-
-<div style="width: 1750px; margin: auto;" fxLayout="row" fxLayoutAlign="center start">
+<div style="width: 1750px; margin: auto;" fxLayout="row" fxLayoutAlign="center start" class="main">
     <div fxLayout="row wrap" fxLayout.xs="column" fxLayoutAlign="start start" fxLayoutGap="20px">
-        <div *ngFor="let lugar of lugares$ | async" style="min-height: 390px;">
+        <div *ngFor="let lugar of lugares  | paginate: { itemsPerPage: 12, currentPage: page }"
+            style="min-height: 390px;">
             <app-lugar-tarjeta [lugar]="lugar"></app-lugar-tarjeta>
         </div>
     </div>
+</div>
+
+<br>
+<mat-divider></mat-divider>
+<div fxLayout="row" fxLayoutAlign="center center">
+    <pagination-controls (pageChange)="page = $event" previousLabel="Anterior" nextLabel="Siguiente">
+    </pagination-controls>
 </div>

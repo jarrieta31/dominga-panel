@@ -1,6 +1,5 @@
 import { Imagen } from '../../shared/interfaces/imagen.interface';
 import { Posicion } from '../../shared/interfaces/datosMapa.interface';
-import { Timestamp } from '../../shared/interfaces/timestamp.interface';
 
 export interface Evento{
         carpeta:string;
@@ -8,16 +7,20 @@ export interface Evento{
         descripcion: string;
         direccion?: string;
         facebook?: string;
-        fecha?: Timestamp;
+        fechaFin?: any;
+        fechaInicio: any;
         id?: string;
         imagen: Imagen;
         instagram: string;
         localidad: string;
-        lugar?: string;
+        lugar: string;
+        moneda: string;
         nombre: string; 
+        precio: number;
+        precioUnico: boolean;
         publicado: boolean;
         ticktAntel?: string;
-        tipo?:string;
-        ubicacion?: Posicion;
+        tipo:string;
+        ubicacion: Posicion;
         whatsapp?: string; 
 }

@@ -2,43 +2,63 @@ import { Injectable } from '@angular/core';
 
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
 export class LocalStorageService {
 
-    departamento: string = "";
-    localidad: string = '';
-    publicado: string = '';
+    private _departamento: string;
+    private _localidad: string;
+    private _publicado: string;
+    private _activos: string;
 
     constructor() {
-        this.setDepartamento( localStorage.getItem('departamento') );
     }
 
-
-    setDepartamento(dpto?: string):void {
-        if (dpto === undefined || dpto === null) {
-            localStorage.setItem("departamento", "San José");
-        }else{
-            localStorage.setItem("departamento", dpto);
-        }
-        this.departamento = localStorage.getItem("departamento");
+    set departamento(dpto: string) {
+        localStorage.setItem("departamento", dpto);
     }
 
-    setLocalidad(loc: string): void {
-        if (loc === undefined) {
-            localStorage.setItem("localidad", "San José de Mayo");
-        }else{
-            localStorage.setItem("localidad", loc);
-        }
-        this.localidad = localStorage.getItem("localidad");
+    set localidad(loc: string) {
+        localStorage.setItem("localidad", loc);
     }
 
-    setPublicado(pub: string){
-        if (pub === undefined) {
-            localStorage.setItem("publicado", "false");
-        }else{
-            localStorage.setItem("publicado", pub);
+    set publicado(pub: string) {
+            localStorage.setItem("publicado", pub );
+    }
+
+    set activos(activos: string) {
+        localStorage.setItem("activos", activos );
+    }
+
+    get departamento(): string {
+        if (localStorage.getItem("departamento") === undefined) {
+            localStorage.setItem("departamento", 'San José');
         }
-        this.publicado = localStorage.getItem("publicado");
+        this._departamento = localStorage.getItem("departamento");
+        return this._departamento;
+    }
+
+    get localidad(): string {
+        if (localStorage.getItem("localidad") === undefined) {
+            localStorage.setItem("localidad", '');
+        }
+        this._localidad = localStorage.getItem("localidad");
+        return this._localidad;
+    }
+
+    get publicado(): string {
+        if (localStorage.getItem("publicado") === undefined) {
+            localStorage.setItem("publicado", 'todos');
+        }
+        this._publicado = localStorage.getItem('publicado');
+        return this._publicado;
+    }
+
+    get activos(): string {
+        if (localStorage.getItem("activos") === undefined) {
+            localStorage.setItem("activos", 'todos');
+        }
+        this._activos = localStorage.getItem('activos');
+        return this._activos;
     }
 }

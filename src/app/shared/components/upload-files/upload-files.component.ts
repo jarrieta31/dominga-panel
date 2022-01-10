@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators, ValidationErrors, AbstractControl, 
 import { StorageService } from '../../../shared/services/storage.service';
 import { Imagen } from '../../../shared/interfaces/imagen.interface';
 import { Video } from '../../../shared/interfaces/video.interface';
+import * as CryptoJS from 'crypto-js';
 
 @Component({
     selector: 'app-upload-files',
@@ -17,6 +18,7 @@ export class UploadFilesComponent implements OnInit {
     URLPublica: string = '';
     porcentaje: number = 0;
     finalizado: boolean = false;
+    hash:string;
 
     @Input() widthAllowed: number = 0;
     @Input() heightAllowed: number = 0;
@@ -106,6 +108,9 @@ export class UploadFilesComponent implements OnInit {
                         this.alto = true;
                     }
                 };
+                var md5 = CryptoJS.MD5(fr).toString();
+                this.hash =md5;
+                console.log(md5 )
                 img.src = fr.result as string; // The data URL 
             };
             fr.readAsDataURL(image);

@@ -1,11 +1,21 @@
 <mat-card>
-    <mat-card-header>
+    <img mat-card-image [src]="evento | imagen">
+    <mat-card-header >
+        <mat-card-subtitle >
+            <div fxLayout="row" fxLayoutAlign="space-between center" >
+                <div>
+                    {{evento.fechaInicio | fecha: evento.fechaFin }}
+                </div>
+                <div>
+                    {{evento.fechaInicio | hora}}
+                </div>
+            </div>
+        </mat-card-subtitle>
         <mat-card-title>{{ evento.nombre }}</mat-card-title>
-        <mat-card-subtitle>{{ evento.fecha | fechaHora }} </mat-card-subtitle>
+        <!-- 
         <mat-card-subtitle>Tipo: {{ evento.tipo }} </mat-card-subtitle>
+        -->
     </mat-card-header>
-
-    <img mat-card-image [src]="evento | imagen" style="width: 270px; height: 158.84px;">
 
     <mat-card-content>
         <!-- {{ lugar.descripcion | deleteHtml | recortarParrafo }} -->
@@ -13,13 +23,7 @@
     </mat-card-content>
 
     <mat-card-actions>
-
         <mat-grid-list cols="3" rowHeight="50px">
-            <mat-grid-tile colspan="1" [rowspan]="1">
-                <button mat-button mat-stroked-button color="info" [routerLink]="['/eventos', evento.id]">
-                    Ver
-                </button>
-            </mat-grid-tile>
             <mat-grid-tile colspan="1" [rowspan]="1">
                 <button mat-button mat-stroked-button color="primary" [routerLink]="['/eventos/editar', evento.id]">
                     Editar
@@ -31,18 +35,16 @@
                 </button>
             </mat-grid-tile>
         </mat-grid-list>
-
-
     </mat-card-actions>
 
     <mat-card-footer>
         Publicado:
-        <span *ngIf="evento.publicado">
+        <ng-container *ngIf="evento.publicado">
             Sí <mat-icon class="icon-si">done</mat-icon>
-        </span>
-        <span *ngIf="!evento.publicado">
+        </ng-container>
+        <ng-container *ngIf="!evento.publicado">
             No <mat-icon color="warn">close</mat-icon>
-        </span>
+        </ng-container>
     </mat-card-footer>
 
 </mat-card>

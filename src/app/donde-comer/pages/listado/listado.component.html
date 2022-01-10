@@ -1,1 +1,18 @@
-<p>listado works!</p>
+<div fxLayout='row' fxLayoutAlign="space-between center">
+
+    <button mat-button type="button" color="primary" (click)="regresar()">
+        <mat-icon>arrow_back_ios</mat-icon>
+        Atras
+    </button>
+    <h1>{{titulo}}</h1>
+    <div></div>
+</div>
+
+
+<div style="width: 1750px; margin: auto;" fxLayout="row" fxLayoutAlign="center start">
+    <div fxLayout="row wrap" fxLayout.xs="column" fxLayoutAlign="start start" fxLayoutGap="20px">
+        <div *ngFor="let restoran of restaurantes$ | async" style="min-height: 390px;">
+            <app-donde-comer-tarjeta [restoran]="restoran"></app-donde-comer-tarjeta>
+        </div>
+    </div>
+</div>

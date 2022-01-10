@@ -18,6 +18,10 @@ import { ListadoComponent } from './pages/listado/listado.component';
 //Componentes
 import { DialogEliminarComponent } from './components/dialog-eliminar/dialog-eliminar.component';
 import { DondeComerTarjetaComponent } from './components/donde-comer-tarjeta/donde-comer-tarjeta.component';
+import { DialogPublicarComponent } from './components/dialog-publicar/dialog-publicar.component';
+
+//Pipes
+import { ImagenPipe } from './pipes/imagen.pipe';
 
 
 @NgModule({
@@ -27,6 +31,8 @@ import { DondeComerTarjetaComponent } from './components/donde-comer-tarjeta/don
         DondeComerComponent,
         DondeComerTarjetaComponent,
         ListadoComponent,
+        DialogPublicarComponent,
+        ImagenPipe,
     ],
     imports: [
         CommonModule,

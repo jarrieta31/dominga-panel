@@ -28,30 +28,32 @@ import { Moment } from 'moment';
 })
 export class AgregarComponent implements OnInit {
 
-    startDate: Date;
-    minDate = new Date();
-    maxDate = new Date(2050, 1, 1);
-    meses: string[] = [];
-    titulo: string = "Nuevo Evento";
     allowedSizeGallery: number = 150; //kilo bytes
     allowedSizeHome: number = 80; //kilo bytes
+    anio: number;
     cambiosConfirmados: boolean = false;
     departamentos: string[] = [];
-    directorio: string = ''; //subcarpeta con el nombre del lugar
     dia: number;
-    mes: number;
-    anio: number;
-    idEvento: string;
+    directorio: string = ''; //subcarpeta con el nombre del lugar
     directorioPadre: string = 'eventos'; //carpeta raíz donde se almacenan los lugares
+    eventoTipo = [{ tipo: "Teatro" }, { tipo: "Danza" }, { tipo: "Música" }, { tipo: "Deportes" }, { tipo: "Otros" }];
     fechaHora: Date;
-    heightAllowedGallery: number = 450;
+    heightAllowedEvento: number = 450;
+    idEvento: string;
     localidades: string[] = [];
     mapaTouched: boolean = false;
-    prioridadAnterior: number;
-    tituloUploaderGaleria: string = "Subir imágenes a la galería";
-    tituloUploaderHome: string = "Selecciona la imágen del Home";
-    eventoTipo = [{ tipo: "Teatro" }, { tipo: "Danza" }, { tipo: "Música" }, { tipo: "Deportes" }, { tipo: "Otros" }];
-    widthAllowedGallery: number = 600;
+    maxDate = new Date(2050, 1, 1);
+    maxDateFin = new Date(2050, 1, 1);
+    mes: number;
+    meses: string[] = [];
+    minDate = new Date();
+    minDateFin: Date;
+    monedas = [{tipo: "$"}, {tipo: "U$S"}];
+    precioU: boolean = false;
+    startDate: Date;
+    startDateEnd: Date;
+    titulo: string = "Nuevo Evento";
+    widthAllowedEvento: number = 600;
     private sourceDepartamentos: Subscription;
     private sourceLocalidades: Subscription;
     private sourceMiniMapa: Subscription;
@@ -63,24 +65,29 @@ export class AgregarComponent implements OnInit {
 
     public eventoForm: FormGroup = this.fb.group({
         carpeta: [null],
-        departamento: [''],
+        departamento: ['',Validators.required],
         descripcion: ['', [Validators.minLength(60), Validators.maxLength(4900)]],
         direccion: [''],
         facebook: [null, [this.vs.validarFacebook]],
-        fecha: [null],
+        fechaFin: [null],
+        fechaInicio: [null],
         imagen: [this.imagenDefault],
         instagram: [null, [this.vs.validarInstagram]],
-        localidad: [''],
-        lugar: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(50)]],
+        localidad: ['',[Validators.required]],
+        lugar: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
+        moneda: [this.monedas[0].tipo,[Validators.required]],
         nombre: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
+        precio: [0, [Validators.required, Validators.min(0)]],
+        precioUnico: [true],
         publicado: [false],
-        ticktAntel: [null],
-        tipo: [''],
+        tickAntel: [null, [this.vs.validarTickAntel]],
+        tipo: ['',[Validators.required]],
         ubicacion: [null, [this.vs.validarUbicacion, Validators.required]],
         whatsapp: [null, [this.vs.valididarWhatsapp]],
     });
 
-    fechaIn: FormControl = this.fb.control('');
+    pickerFechIni: FormControl = this.fb.control(null);
+    pickerFechEnd: FormControl = this.fb.control(null);
     horaIn: FormControl = this.fb.control('');
 
 
@@ -158,6 +165,7 @@ export class AgregarComponent implements OnInit {
     ngOnInit(): void {
         this._adapter.setLocale('es');
         this.horaIn.disable();
+        this.pickerFechEnd.disable();
         this.sourceDepartamentos = this.configService.getObsDepartamentos().subscribe(dptos => this.departamentos = dptos)
         this.configService.emitirDepartamentosActivos();
         this.sourceLocalidades = this.configService.getObsLocalidades().subscribe(locs => this.localidades = locs);
@@ -170,15 +178,26 @@ export class AgregarComponent implements OnInit {
         ).subscribe(evento => {
             let eventoActual: Evento = JSON.parse(JSON.stringify(evento));
             if (eventoActual.id !== undefined) {//Si estamos editando un lugar
-                let fechaEvento = new Date(evento.fecha.seconds * 1000);
-                let anioEvento = fechaEvento.getFullYear();
-                let diaEvento = fechaEvento.getDate();
-                let mesEvento = fechaEvento.getMonth();
-                this.startDate = new Date(anioEvento, mesEvento, diaEvento);
-                console.log(fechaEvento.getUTCHours())
-                this.fechaIn.setValue(this.startDate);
-                this.horaIn.setValue(this.getHoraStr(fechaEvento.getHours(), fechaEvento.getMinutes()));
-                this.horaIn.enable();
+                if (evento.fechaInicio !== null && evento.fechaInicio !== undefined) {
+                    const fInicio = new Date(evento.fechaInicio.seconds * 1000);
+                    this.minDateFin = fInicio;
+                    const anioInicio = fInicio.getFullYear();
+                    const diaInicio = fInicio.getDate();
+                    const mesInicio = fInicio.getMonth();
+                    this.startDate = new Date(anioInicio, mesInicio, diaInicio);
+                    this.pickerFechIni.setValue(this.startDate);
+                    this.horaIn.setValue(this.getHoraStr(fInicio.getHours(), fInicio.getMinutes()));
+                    this.horaIn.enable();
+                    this.pickerFechEnd.enable();
+                    if (evento.fechaFin !== null && evento.fechaFin !== undefined) {
+                        const fFin = new Date(evento.fechaFin.seconds * 1000);
+                        const anioFin = fFin.getFullYear();
+                        const diaFin = fFin.getDate();
+                        const mesFin = fFin.getMonth();
+                        this.startDateEnd = new Date(anioFin, mesFin, diaFin);
+                        this.pickerFechEnd.setValue(this.startDateEnd);
+                    }
+                }
                 this.idEvento = eventoActual.id;
                 delete eventoActual.id //para setear el formulario es necesario quitar el tatributo id
                 this.eventoForm.reset(eventoActual);
@@ -202,6 +221,14 @@ export class AgregarComponent implements OnInit {
     OnDestroy(): void {
         this.sourceDepartamentos.unsubscribe();
         this.sourceLocalidades.unsubscribe();
+        this.sourceMiniMapa.unsubscribe();
+
+        //limpia el mapa y el mini-mapa
+        this.mapaService.resetDataMapa();
+        this.mapaService.resetDataMiniMapa();
+        //Limpia el minimapa y el mapa
+        this.mapaService.emitirMiniMapa();
+        this.mapaService.resetDataMapa();
     }
 
     ngAfterViewInit(): void {
@@ -210,16 +237,33 @@ export class AgregarComponent implements OnInit {
 
     }
 
-    setFecha() {
-        let d:Moment = this.fechaIn.value;
-        console.log(d)
+    /**
+     * Funcion que toma la fecha de inicio ingresada y setea los valores inical y el mínimo que se puede seleccionar
+     * en el datepicker de fecha final.
+     * También habilita el input de la hora y el datepicker de fecha final
+     */
+    setFechaStart() {
+        if(this.pickerFechEnd.value === null){
+            this.startDateEnd = this.pickerFechIni.value; //fecha inicial del picker pickerFechEnd
+        }
+        else if(this.pickerFechIni.value !== null && this.horaIn.value !== null){
+            this.setFechaHora()
+        }
+        this.minDateFin = this.pickerFechIni.value; //fecha mínima del picker pickerFechEnd
         this.horaIn.enable();
+        this.pickerFechEnd.enable();
     }
 
-    setHora() {
-        let fecha = this.getFechaStr(this.fechaIn.value);
+    setFechaEnd() {
+        let fecha = this.getFechaStr(this.pickerFechEnd.value);
         let fechaStr: string = `${fecha} ${this.horaIn.value}:00 UTC-0300`;
-        this.fecha.setValue(Timestamp.fromDate(new Date(fechaStr)));
+        this.fechaFin.setValue(Timestamp.fromDate(new Date(fechaStr)));
+    }
+
+    setFechaHora() {
+        let fecha = this.getFechaStr(this.pickerFechIni.value);
+        let fechaStr: string = `${fecha} ${this.horaIn.value}:00 UTC-0300`;
+        this.fechaInicio.setValue(Timestamp.fromDate( new Date(fechaStr) ));
     }
 
     /**
@@ -229,7 +273,7 @@ export class AgregarComponent implements OnInit {
      * @param _minutos Minutos en formato numérico. 
      * @returns  Retorna la hora en el siguiente formato "hh:mm" no muestra los segundos.
      */
-    getHoraStr( _hora: number, _minutos:number ): string{
+    getHoraStr(_hora: number, _minutos: number): string {
         const horas: string[] = [];
         const minutos: string[] = [];
         //crear el array de horas
@@ -238,7 +282,7 @@ export class AgregarComponent implements OnInit {
         for (let i = 0; i < 60; i++) { minutos[i] = (i < 10) ? `0${i}` : `${i}` }
         let h = horas[_hora];
         let m = minutos[_minutos];
-        return  `${h}:${m}`;
+        return `${h}:${m}`;
     }
 
     /**
@@ -250,11 +294,11 @@ export class AgregarComponent implements OnInit {
     getFechaStr(_date: Moment): string {
         const dias: string[] = [];
         const meses: string[] = [];
-        for(let i = 1; i <= 31; i++){ dias[i] = ( i < 10 ) ? `0${i}` : `${i}` }
-        for(let i = 0; i < 12; i++){ meses[i] = ( i < 9 ) ? `0${(i+1)}` : `${(i+1)}` }
+        for (let i = 1; i <= 31; i++) { dias[i] = (i < 10) ? `0${i}` : `${i}` }
+        for (let i = 0; i < 12; i++) { meses[i] = (i < 9) ? `0${(i + 1)}` : `${(i + 1)}` }
         let dd: string = dias[_date.date()];
         let mm: string = meses[_date.month()];
-        let yyyy: string =  `${_date.year()}`;
+        let yyyy: string = `${_date.year()}`;
         return `${yyyy}/${mm}/${dd}`;
     }
 
@@ -358,6 +402,7 @@ export class AgregarComponent implements OnInit {
         this.eventoForm.controls['imagen'].setValue(this.imagenEvento);
         if (this.eventoForm.valid) {
             this.cambiosConfirmados = true;
+            if (this.fechaFin.value === null){ this.fechaFin.setValue(this.fechaInicio.value) }
             //verifica si es una actualización o un evento nuevo
             if (this.idEvento !== undefined) {//si se esta editando un lugar
                 //this.lugaresService.updateLugar(this.lugarForm.value, this.idLugar);
@@ -372,10 +417,16 @@ export class AgregarComponent implements OnInit {
                         this.openSnackBarSubmit('¡Error, no se ha podido actualizar el evento en Firestore!');
                         console.error('¡Error, no se ha podido actualizar el lugar en Firestore!. Error: ' + error);
                     });
+                //limpia el mapa y el mini-mapa
+                this.mapaService.resetDataMapa();
+                this.mapaService.resetDataMiniMapa();
+                //Limpia el minimapa y el mapa
+                this.mapaService.emitirMiniMapa();
+                this.mapaService.resetDataMapa();
                 this.regresar();
             } else { //Si el lugar es nuevo
                 let nuevoId: string;
-                this.eventosService.addLugar(this.eventoForm.value).then(id => {
+                this.eventosService.addEvento(this.eventoForm.value).then(id => {
                     nuevoId = id
                     if (nuevoId !== '' && nuevoId !== undefined) {
                         this.openSnackBarSubmit('¡El nuevo evento se ha guardado correctamente con el ID: ' + nuevoId);
@@ -405,14 +456,17 @@ export class AgregarComponent implements OnInit {
     get descripcion() { return this.eventoForm.get('descripcion'); }
     get direccion() { return this.eventoForm.get('direccion'); }
     get facebook() { return this.eventoForm.get('facebook'); }
-    get fecha() { return this.eventoForm.get('fecha'); }
+    get fechaFin() { return this.eventoForm.get('fechaFin'); }
+    get fechaInicio() { return this.eventoForm.get('fechaInicio'); }
     get imagen() { return this.eventoForm.get('imagen'); }
     get instagram() { return this.eventoForm.get('instagram'); }
     get localidad() { return this.eventoForm.get('localidad'); }
+    get lugar() { return this.eventoForm.get('lugar'); }
     get nombre() { return this.eventoForm.get('nombre'); }
     get nombreLugar() { return this.eventoForm.get('nombreLugar'); }
+    get precio() { return this.eventoForm.get('precio'); }
     get publicado() { return this.eventoForm.get('publicado'); }
-    get ticktAntel() { return this.eventoForm.get('ticktAntel'); }
+    get tickAntel() { return this.eventoForm.get('tickAntel'); }
     get ubicacion() { return this.eventoForm.get('ubicacion'); }
     get whatsapp() { return this.eventoForm.get('whatsapp'); }
 

@@ -12,6 +12,7 @@ import { SharedModule } from '../shared/shared.module';
 //Otros Modulos
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { AngularEditorModule } from '@kolkov/angular-editor';
+import { NgxPaginationModule } from 'ngx-pagination'; 
 
 //Paginas
 import { ListadoComponent } from './pages/listado/listado.component';
@@ -26,7 +27,8 @@ import { DialogPublicarComponent } from './components/dialog-publicar/dialog-pub
 //Pipes
 import { ImagenPipe } from './pipes/imagen.pipe';
 import { RecortarParrafoPipe } from './pipes/recortar-parrafo.pipe';
-import { FechaHoraPipe } from './pipes/fecha-hora.pipe';
+import { FechaPipe } from './pipes/fecha.pipe';
+import { HoraPipe } from './pipes/hora.pipe';
 
 
 
@@ -41,7 +43,8 @@ import { FechaHoraPipe } from './pipes/fecha-hora.pipe';
         ListadoComponent,
         RecortarParrafoPipe,
         DialogPublicarComponent,
-        FechaHoraPipe
+        FechaPipe,
+        HoraPipe
     ],
     imports: [
         AngularEditorModule,
@@ -50,6 +53,7 @@ import { FechaHoraPipe } from './pipes/fecha-hora.pipe';
         FlexLayoutModule,
         HttpClientModule,
         MaterialModule,
+        NgxPaginationModule,
         ReactiveFormsModule,
         SharedModule,
     ]

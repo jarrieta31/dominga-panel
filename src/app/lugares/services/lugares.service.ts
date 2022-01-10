@@ -23,7 +23,7 @@ export class LugaresService {
 
     constructor(
         private afs: AngularFirestore,
-        private localStorageService: LocalStorageService) {
+        private ls: LocalStorageService) {
         this.lugares$ = new BehaviorSubject(this.lugares);
         //this.getLugaresFirestore(this.localStorageService.departamento);
         this.prioridades$ = new BehaviorSubject([]);
@@ -55,15 +55,15 @@ export class LugaresService {
         })
     }
 
-    getCache(nombreDpto:string): Lugar[]{
-       return this.mapCache.get(nombreDpto); 
+    getCache(nombreDpto: string): Lugar[] {
+        return this.mapCache.get(nombreDpto);
     }
 
-    setCache(nombreDpto:string, lugares: Lugar[]):void{
+    setCache(nombreDpto: string, lugares: Lugar[]): void {
         this.mapCache.set(nombreDpto, lugares);
     }
 
-    checkCache(nombreDpto:string):boolean {
+    checkCache(nombreDpto: string): boolean {
         return this.mapCache.has(nombreDpto);
     }
 
@@ -172,27 +172,68 @@ export class LugaresService {
 
     /** 
      * Obtiene todos los lugares desde firestore y los almacena en lugares[] para 
-     * no estar consultado la base y minimizar el traficio.
+     * no estar consultando la base y minimizar el traficio.
      */
-    getLugaresFirestore(departament: string) {
-        this.afs.collection('lugares').ref.where('departamento', "==", departament).where('prioridad', ">", -1).orderBy('prioridad').get().then(
-            //this.afs.collection('lugares').ref.where('prioridad', ">", -1).orderBy('prioridad').get().then(
-            querySnapshot => {
-                const arrLugares: any[] = [];
-                querySnapshot.forEach(item => {
-                    const data: any = item.data()
-                    arrLugares.push({ id: item.id, ...data });
-                })
-                this.mapCache.set(departament, arrLugares.slice());
-                this.lugares = arrLugares.slice();
-                //this.lugaresOriginal = arrLugares.slice();
-                // this.corregirPrioridades(); //actualiza cada prioridad segun el inidice
-                this.updateListaPrioridadesLocal(false);//
-                this.lugares$.next(this.lugares); //el subject lugares$ emite los lugares
-            }
-        ).catch(error => {
-            console.error("Error en getLugaresFirestore(). error:" + error);
-        });
+    getLugaresFirestore(dpto: string) {
+        if (!this.mapCache.has(dpto)) {
+            console.log("get lugares "+dpto + " desde firestore")
+            this.afs.collection('lugares').ref.where('departamento', "==", dpto).where('prioridad', ">", -1).orderBy('prioridad').get().then(
+                //this.afs.collection('lugares').ref.where('prioridad', ">", -1).orderBy('prioridad').get().then(
+                querySnapshot => {
+                    const arrLugares: any[] = [];
+                    querySnapshot.forEach(item => {
+                        const data: any = item.data()
+                        arrLugares.push({ id: item.id, ...data });
+                    })
+                    this.mapCache.set(dpto, arrLugares.slice());
+                    this.lugares = arrLugares.slice();
+                    //this.lugaresOriginal = arrLugares.slice();
+                    // this.corregirPrioridades(); //actualiza cada prioridad segun el inidice
+                    this.updateListaPrioridadesLocal(false);//
+                    //this.lugares$.next(this.lugares); //el subject lugares$ emite los lugares
+                    this.getLugaresFiltrados()
+                }
+            ).catch(error => {
+                console.error("Error en getLugaresFirestore(). error:" + error);
+            });
+        }else{
+            console.log("get lugares "+dpto + " desde la cache de lugares")
+            this.lugares = this.mapCache.get(dpto);
+            this.updateListaPrioridadesLocal(false);
+    //            this.lugares$.next(this.lugares);
+            this.getLugaresFiltrados();
+        }
+    }
+
+    /**
+     * Función que realiza todos los filtros para lugares.
+     * Los filtros se realizan sobre el array local de lugares.
+     */
+    getLugaresFiltrados() {
+        // Por departamento
+        if (this.ls.localidad === ''  && this.ls.publicado === 'todos') {
+            this.lugares$.next(this.lugares)
+        }
+        // Departamento y Publidados
+        else if (this.ls.localidad === '' && this.ls.publicado !== 'todos') {
+            let p: boolean = this.ls.publicado === 'publicados' ? true : false;
+            this.lugares$.next(this.lugares.filter(evento =>
+                evento.publicado == p
+            ));
+        }
+        // Departamento y Localidad 
+        else if (this.ls.localidad !== '' && this.ls.publicado === 'todos') {
+            this.lugares$.next(this.lugares.filter(evento =>
+                evento.localidad === this.ls.localidad
+            ));
+        }
+        // Departamento, Localidad y Publidados
+        else if (this.ls.localidad !== '' && this.ls.activos === 'todos' && this.ls.publicado !== 'todos') {
+            let p: boolean = this.ls.publicado === 'publicados' ? true : false;
+            this.lugares$.next(this.lugares.filter(evento =>
+                evento.localidad === this.ls.localidad && evento.publicado == p
+            ));
+        }
     }
 
     /**
@@ -222,57 +263,6 @@ export class LugaresService {
             //this.afs.doc(`lugares/${id}`).snapshotChanges() //funciona ok no se usa
             //this.afs.doc(id).get()                          //funciona ok no se usa
             lugarEncontrado
-        );
-    }
-
-    /** 
-     * test Ok: Filtra lugares por departamento en el array local lugares. La lista 
-     * resultante es emitida desde el Subject lugares$. 
-     * @param {String} departamento Nombre del departamento por el cual se realiza la busqueda.
-     */
-    getLugaresPorDepartamento(departamento: string): void {
-        //si uso la consulta a firestore retorna un observable
-        //return this.afs.collection('lugares', ref => ref.where('departamento', '==', departamento)).valueChanges({ idField: 'id' });
-        let lugaresDepartamento = this.lugares.filter(lugar => lugar.departamento === departamento);
-        this.lugares$.next(lugaresDepartamento);
-    }
-
-    getLugaresLocalidad(loc: string) {
-        let lugaresLocalidad = this.lugares.filter(lugar => lugar.localidad === loc);
-        this.lugares$.next(lugaresLocalidad);
-    }
-
-    /** OK: Filtra por el estado de publicacion y retorna un obserbave  */
-    getLugaresPorEstado(publicado: boolean): void {
-        //si uso la consulta a firestore retorna un observable
-        //return this.afs.collection('lugares', ref => ref.where('publicado', '==', publicado)).valueChanges({ idField: 'id' });
-        this.lugares$.next(this.lugares.filter(lugar => lugar.publicado == publicado));
-    }
-
-    /** OK: Filtra por el estado de publicacion y por el departamento, luego 
-     * actualiza el Subject  lugares$
-      */
-    getLugaresPublicadoYDepartamento(pub: boolean, depto: string): void {
-        this.lugares$.next(
-            this.lugares.filter(lugar => {
-                if (lugar.publicado === pub && lugar.departamento === depto) {
-                    return true;
-                } else {
-                    return false;
-                }
-            })
-        );
-    }
-
-    getLugaresPublicadoDepartamentoLocalidad(pub: boolean, dpto: string, loc: string) {
-        this.lugares$.next(
-            this.lugares.filter(lugar => {
-                if (lugar.publicado === pub && lugar.departamento === dpto && lugar.localidad === loc) {
-                    return true;
-                } else {
-                    return false;
-                }
-            })
         );
     }
 
