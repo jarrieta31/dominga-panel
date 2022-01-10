@@ -1,17 +1,49 @@
 
 mat-card {
    margin-top: 20px;
-   width: 238px;
-   height: 411px;
+   width: 270px;
+   height: 370px;
+   padding: 0;
+   padding-bottom: 12px;
 }
 
+mat-card img {
+    padding: 0px;
+    margin: 0px;
+    height: 158.84px;
+    width: 270px;
+}
+
+mat-card-subtitle {
+    color: #006CD8;
+    font-size: 11px;
+    width: 240px;
+}
+
+
 mat-card-content {
-    height: 40px;
+    width: 230px;
+    height: 60px;
+    margin: 0px;
+    margin-bottom: 5px;
+    padding: 0px 20px 0px 20px;
+    color: rgb(96, 96, 96);
+}
+
+mat-card-actions {
+    width: 100%;
+    padding: 0px;
+    margin: 0px;
 }
 
 mat-card-footer {
-    padding-bottom: 20px;
+    width: 230px;
+    margin: 0px;
+    padding-bottom: 10px;
     padding-left: 20px;
+    display: flex;
+    justify-content:flex-start;
+    align-items: center;
 }
 
 .icon-si {

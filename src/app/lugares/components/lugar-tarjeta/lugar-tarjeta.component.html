@@ -1,10 +1,16 @@
 <mat-card>
+    <img mat-card-image [src]="lugar | imagen">
+
     <mat-card-header>
+        <mat-card-subtitle>
+            <div fxLayout="row" fxLayoutAlign="space-between center" >
+                <div>Tipo {{lugar.tipo}}</div>
+               <div>Prioridad: {{lugar.prioridad}}</div> 
+            </div>
+        </mat-card-subtitle>
         <mat-card-title>{{ lugar.nombre }}</mat-card-title>
-        <mat-card-subtitle>Tipo: {{ lugar.tipo }} &nbsp; Prioridad: {{lugar.prioridad}}</mat-card-subtitle>
     </mat-card-header>
 
-    <img mat-card-image [src]="lugar | imagen">
 
     <mat-card-content>
         <!-- {{ lugar.descripcion | deleteHtml | recortarParrafo }} -->
@@ -36,12 +42,12 @@
 
     <mat-card-footer>
         Publicado:
-        <span *ngIf="lugar.publicado">
+        <ng-container *ngIf="lugar.publicado">
             Sí <mat-icon class="icon-si">done</mat-icon>
-        </span>
-        <span *ngIf="!lugar.publicado">
+        </ng-container>
+        <ng-container *ngIf="!lugar.publicado">
             No <mat-icon color="warn">close</mat-icon>
-        </span>
+        </ng-container>
     </mat-card-footer>
 
 </mat-card>
