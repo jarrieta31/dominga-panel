@@ -1,1 +1,22 @@
-<p>dialog-eliminar works!</p>
+<h2 mat-dialog-title>Eliminar Hotel</h2>
+<mat-dialog-content class="mat-typography">
+    <h3>¡Atención Eliminando Hotel!</h3>
+    <p>¿Está seguro que quiere eliminar el hotel <em>"{{data.nombre}}"</em> de la APP?</p>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button type="button"
+        mat-stroked-button 
+        color="primary" 
+        mat-dialog-close 
+        (click)="closeDialog()">
+        Cancelar
+    </button>
+    <button type="button"
+        mat-stroked-button color="warn" 
+        [mat-dialog-close]="true" 
+        cdkFocusInitial 
+        (click)="eliminarRestauran(data.id)">
+        Eliminar
+    </button>
+</mat-dialog-actions>
+

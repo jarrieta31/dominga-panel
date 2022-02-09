@@ -1,1 +1,49 @@
-<p>donde-dormir-tarjeta works!</p>
+<mat-card>
+    <img mat-card-image [src]="hotel | imagen">
+    <mat-card-header >
+        <mat-card-subtitle >
+            <div fxLayout="row" fxLayoutAlign="space-between center" >
+                <div fxFlex="40">
+                    {{ hotel.departamento }}
+                </div>
+                <div fxFlex="40">
+                    {{ hotel.localidad }}
+                </div>
+            </div>
+        </mat-card-subtitle>
+        <mat-card-title>{{ hotel.nombre | recortarTitulo:largoTitulo }}</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+        <div>Dirección: {{ hotel.direccion }}</div>
+        <div *ngIf="hotel.telefonos.length > 0">Teléfono: {{hotel.telefonos[0].numero}}</div>
+        <div *ngIf="hotel.telefonos.length > 1">Teléfono: {{hotel.telefonos[1].numero}}</div>
+    </mat-card-content>
+
+    <mat-card-actions>
+        <mat-grid-list cols="3" rowHeight="50px">
+            <mat-grid-tile colspan="1" [rowspan]="1">
+                <button mat-button mat-stroked-button color="primary" [routerLink]="['/donde-dormir/editar', hotel.id]">
+                    Editar
+                </button>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="1" [rowspan]="1">
+                <button mat-button mat-stroked-button color="warn" (click)="openDialog()">
+                    Eliminar
+                </button>
+            </mat-grid-tile>
+        </mat-grid-list>
+    </mat-card-actions>
+
+    <mat-card-footer>
+        Publicado:
+        <ng-container *ngIf="hotel.publicado">
+            Sí <mat-icon class="icon-si">done</mat-icon>
+        </ng-container>
+        <ng-container *ngIf="!hotel.publicado">
+            No <mat-icon color="warn">close</mat-icon>
+        </ng-container>
+    </mat-card-footer>
+
+</mat-card>
+

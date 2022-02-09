@@ -11,15 +11,11 @@
                 </div>
             </div>
         </mat-card-subtitle>
-        <mat-card-title>{{ evento.nombre }}</mat-card-title>
-        <!-- 
-        <mat-card-subtitle>Tipo: {{ evento.tipo }} </mat-card-subtitle>
-        -->
+        <mat-card-title>{{ evento.nombre | recortarTitulo:largoTitulo }}</mat-card-title>
     </mat-card-header>
 
     <mat-card-content>
-        <!-- {{ lugar.descripcion | deleteHtml | recortarParrafo }} -->
-        <div [innerHTML]="evento.descripcion | recortarParrafo"></div>
+        <div [innerHTML]="evento.descripcion | recortarParrafo:largoDescripcion"></div>
     </mat-card-content>
 
     <mat-card-actions>

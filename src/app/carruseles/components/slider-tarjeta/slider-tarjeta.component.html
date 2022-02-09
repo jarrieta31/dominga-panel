@@ -1,0 +1,41 @@
+<mat-card>
+    <img mat-card-image [src]="slider | imagen">
+    <mat-card-header>
+        <mat-card-subtitle>
+            <div fxLayout="column" fxLayoutAlign="space-between start">
+                <div>
+                    Pantalla: {{ slider.pantalla | textoPantalla }}
+                </div>
+                <div *ngIf="slider.linkTipo !== null">
+                    Link: {{ slider.linkTipo | textoPantalla }}
+                </div>
+            </div>
+        </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-actions>
+        <mat-grid-list cols="3" rowHeight="50px">
+            <mat-grid-tile colspan="1" [rowspan]="1">
+                <button mat-button mat-stroked-button color="primary" (click)="editar()">
+                    Editar
+                </button>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="1" [rowspan]="1">
+                <button mat-button mat-stroked-button color="warn" (click)="openDialog()">
+                    Eliminar
+                </button>
+            </mat-grid-tile>
+        </mat-grid-list>
+        <mat-card-footer>
+            Publicado:
+            <ng-container *ngIf="slider.publicado">
+                Sí <mat-icon class="icon-si">done</mat-icon>
+            </ng-container>
+            <ng-container *ngIf="!slider.publicado">
+                No <mat-icon color="warn">close</mat-icon>
+            </ng-container>
+        </mat-card-footer>
+    </mat-card-actions>
+
+
+</mat-card>

@@ -26,9 +26,11 @@ import { DialogPublicarComponent } from './components/dialog-publicar/dialog-pub
 
 //Pipes
 import { ImagenPipe } from './pipes/imagen.pipe';
-import { RecortarParrafoPipe } from './pipes/recortar-parrafo.pipe';
+import { RecortarParrafoPipe } from '../shared/pipes/recortar-parrafo.pipe';
 import { FechaPipe } from './pipes/fecha.pipe';
 import { HoraPipe } from './pipes/hora.pipe';
+import { RecortarTituloPipe } from '../shared/pipes/recortar-titulo.pipe';
+import { FiltrosPipe } from './pipes/filtros.pipe';
 
 
 
@@ -41,10 +43,10 @@ import { HoraPipe } from './pipes/hora.pipe';
         EventoTarjetaComponent,
         ImagenPipe,
         ListadoComponent,
-        RecortarParrafoPipe,
         DialogPublicarComponent,
         FechaPipe,
-        HoraPipe
+        HoraPipe,
+        FiltrosPipe
     ],
     imports: [
         AngularEditorModule,

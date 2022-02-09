@@ -10,7 +10,7 @@
         <form [formGroup]="archivoForm" (ngSubmit)="subirArchivo()">
 
             <div>
-                <input class="botonFile" type="file" formControlName="archivo" multiple="false" accept=".jpg"
+                <input class="botonFile" type="file" formControlName="archivo" multiple="false" accept=".jpg, .jpeg"
                     #coverFilesInput (change)="cambioArchivo($event)">
             </div>
             <br>

@@ -8,13 +8,13 @@
                <div>Prioridad: {{lugar.prioridad}}</div> 
             </div>
         </mat-card-subtitle>
-        <mat-card-title>{{ lugar.nombre }}</mat-card-title>
+        <mat-card-title>{{ lugar.nombre | recortarTitulo:largoTitulo }}</mat-card-title>
     </mat-card-header>
 
 
     <mat-card-content>
         <!-- {{ lugar.descripcion | deleteHtml | recortarParrafo }} -->
-        <div [innerHTML]="lugar.descripcion | recortarParrafo"></div>
+        <div [innerHTML]="lugar.descripcion | recortarParrafo:largoDescripcion"></div>
     </mat-card-content>
 
     <mat-card-actions>

@@ -1,18 +1,68 @@
-<div fxLayout='row' fxLayoutAlign="space-between center">
+<div fxLayout='row' fxLayoutAlign="center center">
 
-    <button mat-button type="button" color="primary" (click)="regresar()">
-        <mat-icon>arrow_back_ios</mat-icon>
-        Atras
-    </button>
     <h1>{{titulo}}</h1>
-    <div></div>
 </div>
 
+<mat-divider></mat-divider>
+<br>
 
-<div style="width: 1750px; margin: auto;" fxLayout="row" fxLayoutAlign="center start">
+<form [formGroup]="filtrosForm">
+    <div fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="30px" class="rowFiltros">
+        <div fxLayout="row" fxLayoutAlign="space-between end" fxLayoutGap="10px" class="rowDepartamento row">
+            <div fxFlex="20%">
+                <h3>Departamento:</h3>
+            </div>
+            <mat-form-field class="inputDepartamento">
+                <mat-label>Selecciona el Departamento</mat-label>
+                <mat-select formControlName="departamento" (selectionChange)="setFiltroDepartamento()">
+                    <mat-option *ngFor="let dpto of departamentos" [value]="dpto">
+                        {{ dpto }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="space-between end" fxLayoutGap="10px" class="rowLocalidad row">
+            <div fxFlex="30%">
+                <h3>Localidad:</h3>
+            </div>
+            <mat-form-field class="inputLocalidad">
+                <mat-label>Selecciona la Localidad</mat-label>
+                <mat-select formControlName="localidad" (selectionChange)="setFiltroLocalidad()">
+                    <mat-option value="">Ver todas</mat-option>
+                    <mat-option *ngFor="let loc of localidades" [value]="loc">{{ loc }}</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="space-between end" fxLayoutGap="10px" class="rowPublicados row">
+            <div fxFlex="20%">
+                <h3>Publicados:</h3>
+            </div>
+            <mat-form-field class="inputPublicados">
+                <mat-label>Filtrar Publicados</mat-label>
+                <mat-select formControlName="publicado" (selectionChange)="setFiltroPublicados()">
+                    <mat-option *ngFor="let opcion of opcionesSlectPublicado" [value]="opcion.valor">{{ opcion.estado }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <div class="rowReset row">
+            <button type="button" mat-raised-button color="primary" (click)="resetFiltros()">Reset filtros</button>
+        </div>
+    </div>
+</form>
+
+<mat-divider></mat-divider>
+<div fxLayout="row" fxLayoutAlign="center start" class="main">
     <div fxLayout="row wrap" fxLayout.xs="column" fxLayoutAlign="start start" fxLayoutGap="20px">
-        <div *ngFor="let restoran of restaurantes$ | async" style="min-height: 390px;">
+        <div *ngFor="let restoran of restaurantes | paginate: { itemsPerPage: 12, currentPage: page }">
             <app-donde-comer-tarjeta [restoran]="restoran"></app-donde-comer-tarjeta>
         </div>
     </div>
+</div>
+
+<br>
+<mat-divider></mat-divider>
+<div fxLayout="row" fxLayoutAlign="center center">
+    <pagination-controls (pageChange)="page = $event" previousLabel="Anterior" nextLabel="Siguiente">
+    </pagination-controls>
 </div>

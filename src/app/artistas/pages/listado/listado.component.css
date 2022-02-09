@@ -1,0 +1,36 @@
+
+.main {
+    min-height: 600px;
+}
+
+.rowDepartamento {
+    width: 320px;
+}
+
+.inputDepartamento {
+    width: 200px;
+}
+
+.rowLocalidad {
+    width: 300px;
+}
+
+.inputLocalidad {
+    width: 220px;
+}
+
+.rowActivos {
+    width: 250px;
+}
+
+.inputActivos {
+    width: 150px;
+}
+
+.rowPublicados {
+    width: 230px;
+}
+
+.inputPublicados {
+    width: 130px;
+}

@@ -74,6 +74,45 @@
             </div>
             <!-- ============================== Fin Departamento y Localidad ==================================== -->
 
+            <!-- ============================== Mapa ==================================== -->
+            <div fxFlex="50%" fxLayout="column" fxLayoutAlign="space-evenly center" class="container">
+                <h2>Ubicación del Evento *</h2>
+                <div fxLayout="row">
+                    <div fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="30px">
+                        <div style="width: 70%;">
+                            <p>Abra el mapa y creé un marcador en la ubicación del evento para obtener sus coordenadas
+                            </p>
+                        </div>
+
+                        <div>
+                            <button type="button" mat-raised-button color="primary" (click)="abrirMapa()">
+                                <mat-icon>map</mat-icon>
+                                Abrir Mapa
+                            </button>
+                        </div>
+                        <div *ngIf="ubicacion.value !== null">
+                            Longitud: {{ ubicacion.value.lng }}, Latidud: {{ ubicacion.value.lat }}
+                        </div>
+                        <div *ngIf="ubicacion.value === null">
+                            Longitud: 0, Latidud: 0
+                        </div>
+                        <ng-container *ngIf="!ubicacion.valid && mapaTouched">
+                            <mat-error>¡Debe seleccionar la ubicación del lugar creando un marcador en el mapa!
+                            </mat-error>
+                        </ng-container>
+                    </div>
+                    <div fxLayout="column">
+                        <app-mini-mapa></app-mini-mapa>
+                    </div>
+                </div>
+            </div>
+            <!-- ============================== Fin Mapa ==================================== -->
+        </div>
+
+
+        <!-- ============================== Columna derecha ==================================== -->
+        <div class="main-column" fxFlex="50%" fxLayout="column" fxLayoutAlign="start stretch" fxLayoutGap="30">
+
             <!-- =================================== Dirección ================================ -->
             <div fxLayout="column" fxLayoutAlign="start stretch" class="container">
                 <div>
@@ -87,7 +126,7 @@
                                 required class="input">
                             <ng-container *ngIf="!direccion.valid && direccion.touched">
                                 <mat-error *ngIf="direccion.errors.required">
-                                    La direccion del evento es obligatoria.
+                                    La direccion es obligatoria.
                                 </mat-error>
                                 <mat-error *ngIf="direccion.errors.minlength">
                                     La direccion de tener un mínimo de 3 caracteres.
@@ -103,12 +142,6 @@
                 </div>
             </div>
             <!-- =================================== Fin Dirección ================================ -->
-        </div>
-
-
-        <!-- ============================== Columna derecha ==================================== -->
-        <div class="main-column" fxFlex="50%" fxLayout="column" fxLayoutAlign="start stretch" fxLayoutGap="30">
-
 
             <!-- ============================== Telefonos ==================================== -->
             <div fxLayout="column" class="container">
@@ -134,8 +167,8 @@
                                 Eliminar
                             </button>
                         </div>
-                        <div *ngIf="i == 0">
-                            <button type="button" mat-raised-button color="primary"
+                        <div *ngIf="i === 0">
+                            <button type="button" mat-raised-button color="primary" [disabled]="disabledAddPhones"
                                 (click)="agregarNuevoTelefonoAlFormulario()">
                                 <mat-icon>add</mat-icon>
                                 Agregar Teléfono

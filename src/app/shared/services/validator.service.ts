@@ -49,7 +49,6 @@ export class ValidatorService {
 
     //revisar
     valididarWhatsapp(control: FormControl): ValidationErrors | null {
-        //console.log(control.value)
         if (control.value === "" || control.value === null) {
             return null;
         } else {
@@ -63,8 +62,21 @@ export class ValidatorService {
         }
     }
 
+    valididarNumeroWhatsapp(control: FormControl): ValidationErrors | null {
+        if (control.value === "" || control.value === null) {
+            return null;
+        } else {
+            const valor: string = control.value?.trim().toLowerCase();
+            //Ejemplo: https://api.whatsapp.com/send?phone=59899468473
+            let regExPersonal = /09[\d]{7}$/g;
+            if (regExPersonal.test(valor)) {
+                return null;
+            }
+            return { whatsapp: true };
+        }
+    }
+
     validarInstagram(control: FormControl): ValidationErrors | null {
-        //console.log(control.value)
         if (control.value === "" || control.value === null) {
             return null;
         } else {
@@ -94,7 +106,7 @@ export class ValidatorService {
      * @param control FormControl del video
      * @returns 
      */
-    validarYoutube(control: FormControl): ValidationErrors | null{
+    validarVideoYoutube(control: FormControl): ValidationErrors | null{
         //console.log(control.value)
         // tiene que quedar:    https://www.youtube.com/embed/WEn3eSV-hvw
         console.log(control.value)
@@ -110,6 +122,28 @@ export class ValidatorService {
         }
     }
 
+    /**
+     * Valida el link a youtube con el formato listo para embeber en al app. 
+     * @param control FormControl del video
+     * @returns 
+     */
+    validarLinkYoutube(control: FormControl): ValidationErrors | null{
+        //console.log(control.value)
+        // tiene que quedar:    https://www.youtube.com/embed/WEn3eSV-hvw
+        console.log(control.value)
+        if ( control.value === null || control.value === '') {
+            return null;
+        } else {
+            const valor: string = control.value;
+            let regExVideo = /^https:\/\/(?:www\.)?youtube\.com\/watch\b([-a-zA-Z0-9_=&?]{50,80})$/g;
+            let regExCanal = /^https:\/\/(?:www\.)?youtube\.com\/channel\/\b([-a-zA-Z0-9_]{24})$/g;
+            if (regExVideo.test(valor) || regExCanal.test(valor)) {
+                return null;
+            }
+            return { youtube: true };
+        }
+    }
+
 
     /**
      * Valida el link de un video de youtube con el formato listo para embeber en al app. 
@@ -118,14 +152,14 @@ export class ValidatorService {
      */
     validarTelefono(control: FormControl): ValidationErrors | null{
         // puede aceptar : 43422835 o 43422835-36 o 099123456   
-        console.log(control.value)
         if ( control.value === null || control.value === '') {
             return null;
         } else {
             const valor: string = control.value;
-            let regExPersonal = /^\b([0-9]{8,8})(?:-[0-9]{2,2})?$/g;
-            let regExPersonal2 = /^\b([0-9]{9,9})$/g;
-            if (regExPersonal.test(valor) || regExPersonal2.test(valor)) {
+            let regExLinea = /^\b([0-9]{8,8})(?:-[0-9]{2,2})?$/g;
+            let regExCelular = /^\b([0-9]{9,9})$/g;
+            let regExEmergencia = /^\b([0-9]{3,3})$/g;
+            if (regExLinea.test(valor) || regExCelular.test(valor) || regExEmergencia.test(valor)) {
                 return null;
             }
             return { telefono: true };
@@ -147,4 +181,71 @@ export class ValidatorService {
 
     }
 
+    valididarImagenCarrusel(control: FormControl): ValidationErrors | null {
+        console.log(control.value.name)
+        if (control.value.name !== "imagen-default" ) {
+            return null;
+        } else {
+            return { imagen: true };
+        }
+    }
+
+    /**
+     * Valida el link de una playlist, o de un artista de spotify con el formato listo para pegar en al app. 
+     * @param control FormControl de link spotify
+     * @returns 
+     */
+    validarPlayListSpotify(control: FormControl): ValidationErrors | null{
+        //https://open.spotify.com/playlist/00tfEBrWnJvbSA5VjsjnRA?si=86593d2769974857
+        //https://open.spotify.com/artist/1dfeR4HaWDbWqFHLkxsg1d?si=bQ7EkrD9SuCeyrvfzcZizw&nd=1
+        console.log(control.value)
+        if ( control.value === null || control.value === '') {
+            return null;
+        } else {
+            const valor: string = control.value;
+            let regExArtist = /^https:\/\/open\.spotify\.com\/artist\/\b([-a-zA-Z0-9_?=&]{42,53})$/g;
+            let regExPlayList = /^https:\/\/open\.spotify\.com\/playlist\/\b([-a-zA-Z0-9_?=]{42,53})$/g;
+            if (regExArtist.test(valor) || regExPlayList.test(valor) ) {
+                return null;
+            }
+            return { spotify: true };
+        }
+    }
+    
+    /**
+     * Valida la latitud.
+     * @param control FormControl latitud
+     * @returns 
+     */
+    validarLatitud(control: FormControl): ValidationErrors | null{
+        console.log(typeof control.value)
+        console.log(control.value)
+        if ( control.value === null ) {
+            return null;
+        } else {
+            const valor: number = Number(control.value);
+            if (  valor >= -39 && valor <= -30 ){
+                return null;
+            }
+            return { latitud: true };
+        }
+    }
+
+
+    /**
+     * Valida la longitud.
+     * @param control FormControl longitud
+     * @returns 
+     */
+    validarLongitud(control: FormControl): ValidationErrors | null{
+        if ( control.value === null ) {
+            return null;
+        } else {
+            const valor: number = Number(control.value);
+            if (  valor >= -59 && valor <= -50){
+                return null;
+            }
+            return { longitud: true };
+        }
+    }
 }

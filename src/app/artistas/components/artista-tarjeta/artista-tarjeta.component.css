@@ -1,0 +1,59 @@
+mat-card {
+    width:270px;
+    height: 390px;
+    padding: 0;
+    padding-bottom: 12px;
+    margin-top: 20px;
+    background-color: #ffffff;
+}
+
+mat-card img {
+    padding: 0px;
+    margin: 0px;
+    width: 270px;
+    height: 250px;
+}
+
+mat-card-header {
+    width: 100%;
+    padding: 0px;
+    margin: 0px;
+}
+
+mat-card-subtitle div {
+    color: #006CD8;
+    font-size: 11px;
+    width: 238px;
+    margin: 0px;
+}
+
+
+mat-card-content {
+    width: 230px;     
+    height: 60px;
+    margin: 0px;
+    margin-bottom: 5px;
+    padding: 0px 20px 0px 20px;
+    color:rgb(96, 96, 96);
+    font-size: 12px;
+}
+
+mat-card-actions {
+    width: 100%;
+    padding: 0px;
+    margin: 0px;
+}
+
+mat-card-footer {
+    width: 230px;
+    margin: 0px;
+    padding-bottom: 10px;
+    padding-left: 20px;
+    display: flex;
+    justify-content:flex-start;
+    align-items: center;
+}
+
+.icon-si {
+    color: green;
+}

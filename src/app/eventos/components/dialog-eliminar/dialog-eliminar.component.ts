@@ -1,10 +1,10 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { EventosService } from '../../services/eventos.service';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { StorageService } from '../../../shared/services/storage.service';
 
 //Interfaces
 import { Evento } from '../../interfaces/evento.interface';
-import { StorageService } from '../../../shared/services/storage.service';
 
 @Component({
     selector: 'app-dialog-eliminar',

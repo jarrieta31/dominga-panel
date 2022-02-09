@@ -86,9 +86,9 @@ export class AgregarComponent implements OnInit {
         whatsapp: [null, [this.vs.valididarWhatsapp]],
     });
 
-    pickerFechIni: FormControl = this.fb.control(null);
-    pickerFechEnd: FormControl = this.fb.control(null);
-    horaIn: FormControl = this.fb.control('');
+    pickerFechIni:  FormControl = this.fb.control(null);
+    pickerFechEnd:  FormControl = this.fb.control(null);
+    horaIn:         FormControl = this.fb.control('');
 
 
     editorConfig: AngularEditorConfig = {

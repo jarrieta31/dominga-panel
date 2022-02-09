@@ -13,7 +13,7 @@ export class DondeComerTarjetaComponent implements OnInit {
 
 
     @Input() restoran: Restoran;
-
+    largoTitulo:number = 26;
 
     constructor(
         public dialog: MatDialog,

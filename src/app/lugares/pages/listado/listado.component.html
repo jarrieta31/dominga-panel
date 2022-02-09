@@ -51,14 +51,29 @@
     </div>
 </form>
 
-<div style="width: 1750px; margin: auto;" fxLayout="row" fxLayoutAlign="center start" class="main">
-    <div fxLayout="row wrap" fxLayout.xs="column" fxLayoutAlign="start start" fxLayoutGap="20px">
-        <div *ngFor="let lugar of lugares  | paginate: { itemsPerPage: 12, currentPage: page }"
-            style="min-height: 390px;">
-            <app-lugar-tarjeta [lugar]="lugar"></app-lugar-tarjeta>
+<!-- Si el lugar no existe muestra el espiner -->
+<mat-grid-list cols="1" *ngIf="lugares.length < 1 else listaLugares">
+    <mat-grid-tile>
+        <mat-spinner></mat-spinner>
+    </mat-grid-tile>
+</mat-grid-list>
+
+<ng-template #listaLugares>
+    <div style="width: 1750px; margin: auto;" fxLayout="row" fxLayoutAlign="center start" class="main">
+        <div fxLayout="row wrap" fxLayout.xs="column" fxLayoutAlign="start start" fxLayoutGap="20px">
+            <div *ngFor="let lugar of lugares  | paginate: { itemsPerPage: 12, currentPage: page }">
+                <app-lugar-tarjeta [lugar]="lugar"></app-lugar-tarjeta>
+            </div>
         </div>
     </div>
-</div>
+</ng-template>
+
+
+
+<ng-template #noLugares>
+    <div>No hay datos para mostrar</div>
+</ng-template>
+
 
 <br>
 <mat-divider></mat-divider>

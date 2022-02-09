@@ -1,0 +1,38 @@
+mat-divider{
+    margin-bottom: 40px;
+}
+
+form {
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.container {
+    padding: 10px;
+    margin-bottom: 2px;
+    width: 100%;
+}
+
+.direccion {
+    min-width: 100%;
+}
+
+.lugar{
+    min-width: 100%;
+}
+
+.input{
+    min-width: 100%;
+}
+
+.nombre {
+    min-width: 300px;
+}
+
+.telefono {
+    width: 200px;
+}
+
+.rowButton {
+    padding-top: 320px;
+}

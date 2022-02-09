@@ -10,31 +10,39 @@ import { MiniMapaComponent } from './components/mini-mapa/mini-mapa.component';
 import { MapaComponent } from './components/mapa/mapa.component';
 import { DialogMapaComponent } from './components/dialog-mapa/dialog-mapa.component';
 import { QuitarEspaciosPipe } from './pipes/quitar-espacios.pipe';
+import { ImagenPipe } from './pipes/imagen.pipe';
+import { RecortarParrafoPipe } from './pipes/recortar-parrafo.pipe';
+import { RecortarTituloPipe } from './pipes/recortar-titulo.pipe';
 
 
 
 @NgModule({
-  declarations: [
-    ErrorPageComponent,
-    UploadFilesComponent,
-    ImagenComponent,
-    MiniMapaComponent,
-    MapaComponent,
-    DialogMapaComponent,
-    QuitarEspaciosPipe
-  ],
-  exports:[
-    ErrorPageComponent,
-    UploadFilesComponent,
-    ImagenComponent,
-    MiniMapaComponent,
-    MapaComponent,
-  ],
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    FlexLayoutModule,
-    MaterialModule
-  ]
+    declarations: [
+        DialogMapaComponent,
+        ErrorPageComponent,
+        ImagenComponent,
+        ImagenPipe,
+        MapaComponent,
+        MiniMapaComponent,
+        QuitarEspaciosPipe,
+        RecortarParrafoPipe,
+        RecortarTituloPipe,
+        UploadFilesComponent,
+    ],
+    exports: [
+        ErrorPageComponent,
+        ImagenComponent,
+        MapaComponent,
+        MiniMapaComponent,
+        RecortarParrafoPipe,
+        RecortarTituloPipe,
+        UploadFilesComponent,
+    ],
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        FlexLayoutModule,
+        MaterialModule
+    ]
 })
 export class SharedModule { }

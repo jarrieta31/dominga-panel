@@ -23,8 +23,8 @@ import { ImagenPipe } from './pipes/imagen.pipe';
 import { ListadoComponent } from './pages/listado/listado.component';
 import { LugarComponent } from './pages/lugar/lugar.component';
 import { LugarTarjetaComponent } from './components/lugar-tarjeta/lugar-tarjeta.component';
-import { RecortarParrafoPipe } from './pipes/recortar-parrafo.pipe';
 import { DialogPublicarComponent } from './components/dialog-publicar/dialog-publicar.component';
+import { FiltrosPipe } from './pipes/filtros.pipe';
 
 
 @NgModule({
@@ -38,8 +38,8 @@ import { DialogPublicarComponent } from './components/dialog-publicar/dialog-pub
         ListadoComponent,
         LugarComponent,
         LugarTarjetaComponent,
-        RecortarParrafoPipe,
         DialogPublicarComponent,
+        FiltrosPipe,
     ],
     imports: [
         AngularEditorModule,

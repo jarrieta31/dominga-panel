@@ -1,1 +1,265 @@
-<p>agregar works!</p>
+<div fxLayout='row' fxLayoutAlign="space-between center">
+
+    <button mat-button type="button" color="primary" (click)="regresar()">
+        <mat-icon>arrow_back_ios</mat-icon>
+        Atras
+    </button>
+    <h1>{{titulo}}</h1>
+    <div></div>
+</div>
+<br>
+<form [formGroup]="hotelForm" (ngSubmit)="submitEvento()">
+
+    <div fxLayout="row" fxLayoutAlign="space-between stretch" fxLayoutGap="40px" style="min-height: 300px;">
+
+        <!-- ============================== Columna izquierda ==================================== -->
+        <div class="main-column" fxFlex="50" fxLayout="column" fxLayoutAlign="start stretch" fxLayoutGap="30">
+
+            <!-- ==============================  Nombre/Publicado ==================================== -->
+            <div fxLayout="column" fxLayoutAlign="start stretch" class="container">
+                <div>
+                    <h2>Nombre */Estado de publicación</h2>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="space-between start" fxLayoutGap="30px">
+
+                    <mat-form-field fxFlex="50%">
+                        <mat-label>Nombre del local de comidas</mat-label>
+                        <input required matInput type="text" formControlName="nombre" (change)="quitarEspacios()">
+                        <ng-container *ngIf="!nombre.valid && nombre.touched">
+                            <mat-error *ngIf="nombre.errors.required">
+                                El campo nombre del evento es obligatorio.
+                            </mat-error>
+                            <mat-error *ngIf="nombre.errors.minlength">
+                                El nombre de tener un mínimo de 2 caracteres.
+                            </mat-error>
+                        </ng-container>
+                    </mat-form-field>
+
+                    <div fxFlex="35%">
+                        Activar para que sea visible en la app: &nbsp; &nbsp;
+                        <mat-slide-toggle (change)="switchPublicar()" formControlName="publicado">
+                            Publicado
+                        </mat-slide-toggle>
+                    </div>
+
+                    <mat-form-field fxFlex="15%">
+                        <mat-label>Carperta Cloud Storage</mat-label>
+                        <input matInput type="text" formControlName="carpeta" [readonly]="true">
+                    </mat-form-field>
+                </div>
+            </div>
+            <!-- ============================== Fin  Nombre/Publicado ==================================== -->
+
+            <!-- ==============================  Departamento y Localidad ==================================== -->
+            <div class="container">
+                <div>
+                    <h2>Departamento */Localidad *</h2>
+                </div>
+                <div fxLayout="row" fxLayoutGap="40px">
+                    <mat-form-field id="camp-principal" fxFlex="50%">
+                        <mat-label>Selecciona el Departamento</mat-label>
+                        <mat-select formControlName="departamento" required
+                            (selectionChange)="getLocalidadesPorDepartamento()">
+                            <mat-option *ngFor="let departamento of departamentos" [value]="departamento">
+                                {{ departamento }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-form-field fxFlex="50%">
+                        <mat-label>Selecciona la Localidad</mat-label>
+                        <mat-select formControlName="localidad" required>
+                            <mat-option *ngFor="let localidad of localidades" [value]="localidad">{{ localidad }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </div>
+            <!-- ============================== Fin Departamento y Localidad ==================================== -->
+
+            <!-- ============================== Mapa ==================================== -->
+            <div fxFlex="50%" fxLayout="column" fxLayoutAlign="space-evenly center" class="container">
+                <h2>Ubicación del Evento *</h2>
+                <div fxLayout="row">
+                    <div fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="30px">
+                        <div style="width: 70%;">
+                            <p>Abra el mapa y creé un marcador en la ubicación del evento para obtener sus coordenadas
+                            </p>
+                        </div>
+
+                        <div>
+                            <button type="button" mat-raised-button color="primary" (click)="abrirMapa()">
+                                <mat-icon>map</mat-icon>
+                                Abrir Mapa
+                            </button>
+                        </div>
+                        <div fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="20px">
+                            <mat-form-field class="latitud">
+                                <mat-label>Latitud</mat-label>
+                                <input  type="number" matInput 
+                                        placeholder="-34.451542" 
+                                        [formControl]="latitud"
+                                        (input)="setUbicacionManual()"
+                                        required class="input">
+                                <ng-container *ngIf="!latitud.valid && latitud.touched">
+                                    <mat-error >
+                                        Latitud no válida.
+                                    </mat-error>
+                                </ng-container>
+                            </mat-form-field>
+                            <mat-form-field class="longitud">
+                                <mat-label>Longitud</mat-label>
+                                <input  type="number" 
+                                        matInput 
+                                        placeholder="-56.731087" 
+                                        [formControl]="longitud"
+                                        (input)="setUbicacionManual()"
+                                        required class="input">
+                                <ng-container *ngIf="!longitud.valid && longitud.touched">
+                                    <mat-error >
+                                        Longitud no válida.
+                                    </mat-error>
+                                </ng-container>
+                            </mat-form-field>
+                        </div>
+                        <ng-container *ngIf="!ubicacion.valid && mapaTouched">
+                            <mat-error>¡Debe seleccionar la ubicación del lugar creando un marcador en el mapa!
+                            </mat-error>
+                        </ng-container>
+                    </div>
+                    <div fxLayout="column">
+                        <app-mini-mapa></app-mini-mapa>
+                    </div>
+                </div>
+            </div>
+            <!-- ============================== Fin Mapa ==================================== -->
+        </div>
+
+
+        <!-- ============================== Columna derecha ==================================== -->
+        <div class="main-column" fxFlex="50%" fxLayout="column" fxLayoutAlign="start stretch" fxLayoutGap="30">
+
+            <!-- =================================== Dirección ================================ -->
+            <div fxLayout="column" fxLayoutAlign="start stretch" class="container">
+                <div>
+                    <h2>Dirección *</h2>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap.gt-lg="40px">
+                    <div fxFlex="80%">
+                        <mat-form-field class="direccion">
+                            <mat-label>Dirección</mat-label>
+                            <input type="text" matInput placeholder="18 de Julio 123" formControlName="direccion"
+                                required class="input">
+                            <ng-container *ngIf="!direccion.valid && direccion.touched">
+                                <mat-error *ngIf="direccion.errors.required">
+                                    La direccion es obligatoria.
+                                </mat-error>
+                                <mat-error *ngIf="direccion.errors.minlength">
+                                    La direccion de tener un mínimo de 3 caracteres.
+                                </mat-error>
+                                <mat-error *ngIf="direccion.errors.maxlength">
+                                    La direccion de tener un máximo de 50 caracteres.
+                                </mat-error>
+                            </ng-container>
+                        </mat-form-field>
+                    </div>
+                    <div fxFlex="20%">
+                    </div>
+                </div>
+            </div>
+            <!-- =================================== Fin Dirección ================================ -->
+
+            <!-- ============================== Telefonos ==================================== -->
+            <div fxLayout="column" class="container">
+                <div fxFlex="100%">
+                    <h2 class="subtitulo">Teléfonos</h2>
+                </div>
+                <div fxLayout="column" formArrayName="telefonos">
+                    <div *ngFor="let telefono of telefonos.controls; let i=index" [formGroupName]="i"
+                        style="width: 100%;" fxLayout="row" fxLayoutAling="space-between center" fxLayoutGap="20px">
+                        <mat-form-field style="width: 50%;">
+                            <input matInput type="tel" formControlName="numero"
+                                placeholder="43401234 o 43401234-36 o 099123456" style="width: 100%;">
+                            <mat-icon matSuffix>phone</mat-icon>
+                            <mat-label>Inserte el teléfono {{ i + 1}}</mat-label>
+                            <ng-container *ngIf="!telefonos.at(i).valid && telefonos.at(i).touched">
+                                <mat-error>Formato no válido. ej: 43422835 o 43422835-36 o 099123456</mat-error>
+                            </ng-container>
+                        </mat-form-field>
+                        <div *ngIf="i > 0">
+                            <button type="button" mat-stroked-button color="warn"
+                                (click)="eliminarTelefonoDelFormulario(i)">
+                                <mat-icon>delete</mat-icon>
+                                Eliminar
+                            </button>
+                        </div>
+                        <div *ngIf="i === 0">
+                            <button type="button" mat-raised-button color="primary" [disabled]="disabledAddPhones"
+                                (click)="agregarNuevoTelefonoAlFormulario()">
+                                <mat-icon>add</mat-icon>
+                                Agregar Teléfono
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <!-- ============================== Fin Telefonos ==================================== -->
+
+            <!-- ============================== Imagen Restaurante ==================================== -->
+            <div fxFlex="50%" fxLayout="column" fxLayoutAlign="start start" style="width: 900px;"
+                class="container container-home">
+                <div fxFlex="100%" class="home">
+                    <h2 style="text-align: center;">Imágen Restaurante</h2>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="30px">
+
+                    <div fxFlex="50%" class="home" fxLayout="column" fxLayoutAlign="space-around center">
+                        <mat-card class="container-img">
+                            <img mat-card-image [src]="imagenRestaurante.url" class="imagen-home">
+                            <mat-card-actions *ngIf="imagenRestaurante.name != 'imagen-default'">
+                                <button type="button" mat-stroked-button color="warn"
+                                    (click)="setImagenRestaurante('')">
+                                    <mat-icon>delete</mat-icon> Eliminar
+                                </button>
+                            </mat-card-actions>
+                        </mat-card>
+                        <p>Tamaño de imágen: {{widthAllowedEvento}} x {{heightAllowedEvento}} px</p>
+                    </div>
+                    <div fxFlex="50%" class="home">
+                        <app-upload-files [DirectorioPadre]="directorioPadre" [Directorio]="directorio"
+                            [widthAllowed]="widthAllowedEvento" [heightAllowed]="heightAllowedEvento"
+                            [allowedSize]="allowedSizeGallery" (imagenSubidaUploader)="setImagenRestaurante($event)">
+                        </app-upload-files>
+                    </div>
+                </div>
+            </div>
+            <!-- ============================== Fin Imagen Home ==================================== -->
+        </div>
+
+
+    </div>
+    <br>
+    <mat-divider></mat-divider>
+
+    <div fxLayout="row" fxLayoutAlign="center start" fxLayoutGap="30px" style="padding-right: 50px;">
+        <button mat-raised-button color="accent" type="submit" [disabled]="hotelForm.invalid">
+            Guardar Hotel
+        </button>
+    </div>
+
+    <br><br>
+    <!-- 
+            <div fxFlex>
+                <pre>{{ this.imagenes | json }}</pre>
+            </div>
+-->
+
+    <div style="overflow: scroll; width: 100%;height: 200px;">
+        <span>Valores</span>
+        <pre>{{ this.hotelForm.value | json }}</pre>
+    </div>
+
+
+
+
+</form>

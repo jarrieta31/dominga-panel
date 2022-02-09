@@ -12,7 +12,7 @@
 
 
         <mat-nav-list>
-            <h2 matSubheader>Artistas</h2>
+            <h2 matSubheader>ARTISTAS</h2>
             <mat-list-item>
                 <mat-icon mat-list-icon>list</mat-icon>
                 <a mat-line routerLink="/artistas/listado" routerLinkActive="link-active" (click)=sidenav.toggle()>
@@ -26,7 +26,7 @@
                 </a>
             </mat-list-item>
             <mat-divider></mat-divider>
-            <h2 matSubheader>Lugares</h2>
+            <h2 matSubheader>LUGARES</h2>
             <mat-list-item>
                 <mat-icon mat-list-icon>list</mat-icon>
                 <a mat-line routerLink="/lugares/listado" routerLinkActive="link-active" (click)=sidenav.toggle()>
@@ -40,7 +40,7 @@
                 </a>
             </mat-list-item>
             <mat-divider></mat-divider>
-            <h2 matSubheader>Eventos</h2>
+            <h2 matSubheader>EVENTOS</h2>
             <mat-list-item>
                 <mat-icon mat-list-icon>list</mat-icon>
                 <a mat-line routerLink="/eventos/listado" routerLinkActive="link-active" (click)=sidenav.toggle()>
@@ -54,7 +54,22 @@
                 </a>
             </mat-list-item>
             <mat-divider></mat-divider>
-            <h2 matSubheader>Donde Comer</h2>
+            <h2 matSubheader>INFORMACIÓN</h2>
+            <mat-list-item>
+                <mat-icon mat-list-icon>list</mat-icon>
+                <a mat-line routerLink="/informacion/listado" routerLinkActive="link-active" (click)=sidenav.toggle()>
+                    <span>Listar Información</span>
+                </a>
+            </mat-list-item>
+            <mat-list-item>
+                <mat-icon mat-list-icon>add</mat-icon>
+                <a routerLink="/informacion/agregar" routerLinkActive="link-active" (click)=sidenav.toggle()>
+                    Agregar Informacíon
+                </a>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-divider></mat-divider>
+            <h2 matSubheader>DONDE COMER</h2>
             <mat-list-item>
                 <mat-icon mat-list-icon>list</mat-icon>
                 <a mat-line routerLink="/donde-comer/listado" routerLinkActive="link-active" (click)=sidenav.toggle()>
@@ -68,7 +83,7 @@
                 </a>
             </mat-list-item>
             <mat-divider></mat-divider>
-            <h2 matSubheader>Donde Dormir</h2>
+            <h2 matSubheader>DONDE DORMIR</h2>
             <mat-list-item>
                 <mat-icon mat-list-icon>list</mat-icon>
                 <a mat-line routerLink="/donde-dormir/listado" routerLinkActive="link-active" (click)=sidenav.toggle()>
@@ -82,6 +97,49 @@
                 </a>
             </mat-list-item>
             <mat-divider></mat-divider>
+            <h2 matSubheader>CARRUSELES</h2>
+            <mat-list-item>
+                <mat-icon mat-list-icon>list</mat-icon>
+                <a mat-line routerLink="/carruseles/slider-artistas" routerLinkActive="link-active"
+                    (click)=sidenav.toggle()>
+                    <span>Carrusel Artistas</span>
+                </a>
+            </mat-list-item>
+            <mat-list-item>
+                <mat-icon mat-list-icon>list</mat-icon>
+                <a mat-line routerLink="/carruseles/slider-donde-comer" routerLinkActive="link-active"
+                    (click)=sidenav.toggle()>
+                    <span>Carrusel Donde Comer</span>
+                </a>
+            </mat-list-item>
+            <mat-list-item>
+                <mat-icon mat-list-icon>list</mat-icon>
+                <a mat-line routerLink="/carruseles/slider-donde-dormir" routerLinkActive="link-active"
+                    (click)=sidenav.toggle()>
+                    <span>Carrusel Donde Dormir</span>
+                </a>
+            </mat-list-item>
+            <mat-list-item>
+                <mat-icon mat-list-icon>list</mat-icon>
+                <a mat-line routerLink="/carruseles/slider-eventos" routerLinkActive="link-active"
+                    (click)=sidenav.toggle()>
+                    <span>Carrusel Eventos</span>
+                </a>
+            </mat-list-item>
+            <mat-list-item>
+                <mat-icon mat-list-icon>list</mat-icon>
+                <a mat-line routerLink="/carruseles/slider-informacion" routerLinkActive="link-active"
+                    (click)=sidenav.toggle()>
+                    <span>Carrusel Información</span>
+                </a>
+            </mat-list-item>
+            <mat-list-item>
+                <mat-icon mat-list-icon>list</mat-icon>
+                <a mat-line routerLink="/carruseles/slider-lugares" routerLinkActive="link-active"
+                    (click)=sidenav.toggle()>
+                    <span>Carrusel Lugares</span>
+                </a>
+            </mat-list-item>
         </mat-nav-list>
 
     </mat-sidenav>
@@ -92,8 +150,11 @@
             <mat-icon>menu</mat-icon>
         </button>
         <span> Panel de Administración</span>
-        <span class="spacer"></span>
-        <button mat-button>Salir</button>
+        <span class="spacer"> </span>
+        <ng-container *ngIf="idUser !== undefined">
+            <button type="button" (click)="cerrarSesion()" mat-button>Salir</button>
+        </ng-container>
+
     </mat-toolbar>
 
     <div class="container">

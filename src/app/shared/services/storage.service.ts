@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFireStorage, AngularFireStorageReference } from '@angular/fire/compat/storage';
+import { ListResult } from '@angular/fire/compat/storage/interfaces';
 
 @Injectable({
     providedIn: 'root'
@@ -48,6 +49,11 @@ export class StorageService {
             const storageRef = await this.storage.ref(`${directorio}/${nombreArchivo}`);
             return storageRef.delete().toPromise();
     }
+    
+    public async listarArchvios(directorio: string): Promise<ListResult> {
+        const storageRef = this.storage.ref(`${directorio}`);
+        return storageRef.listAll().toPromise();
+    } 
 
 
     /**

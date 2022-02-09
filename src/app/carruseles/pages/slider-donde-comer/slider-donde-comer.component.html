@@ -1,0 +1,185 @@
+<div fxLayout='row' fxLayoutAlign="center center">
+    <h1>{{titulo}}</h1>
+    <div></div>
+</div>
+<br>
+
+<mat-divider></mat-divider>
+
+<form [formGroup]="sliderForm" (ngSubmit)="submitSlider()">
+
+    <div fxLayout="row" fxLayoutAlign="space-between stretch" fxLayoutGap="40px">
+        <!-- ============================== Columna izquierda ==================================== -->
+        <div fxFlex="50" fxLayout="column" fxLayoutGap="20px" id="columna-izquierda">
+            <div fxLayout="row" fxLayoutAlign="space-between start">
+
+                <!-- ============================== Imagen Slider ==================================== -->
+                <div fxLayout="column" fxLayoutAlign="start" class="container-imagen">
+                    <div fxLayout="row" fxLayoutAlign="start center">
+                        <h2>Imágen Carrusel</h2>
+                    </div>
+
+                    <div fxLayout="row" fxLayoutAlign="start start" fxLayoutGap="20px">
+                        <div fxFlex="50%" fxLayout="column" fxLayoutAlign="space-around center">
+                            <mat-card class="container-img">
+                                <img mat-card-image [src]="imagenSlider.url" class="imagen">
+                                <!-- 
+                                <mat-card-actions *ngIf="imagenSlider.name != 'imagen-default'">
+                                    <button type="button" mat-stroked-button color="warn" (click)="setImagenSlider(imagenSlider)">
+                                        <mat-icon>delete</mat-icon> Eliminar
+                                    </button>
+                                </mat-card-actions>
+                                -->
+                            </mat-card>
+                            <p>Tamaño de imágen: {{widthAllowedEvento}} x {{heightAllowedEvento}} px</p>
+                        </div>
+                        <div fxFlex="50%">
+                            <app-upload-files [DirectorioPadre]="directorioPadre" [Directorio]="directorio"
+                                [widthAllowed]="widthAllowedEvento" [heightAllowed]="heightAllowedEvento"
+                                [allowedSize]="allowedSizeGallery" (imagenSubidaUploader)="setImagenSlider($event)">
+                            </app-upload-files>
+                        </div>
+                    </div>
+                </div>
+                <!-- ============================== Fin Imagen Slider ==================================== -->
+            </div>
+        </div>
+        <!-- ================================= Fin Columna Izquierda ================================= -->
+
+        <!-- ============================== Columna derecha ==================================== -->
+        <div fxFlex="50%" fxLayout="column" fxLayoutAlign="space-between start" fxLayoutGap="30" id="columna-derecha">
+            <div fxLayout="column">
+                <div fxLayout="row">
+                    <h2>Estado Publicación</h2>
+                </div>
+                <div fxLayout="row">
+                    <div>
+                        Activar para que sea visible en la app: &nbsp; &nbsp;
+                        <mat-slide-toggle (change)="switchPublicar()" formControlName="publicado">Publicado
+                        </mat-slide-toggle>
+                    </div>
+                </div>
+            </div>
+            <br><br>
+            <!-- ============================== Links ==================================== -->
+            <div fxLayout="column" fxLayoutAlign="start start" class="container-links-header">
+                <div fxLayout="row" fxLayoutAlign="start end">
+                    <h2 class="subtitulo">Link</h2>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="start center">
+                    <label>Selecciona el tipo de link:</label>
+                    <mat-radio-group aria-labelledby="example-radio-group-label" class="links-radio-group"
+                        [formControl]="radioButtonLinks" [(ngModel)]="linkSeleccionado" (change)="changeTipoLink()">
+                        <mat-radio-button class="links-radio-button" *ngFor="let link of links" [value]="link">
+                            {{link}}
+                        </mat-radio-button>
+                    </mat-radio-group>
+                    <button type="button" mat-raised-button color="primary" (click)="borrarLink()">
+                        Borrar link
+                    </button>
+                    <div></div>
+                </div>
+            </div>
+            <div class="container-links">
+                <div fxLayout="column" fxLayoutAlign="space-evenly" fxLayoutGap="30px">
+                    <ng-container *ngIf="linkSeleccionado === 'web'">
+                        <mat-form-field class="web">
+                            <mat-label>Sitio Web</mat-label>
+                            <input type="url" matInput [formControl]="web" (input)="setLinkWeb()"
+                                placeholder="http://www.mi-sitio-web.com/">
+                            <mat-icon matSuffix>insert_link</mat-icon>
+                            <ng-container *ngIf="!web.valid && web.touched">
+                                <mat-error>La URL ingresada no es válida!</mat-error>
+                            </ng-container>
+                        </mat-form-field>
+                    </ng-container>
+
+                    <ng-container *ngIf="linkSeleccionado === 'whatsapp'">
+                        <mat-form-field class="whatsapp">
+                            <mat-label>Whatsapp</mat-label>
+                            <input type="text" matInput [formControl]="whatsapp" (input)="setLinkWhatsapp()"
+                                placeholder="099123456">
+                            <mat-icon matSuffix>phone</mat-icon>
+                            <ng-container *ngIf="!whatsapp.valid && whatsapp.touched">
+                                <mat-error>
+                                    Número no valido. Ejemplo: 098123456
+                                </mat-error>
+                            </ng-container>
+                        </mat-form-field>
+                    </ng-container>
+                    <ng-container *ngIf="linkSeleccionado === 'facebook'">
+                        <mat-form-field class="facebook">
+                            <mat-label>Facebook</mat-label>
+                            <input type="url" matInput [formControl]="facebook" (input)="setLinkFacebook()"
+                                placeholder="https://m.facebook.com/mi-perfil/">
+                            <mat-icon matSuffix>insert_link</mat-icon>
+                            <ng-container *ngIf="!facebook.valid && facebook.touched">
+                                <mat-error>URL no válida! Ejemplo: https://www.facebook.com/mi-perfil </mat-error>
+                            </ng-container>
+                        </mat-form-field>
+                    </ng-container>
+
+                    <ng-container *ngIf="linkSeleccionado === 'instagram'">
+                        <mat-form-field class="instagram">
+                            <mat-label>Instagram</mat-label>
+                            <input type="url" matInput [formControl]="instagram" (input)="setLinkInstagram()"
+                                placeholder="http://www.instagram.com/">
+                            <mat-icon matSuffix>insert_link</mat-icon>
+                            <ng-container *ngIf="!instagram.valid && instagram.touched">
+                                <mat-error>URL no válida! Ejemplo: http://www.instagram.com/mi-perfil</mat-error>
+                            </ng-container>
+                        </mat-form-field>
+                    </ng-container>
+
+                </div>
+            </div>
+            <!-- ============================== Fin Links ==================================== -->
+
+            <div fxLayout="row" fxLayoutAlign="center start" fxLayoutGap="30px" class="rowSubmit">
+                <button mat-raised-button color="primary" type="button" (click)="resetFormulario()">
+                   Cancelar
+                </button>
+                <button mat-raised-button color="accent" type="submit" [disabled]="datosInvalidos">
+                    Guardar
+                </button>
+            </div>
+            <!-- ================================= Fin Columna Derecha ================================= -->
+        </div>
+        <br>
+        <mat-divider></mat-divider>
+    </div>
+
+</form>
+
+<mat-divider></mat-divider>
+<div fxLayout="row" fxLayoutAlign="center start" class="main">
+</div>
+
+<!-- ============================== Galería de Imágenes ==================================== -->
+<div fxLayout="column" class="contenedor_galeria">
+    <div fxLayout="row" fxLayoutAlign="space-between center">
+        <div></div>
+        <h2>Galería de imágenes</h2>
+        <div></div>
+    </div>
+    <div fxLayout='row' fxLayoutAlign="center center">
+        <div class="galeria" >
+            <div *ngIf="sliders.length < 1">
+                <div fxLayout="row" fxLayoutAlign="center center">
+                    <br>
+                    <h3>No hay imágenes en la galería</h3>
+                </div>
+            </div>
+            <div fxLayout="row wrapDirection" fxLayoutAlign="start start" fxLayoutGap="10px" *ngIf="sliders.length > 0">
+                <div fxLayout="row wrap" fxLayout.xs="column" fxLayoutAlign="start start" fxLayoutGap="20px">
+                    <div *ngFor="let slider of sliders">
+                        <app-slider-tarjeta [slider]="slider" (onEditSlider)="editar($event)"></app-slider-tarjeta>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<pre>
+    {{ this.sliderForm.value | json }} 
+</pre>

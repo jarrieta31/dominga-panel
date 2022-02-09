@@ -88,7 +88,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
         whatsapp: [null, [this.vs.valididarWhatsapp]],
         videos: this.fb.array([
             this.fb.group({
-                url: ['', [this.vs.validarYoutube]]
+                url: ['', [this.vs.validarVideoYoutube]]
             })
         ])
     });
@@ -96,7 +96,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
     editorConfig: AngularEditorConfig = {
         editable: true,
         spellcheck: true,
-        height: '20rem',
+        height: '16rem',
         minHeight: '5rem',
         placeholder: 'Ingresa la descripción del lugar...',
         translate: 'no',
@@ -111,7 +111,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
             [
                 'textColor',
                 'backgroundColor',
-               // 'link',
+                // 'link',
                 //'unlink',
                 'fontSize',
                 'insertImage',
@@ -347,7 +347,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
         const telefonosControl = this.lugarForm.get('telefonos') as FormArray;
         telefonosControl.push(
             this.fb.group({
-                numero: ['', [Validators.minLength(8), Validators.maxLength(9)]]
+                numero: ['', [this.vs.validarTelefono]]
             })
         )
     }
@@ -364,7 +364,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
         const videosControl = this.lugarForm.get('videos') as FormArray;
         videosControl.push(
             this.fb.group({
-                url: ['']
+                url: ['', [this.vs.validarVideoYoutube]]
             })
         )
     }
@@ -485,9 +485,9 @@ export class AgregarComponent implements OnInit, OnDestroy {
                 const lugar: Lugar = this.lugarForm.value;
                 lugar.id = this.idLugar;
                 if (this.prioridadAnterior !== lugar.prioridad) {//Sí la prioridad cambio
-                    this.lugaresService.modificarPrioridadDeLugar(lugar);
                     this.lugaresService.updateLugarFirestore(this.lugarForm.value, this.idLugar)
                         .then(res => {
+                            this.lugaresService.modificarPrioridadDeLugar(lugar);
                             this.openSnackBarSubmit('¡El lugar se ha actualizado correctamente!');
                         })
                         .catch(error => {

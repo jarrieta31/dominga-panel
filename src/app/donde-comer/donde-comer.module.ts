@@ -9,6 +9,7 @@ import { SharedModule } from '../shared/shared.module';
 
 //Otros Modulos
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { NgxPaginationModule } from 'ngx-pagination'; 
 
 //Paginas y componentes 
 import { AgregarComponent } from './pages/agregar/agregar.component';
@@ -22,6 +23,7 @@ import { DialogPublicarComponent } from './components/dialog-publicar/dialog-pub
 
 //Pipes
 import { ImagenPipe } from './pipes/imagen.pipe';
+import { FiltrosPipe } from './pipes/filtros.pipe';
 
 
 @NgModule({
@@ -33,6 +35,7 @@ import { ImagenPipe } from './pipes/imagen.pipe';
         ListadoComponent,
         DialogPublicarComponent,
         ImagenPipe,
+        FiltrosPipe,
     ],
     imports: [
         CommonModule,
@@ -40,6 +43,7 @@ import { ImagenPipe } from './pipes/imagen.pipe';
         FlexLayoutModule,
         FormsModule,
         MaterialModule,
+        NgxPaginationModule,
         ReactiveFormsModule,
         SharedModule,
     ]

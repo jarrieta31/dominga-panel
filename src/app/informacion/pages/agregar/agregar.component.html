@@ -1,0 +1,152 @@
+<div fxLayout='row' fxLayoutAlign="space-between center">
+
+    <button mat-button type="button" color="primary" (click)="regresar()">
+        <mat-icon>arrow_back_ios</mat-icon>
+        Atras
+    </button>
+    <h1>{{titulo}}</h1>
+    <div></div>
+</div>
+<mat-divider></mat-divider>
+<br>
+<form [formGroup]="infoForm" (ngSubmit)="submitEvento()">
+
+    <div fxLayout="row" fxLayoutAlign="space-between stretch" fxLayoutGap="40px">
+
+        <!-- ============================== Columna izquierda ==================================== -->
+        <div class="main-column" fxFlex="50" fxLayout="column" fxLayoutAlign="start stretch" fxLayoutGap="30">
+
+            <!-- ==============================  Nombre/Publicado ==================================== -->
+            <div fxLayout="column" fxLayoutAlign="start stretch" class="container">
+                <div>
+                    <h2>Categoría */Estado de publicación</h2>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="space-between start" fxLayoutGap="30px">
+
+                    <mat-form-field fxFlex="50%">
+                        <mat-label>Nombre </mat-label>
+                        <input required matInput type="text" formControlName="categoria" (change)="quitarEspacios()">
+                        <ng-container *ngIf="!categoria.valid && categoria.touched">
+                            <mat-error *ngIf="categoria.errors.required">El campo nombre del evento es obligatorio.
+                            </mat-error>
+                            <mat-error *ngIf="categoria.errors.minlength">El nombre de tener un mínimo de 2 caracteres.
+                            </mat-error>
+                        </ng-container>
+                    </mat-form-field>
+
+                    <div fxFlex="35%">
+                        Activar para que sea visible en la app: &nbsp; &nbsp;
+                        <mat-slide-toggle (change)="switchPublicar()" formControlName="publicado">
+                            Publicado
+                        </mat-slide-toggle>
+                    </div>
+
+                </div>
+            </div>
+            <!-- ============================== Fin  Nombre/Publicado ==================================== -->
+
+            <!-- ==============================  Departamento y Localidad ==================================== -->
+            <div class="container">
+                <div>
+                    <h2>Departamento */Localidad *</h2>
+                </div>
+                <div fxLayout="row" fxLayoutGap="40px">
+                    <mat-form-field id="camp-principal" fxFlex="50%">
+                        <mat-label>Selecciona el Departamento</mat-label>
+                        <mat-select formControlName="departamento" required
+                            (selectionChange)="getLocalidadesPorDepartamento()">
+                            <mat-option *ngFor="let departamento of departamentos" [value]="departamento">
+                                {{ departamento }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-form-field fxFlex="50%">
+                        <mat-label>Selecciona la Localidad</mat-label>
+                        <mat-select formControlName="localidad" required>
+                            <mat-option *ngFor="let localidad of localidades" [value]="localidad">{{ localidad }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </div>
+            <!-- ============================== Fin Departamento y Localidad ==================================== -->
+
+            <!-- ============================== Telefonos ==================================== -->
+            <div fxLayout="column" class="container">
+                <div fxFlex="100%">
+                    <h2 class="subtitulo">Nombre/Teléfono</h2>
+                </div>
+                <div fxLayout="column" formArrayName="datos">
+                    <div *ngFor="let telefono of datos.controls; let i=index" [formGroupName]="i" style="width: 100%;"
+                        fxLayout="row" fxLayoutAling="space-between center" fxLayoutGap="20px">
+                        <mat-form-field class="nombre">
+                            <input matInput type="text" formControlName="nombre" placeholder="Ingrese el nombre"
+                                style="width: 100%;">
+                            <mat-label>Inserte el nombre {{ i + 1}}</mat-label>
+                            <ng-container *ngIf="!datos.at(i).valid && datos.at(i).touched">
+                                <mat-error>Formato no válido</mat-error>
+                            </ng-container>
+                        </mat-form-field>
+                        <mat-form-field class="telefono">
+                            <input matInput type="tel" formControlName="telefono"
+                                placeholder="43401234 o 43401234-36 o 099123456" style="width: 100%;">
+                            <mat-icon matSuffix>phone</mat-icon>
+                            <mat-label>Inserte el teléfono {{ i + 1}}</mat-label>
+                            <ng-container *ngIf="!datos.at(i).valid && datos.at(i).touched">
+                                <mat-error>Formato no válido</mat-error>
+                            </ng-container>
+                        </mat-form-field>
+                        <div *ngIf="i > 0">
+                            <button type="button" mat-stroked-button color="warn"
+                                (click)="eliminarTelefonoDelFormulario(i)">
+                                <mat-icon>delete</mat-icon>
+                                Eliminar
+                            </button>
+                        </div>
+                        <div *ngIf="i === 0">
+                            <button type="button" mat-raised-button color="primary"
+                                (click)="agregarNuevoTelefonoAlFormulario()">
+                                <mat-icon>add</mat-icon>
+                                Agregar
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <!-- ============================== Fin Telefonos ==================================== -->
+
+        </div>
+
+
+        <!-- ============================== Columna derecha ==================================== -->
+        <div class="main-column" fxFlex="50%" fxLayout="column" fxLayoutAlign="start stretch" fxLayoutGap="30">
+
+            <div fxLayout="row" fxLayoutAlign="center start" fxLayoutGap="30px" class="rowButton">
+                <button mat-raised-button color="accent" type="submit" [disabled]="infoForm.invalid">
+                    Guardar Información
+                </button>
+            </div>
+
+        </div>
+
+
+    </div>
+
+    <!-- 
+            <div fxFlex>
+                <pre>{{ this.imagenes | json }}</pre>
+            </div>
+-->
+    <!-- 
+
+    <div style="overflow: scroll; width: 100%;height: 200px;">
+        <span>Valores</span>
+        <pre>{{ this.infoForm.value | json }}</pre>
+    </div>
+-->
+
+
+
+
+</form>

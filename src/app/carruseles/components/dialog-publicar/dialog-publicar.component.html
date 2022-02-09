@@ -1,0 +1,14 @@
+
+<h2 mat-dialog-title>No es posible publicar la imágen</h2>
+<mat-dialog-content class="mat-typography">
+    <h3>Importante: Al publicar la imágen esta será visible en la APP.</h3>
+    <p>Las condiciones que debe satisfacer para publicar son las siguientes:</p>
+    <mat-list>
+        <mat-list-item>1. Debe tener cargada una imágen para publicar. {{data.home}} </mat-list-item>
+    </mat-list>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button type="button" mat-stroked-button color="primary" mat-dialog-close (click)="closeDialog()">
+        Aceptar
+    </button>
+</mat-dialog-actions>

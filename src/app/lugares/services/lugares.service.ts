@@ -25,7 +25,6 @@ export class LugaresService {
         private afs: AngularFirestore,
         private ls: LocalStorageService) {
         this.lugares$ = new BehaviorSubject(this.lugares);
-        //this.getLugaresFirestore(this.localStorageService.departamento);
         this.prioridades$ = new BehaviorSubject([]);
     }
 
@@ -155,7 +154,8 @@ export class LugaresService {
     updateLugarLocal(data: Lugar) {
         let i = this.lugares.findIndex(lugar => lugar.id === data.id);
         this.lugares[i] = JSON.parse(JSON.stringify(data));
-        this.lugares$.next(this.lugares);
+        this.mapCache.set(data.departamento, this.lugares);
+        //this.lugares$.next(this.lugares);
     }
 
     /**

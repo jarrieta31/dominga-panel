@@ -6,10 +6,13 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ArtistaComponent } from './pages/artista/artista.component';
 import { AgregarComponent } from './pages/agregar/agregar.component';
 import { ListadoComponent } from './pages/listado/listado.component';
+
 //Componentes
 import { DialogEliminarComponent } from './components/dialog-eliminar/dialog-eliminar.component';
 import { ArtistaTarjetaComponent } from './components/artista-tarjeta/artista-tarjeta.component';
+import { DialogPublicarComponent } from './components/dialog-publicar/dialog-publicar.component';
 
+import { FiltrosPipe } from './pipes/filtros.pipe';
 
 //Modulos propios
 import { ArtistasRoutingModule } from './artistas-routing.module';
@@ -19,6 +22,9 @@ import { SharedModule } from '../shared/shared.module';
 //Otros Modulos
 import { AngularEditorModule } from '@kolkov/angular-editor';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { HttpClientModule } from '@angular/common/http';
+import { NgxPaginationModule } from 'ngx-pagination';
+import { ImagenPipe } from './pipes/imagen.pipe'; 
 
 
 @NgModule({
@@ -27,7 +33,10 @@ import { FlexLayoutModule } from '@angular/flex-layout';
         ArtistaComponent,
         ArtistaTarjetaComponent,
         DialogEliminarComponent,
+        DialogPublicarComponent,
+        FiltrosPipe,
         ListadoComponent,
+        ImagenPipe,
     ],
     imports: [
         AngularEditorModule,
@@ -35,7 +44,9 @@ import { FlexLayoutModule } from '@angular/flex-layout';
         CommonModule,
         FlexLayoutModule,
         FormsModule,
+        HttpClientModule,
         MaterialModule,
+        NgxPaginationModule,
         ReactiveFormsModule,
         SharedModule,
     ]

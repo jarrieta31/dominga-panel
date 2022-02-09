@@ -15,6 +15,8 @@ import { tap } from 'rxjs/operators';
 export class LugarTarjetaComponent {
 
     @Input() lugar: Lugar;
+    largoTitulo:number = 26;
+    largoDescripcion:number = 60;
 
     constructor(
         public dialog: MatDialog,

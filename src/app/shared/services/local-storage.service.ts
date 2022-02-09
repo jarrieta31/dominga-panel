@@ -10,6 +10,7 @@ export class LocalStorageService {
     private _localidad: string;
     private _publicado: string;
     private _activos: string;
+    private _slider: string;
 
     constructor() {
     }
@@ -30,8 +31,13 @@ export class LocalStorageService {
         localStorage.setItem("activos", activos );
     }
 
+    set slider(slider: string) {
+        localStorage.setItem("slider", slider );
+    }
+
     get departamento(): string {
-        if (localStorage.getItem("departamento") === undefined) {
+        let s = localStorage.getItem("departamento");
+        if ( s === undefined || s === null) {
             localStorage.setItem("departamento", 'San José');
         }
         this._departamento = localStorage.getItem("departamento");
@@ -39,7 +45,8 @@ export class LocalStorageService {
     }
 
     get localidad(): string {
-        if (localStorage.getItem("localidad") === undefined) {
+        let s = localStorage.getItem("localidad");
+        if ( s === undefined || s === null) {
             localStorage.setItem("localidad", '');
         }
         this._localidad = localStorage.getItem("localidad");
@@ -47,7 +54,8 @@ export class LocalStorageService {
     }
 
     get publicado(): string {
-        if (localStorage.getItem("publicado") === undefined) {
+        let s = localStorage.getItem("publicado");
+        if ( s === undefined || s === null) {
             localStorage.setItem("publicado", 'todos');
         }
         this._publicado = localStorage.getItem('publicado');
@@ -55,10 +63,22 @@ export class LocalStorageService {
     }
 
     get activos(): string {
-        if (localStorage.getItem("activos") === undefined) {
+        let s = localStorage.getItem("activos");
+        if ( s === undefined || s === null) {
             localStorage.setItem("activos", 'todos');
         }
         this._activos = localStorage.getItem('activos');
         return this._activos;
     }
+
+    get slider(): string {
+        let s = localStorage.getItem('slider');
+        if (s === undefined || s  === null ) {
+            localStorage.setItem("slider", 'artistas');
+        }
+        this._slider = localStorage.getItem('slider');
+        return this._slider;
+    }
+
+    
 }

@@ -10,9 +10,7 @@ import { BehaviorSubject, Observable, from } from 'rxjs';
 })
 export class EventosService {
     private eventos$: BehaviorSubject<Evento[]>;
-    private prioridades$: BehaviorSubject<number[]>;
     private eventos: Evento[] = []; //copia activa local de todos los lugares para trabajar con ella
-
     private idNuevoEvento: string = '';
     private mapCache = new Map();
     departamento: string = "San José";
@@ -22,7 +20,6 @@ export class EventosService {
         private ls: LocalStorageService,
     ) {
         this.eventos$ = new BehaviorSubject(this.eventos);
-        this.prioridades$ = new BehaviorSubject([]);
     }
 
     /** 
@@ -194,7 +191,6 @@ export class EventosService {
         let i = this.eventos.findIndex(evento => evento.id === data.id);
         this.eventos[i] = JSON.parse(JSON.stringify(data));
         this.mapCache.set(data.departamento, this.eventos);
-        this.eventos$.next(this.eventos);
     }
 
     getCache(nombreDpto: string): Evento[] {

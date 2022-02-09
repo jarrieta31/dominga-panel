@@ -1,1 +1,43 @@
-<p>artista-tarjeta works!</p>
+<mat-card>
+    <img mat-card-image [src]="artista.imagen.url">
+    <mat-card-header >
+        <mat-card-subtitle >
+            <div fxLayout="row" fxLayoutAlign="space-between center" >
+                <div fxFlex="40">
+                    {{ artista.departamento | recortarTitulo:14 }}
+                </div>
+                <div fxFlex="40">
+                    {{ artista.localidad | recortarTitulo:14 }}
+                </div>
+            </div>
+        </mat-card-subtitle>
+        <mat-card-title>{{ artista.nombre | recortarTitulo:26 }}</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-actions>
+        <mat-grid-list cols="3" rowHeight="50px">
+            <mat-grid-tile colspan="1" [rowspan]="1">
+                <button mat-button mat-stroked-button color="primary" [routerLink]="['/artistas/editar', artista.id]">
+                    Editar
+                </button>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="1" [rowspan]="1">
+                <button mat-button mat-stroked-button color="warn" (click)="openDialog()">
+                    Eliminar
+                </button>
+            </mat-grid-tile>
+        </mat-grid-list>
+    </mat-card-actions>
+
+    <mat-card-footer>
+        Publicado:
+        <ng-container *ngIf="artista.publicado">
+            Sí <mat-icon class="icon-si">done</mat-icon>
+        </ng-container>
+        <ng-container *ngIf="!artista.publicado">
+            No <mat-icon color="warn">close</mat-icon>
+        </ng-container>
+    </mat-card-footer>
+
+</mat-card>
+

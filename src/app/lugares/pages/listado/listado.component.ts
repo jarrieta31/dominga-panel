@@ -21,7 +21,7 @@ export class ListadoComponent implements OnInit, OnDestroy {
     filtrosGuardados = [];
     localidades: string[] = [];
     departamentos: string[] = [];
-    lugares: Lugar[];
+    public lugares: Lugar[];
     private sourceDepartamentos: Subscription;
     private sourceLocalidades: Subscription;
     private sourceLugares: Subscription;
@@ -52,6 +52,7 @@ export class ListadoComponent implements OnInit, OnDestroy {
         this.sourceLocalidades = this.configService.getObsLocalidades().subscribe(locs => this.localidades = locs);
         this.configService.emitirLocalidades();
         this.sourceLugares = this.lugaresService.getObsLugares$().subscribe(lugares => this.lugares = lugares);
+        
         //this.lugares$ = this.lugaresService.getObsLugares$();
         //Chequea si los lugares del departamento actual estan en cache.
         if (!this.lugaresService.checkCache(this.departamento.value)) {

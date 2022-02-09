@@ -1,0 +1,55 @@
+<mat-card>
+    <mat-card-header>
+        <mat-card-title>{{ informacion.categoria | recortarTitulo:largoTitulo }}</mat-card-title>
+        <mat-card-subtitle>
+            <div fxLayout="row" fxLayoutAlign="space-between center">
+                <div>
+                    {{ informacion.departamento }}
+                </div>
+                <div>
+                    {{ informacion.localidad }}
+                </div>
+            </div>
+        </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+        <div *ngFor="let dato of informacion.datos">
+            <div fxLayout="row" fxLayoutAlign="space-between center">
+                <div>
+                    {{dato.nombre}}:
+                </div>
+                <div>
+                    {{dato.telefono}}
+                </div>
+            </div>
+        </div>
+    </mat-card-content>
+
+    <mat-card-actions>
+        <mat-grid-list cols="3" rowHeight="50px">
+            <mat-grid-tile colspan="1" [rowspan]="1">
+                <button mat-button mat-stroked-button color="primary"
+                    [routerLink]="['/informacion/editar', informacion.id]">
+                    Editar
+                </button>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="1" [rowspan]="1">
+                <button mat-button mat-stroked-button color="warn" (click)="openDialog()">
+                    Eliminar
+                </button>
+            </mat-grid-tile>
+        </mat-grid-list>
+    </mat-card-actions>
+
+    <mat-card-footer>
+        Publicado:
+        <ng-container *ngIf="informacion.publicado">
+            Sí <mat-icon class="icon-si">done</mat-icon>
+        </ng-container>
+        <ng-container *ngIf="!informacion.publicado">
+            No <mat-icon color="warn">close</mat-icon>
+        </ng-container>
+    </mat-card-footer>
+
+</mat-card>

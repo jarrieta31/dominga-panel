@@ -18,7 +18,7 @@ export class DialogPublicarComponent implements OnInit {
 
 
     /**
-     * Cierra el dialog que advierte cuando se va a eliminar un lugar
+     * Cierra el dialog que advierte cuando se va a eliminar un evento
      */
     closeDialog() {
         this.dialogRef.close();

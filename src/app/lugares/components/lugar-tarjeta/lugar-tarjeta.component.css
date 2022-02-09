@@ -5,6 +5,7 @@ mat-card {
    height: 370px;
    padding: 0;
    padding-bottom: 12px;
+   background-color: #ffffff;
 }
 
 mat-card img {
@@ -28,6 +29,7 @@ mat-card-content {
     margin-bottom: 5px;
     padding: 0px 20px 0px 20px;
     color: rgb(96, 96, 96);
+    font-size: 12px;
 }
 
 mat-card-actions {

@@ -5,15 +5,9 @@
         Atras
     </button>
     <h1>{{titulo}}</h1>
-
-    <div>
-        <pre>Fecha picker inicial: {{pickerFechIni.value | date:'dd/MM/yyyy hh:mm:ss a z'}} </pre>
-        <pre>Hora {{horaIn.value | json}} </pre>
-        <pre>Fecha picker final: {{pickerFechEnd.value | date:'dd/MM/yyyy hh:mm:ss a z'}} </pre>
-        <pre>Fecha Inicio: {{ fechaInicio.value | json }} </pre>
-    </div>
-
+    <div></div>
 </div>
+<mat-divider></mat-divider>
 <br>
 <form [formGroup]="eventoForm" (ngSubmit)="submitEvento()">
 
@@ -187,8 +181,8 @@
                     <div fxFlex="25%">
                         <mat-form-field class="input">
                             <mat-label>Fecha de Finalización</mat-label>
-                            <input [formControl]="pickerFechEnd" matInput [matDatepicker]="dp2" (dateChange)="setFechaEnd()"
-                                [min]="minDateFin" [max]="maxDateFin">
+                            <input [formControl]="pickerFechEnd" matInput [matDatepicker]="dp2"
+                                (dateChange)="setFechaEnd()" [min]="minDateFin" [max]="maxDateFin">
                             <mat-datepicker-toggle matSuffix [for]="dp2"></mat-datepicker-toggle>
                             <mat-datepicker #dp2 [startAt]="startDateEnd">
                             </mat-datepicker>
@@ -301,7 +295,6 @@
 
         </div>
 
-
     </div>
     <br>
     <mat-divider></mat-divider>
@@ -382,7 +375,6 @@
             <div fxFlex>
                 <pre>{{ this.imagenes | json }}</pre>
             </div>
--->
 
     <div style="overflow: scroll; width: 100%;height: 200px;">
         <span>Valores</span>
@@ -390,6 +382,7 @@
     </div>
 
 
+-->
 
 
 </form>

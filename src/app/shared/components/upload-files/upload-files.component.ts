@@ -73,7 +73,6 @@ export class UploadFilesComponent implements OnInit {
     public cambioArchivo(event) {
         if (event.target.files.length > 0) {
             this.DirectorioUploader = `${this.DirectorioPadre}/${this.Directorio}`;
-            console.log(this.DirectorioUploader)
             this.percentDone = 100;
             this.uploadSuccess = true;
             let image: any = event.target.files[0];
@@ -135,8 +134,9 @@ export class UploadFilesComponent implements OnInit {
                 this.finalizado = true;
                 referencia.getDownloadURL().subscribe((URL) => {
                     this.URLPublica = URL;
+                    const img: Imagen = { name: this.nombreArchivo, url: URL }
                     //Dispara el evento de la nueva imagen subida para pasarla agregar.component.ts
-                    this.imagenSubidaUploader.emit({ name: this.nombreArchivo, url: URL });
+                    this.imagenSubidaUploader.emit(img);
                 });
             }
         });

@@ -12,6 +12,8 @@ import { DialogEliminarComponent } from '../dialog-eliminar/dialog-eliminar.comp
 export class EventoTarjetaComponent implements OnInit {
 
     @Input() evento: Evento;
+    largoDescripcion: number = 120;
+    largoTitulo:number = 23;
 
     constructor(
         public dialog: MatDialog,

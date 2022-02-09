@@ -1,14 +1,23 @@
 <mat-card>
     <img mat-card-image [src]="restoran | imagen">
     <mat-card-header >
-        <mat-card-title>{{ restoran.nombre }}</mat-card-title>
-        <!-- 
-        <mat-card-subtitle>Tipo: {{ evento.tipo }} </mat-card-subtitle>
-        -->
+        <mat-card-subtitle >
+            <div fxLayout="row" fxLayoutAlign="space-between center" >
+                <div>
+                    {{ restoran.departamento }}
+                </div>
+                <div>
+                    {{ restoran.localidad }}
+                </div>
+            </div>
+        </mat-card-subtitle>
+        <mat-card-title>{{ restoran.nombre | recortarTitulo:largoTitulo }}</mat-card-title>
     </mat-card-header>
 
     <mat-card-content>
-        <!-- {{ lugar.descripcion | deleteHtml | recortarParrafo }} -->
+        <div>Dirección: {{ restoran.direccion }}</div>
+        <div *ngIf="restoran.telefonos.length > 0">Teléfono: {{restoran.telefonos[0].numero}}</div>
+        <div *ngIf="restoran.telefonos.length > 1">Teléfono: {{restoran.telefonos[1].numero}}</div>
     </mat-card-content>
 
     <mat-card-actions>
@@ -28,12 +37,12 @@
 
     <mat-card-footer>
         Publicado:
-        <span *ngIf="restoran.publicado">
+        <ng-container *ngIf="restoran.publicado">
             Sí <mat-icon class="icon-si">done</mat-icon>
-        </span>
-        <span *ngIf="!restoran.publicado">
+        </ng-container>
+        <ng-container *ngIf="!restoran.publicado">
             No <mat-icon color="warn">close</mat-icon>
-        </span>
+        </ng-container>
     </mat-card-footer>
 
 </mat-card>
