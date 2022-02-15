@@ -10,6 +10,8 @@ import { Router } from '@angular/router';
 })
 export class LoginComponent implements OnInit {
 
+    hide = true;
+
     loginForm: FormGroup = this.fb.group({
         email: [null, [Validators.required, Validators.minLength(10), Validators.maxLength(60)]],
         password: [null, [Validators.required, Validators.minLength(6), Validators.maxLength(20)]]
@@ -26,12 +28,12 @@ export class LoginComponent implements OnInit {
 
     //Funcion que llama al método onLogin del servicio
     async onLogin(email: string, password: string) {
+        console.log("enviando formulario")
         email = email.trim();
         password = password.trim();
         try {
             this.presentLoginLoading();
             const user = await this.authService.signInWithEmail(email, password);
-            
             if (user) {
                 this.router.navigateByUrl('/lugares/listado');
             }
@@ -46,14 +48,14 @@ export class LoginComponent implements OnInit {
                     message = "La dirección de correo electrónico no es válida."
                     break;
                 case "auth/user-disabled":
-                    message = "El usuario dado ha sido deshabilitado."
+                    message = "El usuario ingresado ha sido deshabilitado."
                     break;
                 default:
                     message = "Su inicio de sesión no tuvo éxito!!. Verifique los datos ingresados.";
                     break;
             }
             let title = "Mensaje inicio de sesión";
-            console.log(title+": " +message);
+            console.log(title + ": " + message);
         }
     }
 
@@ -63,28 +65,25 @@ export class LoginComponent implements OnInit {
 
     onSubmit() {
         if (this.loginForm.valid) {
+        console.log("test submit")
             this.onLogin(this.email.value, this.password.value);
             this.onResetForm();
-            // console.log("Form Login corrento:", this.loginForm.value.email);
-        } else {
-            // console.log("Formulario no valido");
         }
     }
-
 
     async resetPasswordAlertPrompt() {
     }
 
     async presentLoginLoading() {
-    //    const loading = await this.loadingController.create({
-    //        cssClass: 'my-custom-class',
-    //        message: 'Enviando ...',
-    //        duration: 1000
-    //    });
-    //    await loading.present();
+        //    const loading = await this.loadingController.create({
+        //        cssClass: 'my-custom-class',
+        //        message: 'Enviando ...',
+        //        duration: 1000
+        //    });
+        //    await loading.present();
 
-    //    const { role, data } = await loading.onDidDismiss();
-    //    console.log('Loading dismissed!');
+        //    const { role, data } = await loading.onDidDismiss();
+        //    console.log('Loading dismissed!');
     }
 
 

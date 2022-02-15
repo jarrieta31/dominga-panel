@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from "@angular/fire/compat/auth";
-import { getAuth, signInWithEmailAndPassword } from '@angular/fire/auth';
+import { getAuth, setPersistence, signInWithEmailAndPassword, browserSessionPersistence} from '@angular/fire/auth';
 import firebase from 'firebase/compat/app';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
@@ -16,6 +16,8 @@ export class AuthService {
     constructor(private afAuth: AngularFireAuth, private router: Router) {
         // authState es la instancia de autentificación actual
         this.user = this.afAuth.authState;
+        //firebase.auth.Auth.Persistence.LOCAL;
+        
     }
 
     isLoggedIn() {
@@ -51,9 +53,10 @@ export class AuthService {
     signOut() {
         this.afAuth.signOut().then((res) => {
             console.log('saliste', res);
+            localStorage.removeItem('token');
             this.router.navigateByUrl('/auth/login');
         }).catch((res) => {
-            console.log('error en signOut');
+            console.log('Error en signOut');
         })
     }
 
@@ -64,6 +67,12 @@ export class AuthService {
         } catch (error) {
             console.log('Error al recuperar contraseña: ', error);
         }
+    }
+
+    validarToken(token: string){
+       this.user.subscribe(
+           console.log
+       ) 
     }
 
 }

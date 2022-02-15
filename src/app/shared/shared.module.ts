@@ -13,6 +13,7 @@ import { QuitarEspaciosPipe } from './pipes/quitar-espacios.pipe';
 import { ImagenPipe } from './pipes/imagen.pipe';
 import { RecortarParrafoPipe } from './pipes/recortar-parrafo.pipe';
 import { RecortarTituloPipe } from './pipes/recortar-titulo.pipe';
+import { LoadingImageComponent } from './components/loading-image/loading-image.component';
 
 
 
@@ -28,6 +29,7 @@ import { RecortarTituloPipe } from './pipes/recortar-titulo.pipe';
         RecortarParrafoPipe,
         RecortarTituloPipe,
         UploadFilesComponent,
+        LoadingImageComponent,
     ],
     exports: [
         ErrorPageComponent,

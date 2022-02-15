@@ -3,6 +3,13 @@ import { CommonModule } from '@angular/common';
 import { Routes, RouterModule } from '@angular/router';
 import { LoginComponent } from './pages/login/login.component';
 import { ResgistroComponent } from './pages/resgistro/resgistro.component';
+import { AngularFireAuthGuard, hasCustomClaim, redirectUnauthorizedTo, redirectLoggedInTo, loggedIn  } from '@angular/fire/compat/auth-guard';
+
+//const adminOnly = () => hasCustomClaim('admin');
+const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['/auth/login']);
+const redirectLoggedInToLugares = () => redirectLoggedInTo(['/lugares/listado']);
+//const belongsToAccount = (next) => hasCustomClaim(`account-${next.params.id}`);
+//const redirectLoggedInTo = () => redirectLoggedInTo(['/lugares/listado']);
 
 const routes:Routes = [
   {
@@ -10,7 +17,9 @@ const routes:Routes = [
     children: [
       {
         path: 'login',
-        component: LoginComponent
+        component: LoginComponent,
+//        canActivate: [AngularFireAuthGuard], 
+//        data: { authGuardPipe:  redirectLoggedInToLugares}
       },
       {
         path: 'registro',

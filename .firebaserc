@@ -1,4 +1,7 @@
 {
+  "projects": {
+    "administracion": "appdominga"
+  },
   "targets": {
     "panel-admin-dominga": {
       "hosting": {

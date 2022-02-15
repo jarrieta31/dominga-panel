@@ -2,10 +2,15 @@
         <mat-card-header>
             <mat-card-title>{{ imagen.name }}</mat-card-title>
         </mat-card-header>
-        <img mat-card-image [src]="imagen.url">
+            <img  [style.display]="viewImage == true ? 'block': 'none'" mat-card-image [src]="imagen.url"  (load)="mostrarImagen()">
+            <img [style.display]="viewImage == true ? 'none': 'block'" src="../../../../assets/loading.gif" >
         <mat-card-actions>
             <button type="button" mat-stroked-button color="warn" (click)="removerImagen(imagen.name)">
                 <mat-icon>delete</mat-icon> Eliminar
             </button>
         </mat-card-actions>
+
     </mat-card>
+
+
+    

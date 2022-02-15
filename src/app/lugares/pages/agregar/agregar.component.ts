@@ -231,14 +231,14 @@ export class AgregarComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         //Si las imagenes agregadas no se guardaron debe ser eliminadas de Firebase Storage. 
-        if (this.cambiosConfirmados === false) {
-            this.galeriaAgregar.forEach(img => {
-                this.fbStorage.borrarArchivoStorage(`${this.directorioPadre}/${this.directorio}`, img.name);
-            });
-            if (this.home.name !== "imagen-default" && this.home.url !== this.imagenHome.value.url) {
-                this.fbStorage.borrarArchivoStorage(`${this.directorioPadre}/${this.directorio}`, this.home.name);
-            }
-        }
+    //    if (this.cambiosConfirmados === false) {
+    //        this.galeriaAgregar.forEach(img => {
+    //            this.fbStorage.borrarArchivoStorage(`${this.directorioPadre}/${this.directorio}`, img.name);
+    //        });
+    //        if (this.home.name !== "imagen-default" && this.home.url !== this.imagenHome.value.url) {
+    //            this.fbStorage.borrarArchivoStorage(`${this.directorioPadre}/${this.directorio}`, this.home.name);
+    //        }
+    //    }
         this.sourceDepartamentos.unsubscribe();
         this.sourceLocalidades.unsubscribe();
         this.sourceMiniMapa.unsubscribe();
@@ -339,6 +339,28 @@ export class AgregarComponent implements OnInit, OnDestroy {
         /** Utilizando el servicio del FirebaseStorage local se borra la imagen */
         //       this.fbStorage.borrarArchivoStorage(`${this.directorioPadre}/${this.directorio}`, $event);
     }
+    
+    /**
+     * Función que busca en Cloud Storage si quedaron imágenes que no están en el array de Sliders. 
+     * Si encuentra imágnes residuales las borra.
+     */
+    limpiarImagenesResiduales(){
+        this.imagenes.value.forEach(element => {
+           console.log(element.name) 
+        });
+        this.fbStorage.listarArchvios(`${this.directorioPadre}/${this.directorio}`)
+            .then(res => {
+                res.items.forEach(item => {
+                    //const existe = (element: Slider) => element.imagen.name === item.name;
+                    //if (!this.sliders.some(existe)) {
+                    //    this.fbStorage.borrarArchivoStorage(`${this.directorioPadre}/${this.directorio}`, item.name);
+                        console.log("se elimino : "+item.name)
+                    //}
+                    console.log(this.imagenes.length)
+                })
+            })
+            .catch(error => console.log(`Error al intentar borrar la imagen residual. ${error}`))
+    }
 
     /**
      * Función que agrega un nuevo formControl de tipo telefono
@@ -395,7 +417,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
             this.publicado.setValue(false);
             _principal = "No válida"
         }
-        if (this.imagenes.value.length < 4) {
+        if (this.imagenes.value.length < 2) {
             test = false;
             this.publicado.setValue(false);
             _galeria = "No válida"
@@ -477,6 +499,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
         //envia el formulario
         this.lugarForm.controls['imagenHome'].setValue(this.home);
         this.lugarForm.controls['imagenes'].setValue(this.galeria);
+        this.limpiarImagenesResiduales()
         if (this.lugarForm.valid) {
             this.cambiosConfirmados = true;
             //verifica si es una actualización o un lugar nuevo

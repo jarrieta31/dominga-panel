@@ -91,7 +91,7 @@ export class ListadoComponent implements OnInit {
     }
 
     regresar() {
-        this.router.navigate(["/lugares/listado"]);
+        this.router.navigate(["/artistas/listado"]);
     }
 
     get departamento() { return this.filtrosForm.get('departamento'); }

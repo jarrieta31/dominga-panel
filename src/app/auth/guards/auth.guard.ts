@@ -24,9 +24,17 @@ export class AuthGuard implements CanLoad, CanActivate {
         .subscribe(authData => {
             if (authData) {
                 this.idUser = authData.uid
+                authData.getIdToken(true).then()
             }
         });
     }
+    
+    /**
+     * Bloque el acceso a una página.
+     * @param route 
+     * @param state 
+     * @returns 
+     */
     canActivate(
         route: ActivatedRouteSnapshot,
         state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
