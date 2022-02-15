@@ -1,12 +1,20 @@
 {
   "projects": {
-    "administracion": "appdominga"
+    "administracion": "appdominga",
+    "default": "appdominga"
   },
   "targets": {
     "panel-admin-dominga": {
       "hosting": {
         "dominga-panel": [
           "panel-admin-dominga"
+        ]
+      }
+    },
+    "appdominga": {
+      "hosting": {
+        "dominga-panel": [
+          "appdominga"
         ]
       }
     }
