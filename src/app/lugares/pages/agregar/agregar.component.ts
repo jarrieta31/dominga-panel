@@ -59,6 +59,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
     galeria: Imagen[] = [];
     galeriaAgregar: Imagen[] = []; //solo guarda las imagenes que se agregan a la galeria
     imagenesBorradas: string[] = []; // solo guarda las imagenes que se eliminaron y no se guardo el formulario
+    nroWhatsapp: FormControl = this.fb.control(null, [this.vs.valididarNumeroWhatsapp]);
     public lugarForm: FormGroup = this.fb.group({
         accesibilidad: [false],
         auto: [false],
@@ -195,6 +196,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
                 this.prioridadAnterior = prio
                 delete lugarActual.id //para setear el formulario es necesario quitar el tatributo id
                 this.lugarForm.reset(lugarActual);
+                this.setNroWhatsapp(lugarActual.whatsapp);
                 this.titulo = `Editando ${this.lugarForm.controls['nombre'].value}`;
                 this.home = lugarActual.imagenHome;
                 this.galeria = JSON.parse(JSON.stringify(lugarActual.imagenes));
@@ -467,6 +469,32 @@ export class AgregarComponent implements OnInit, OnDestroy {
         console.log("estas en setImagenPrincipal ")
     }
 
+    /**
+     * Función para obtener el celular a partir del link de whatsapp y mostrar
+     * en el formulario solo el número de tetéfono.
+     */
+    setNroWhatsapp(link:string){
+        if ( link !== null) {
+            //let enlace: string = this.whatsapp.value
+            let celular = "0" + link.slice(39)
+            this.nroWhatsapp.setValue(celular)
+        }
+    }
+
+    /** 
+     * Esta función toma el número de celular ingresado en el formulario 
+     * construye el link para whatsapp y lo setea en el formulario como un enlace.
+     */
+    setLinkWhatsapp() {
+        if (this.nroWhatsapp.valid) {
+            let nro: string = this.nroWhatsapp.value;
+            nro = nro.slice(1);
+            let url: string = 'https://api.whatsapp.com/send?phone=598' + nro;
+            this.whatsapp.setValue(url);
+        } else {
+            this.whatsapp.setValue(null);
+        }
+    }
     /** 
      * Este método es llamado cada vez que se selecciona un departamento
      */

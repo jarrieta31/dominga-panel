@@ -175,8 +175,8 @@ export class SliderLugaresComponent implements OnInit {
         if (this.linkSeleccionado === 'facebook') { this.facebook.setValue(sliderActual.link) }
         if (this.linkSeleccionado === 'whatsapp') {
             let enlace: string = sliderActual.link
-            enlace = "0" + enlace.slice(39)
-            this.whatsapp.setValue(enlace)
+            let celular = "0" + enlace.slice(39)
+            this.whatsapp.setValue(celular)
         }
         this.activarBtnGuardar()
     }

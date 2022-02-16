@@ -257,6 +257,7 @@
                             <mat-error>La URL ingresada no es válida!</mat-error>
                         </ng-container>
                     </mat-form-field>
+                    <!--
                     <mat-form-field >
                         <mat-label>Whatsapp</mat-label>
                         <input type="url" matInput formControlName="whatsapp"
@@ -264,6 +265,18 @@
                         <mat-icon matSuffix>insert_link</mat-icon>
                         <ng-container *ngIf="!whatsapp.valid && whatsapp.touched">
                             <mat-error>URL no válida! Ejemplo: https://api.whatsapp.com/send?phone=598123456
+                            </mat-error>
+                        </ng-container>
+                    </mat-form-field>
+                -->
+                    <mat-form-field class="whatsapp">
+                        <mat-label>Whatsapp</mat-label>
+                        <input type="text" matInput autocomplete="of" [formControl]="nroWhatsapp" (input)="setLinkWhatsapp()"
+                            placeholder="099123456">
+                        <mat-icon matSuffix>phone</mat-icon>
+                        <ng-container *ngIf="!nroWhatsapp.valid && nroWhatsapp.touched">
+                            <mat-error>
+                                Número no valido. Ejemplo: 098123456
                             </mat-error>
                         </ng-container>
                     </mat-form-field>
@@ -430,7 +443,7 @@
     <br><br>
     <!-- 
             <div fxFlex>
-                <pre>{{ this.imagenes | json }}</pre>
+                
             </div>
 -->
 <!-- 
@@ -440,3 +453,4 @@
     </div>
 -->
 </form>
+<pre>{{ this.lugarForm.value| json }}</pre>

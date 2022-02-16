@@ -14,6 +14,8 @@ import { ImagenPipe } from './pipes/imagen.pipe';
 import { RecortarParrafoPipe } from './pipes/recortar-parrafo.pipe';
 import { RecortarTituloPipe } from './pipes/recortar-titulo.pipe';
 import { LoadingImageComponent } from './components/loading-image/loading-image.component';
+import { SubirUnaImagenComponent } from './components/subir-una-imagen/subir-una-imagen.component';
+import { SubirMultiplesImagensComponent } from './components/subir-multiples-imagens/subir-multiples-imagens.component';
 
 
 
@@ -30,6 +32,8 @@ import { LoadingImageComponent } from './components/loading-image/loading-image.
         RecortarTituloPipe,
         UploadFilesComponent,
         LoadingImageComponent,
+        SubirUnaImagenComponent,
+        SubirMultiplesImagensComponent,
     ],
     exports: [
         ErrorPageComponent,

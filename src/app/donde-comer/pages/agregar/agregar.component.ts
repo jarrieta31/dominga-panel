@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import { FormBuilder, Validators, FormArray, FormGroup } from '@angular/forms';
+import { FormBuilder, Validators, FormArray, FormGroup, FormControl } from '@angular/forms';
 import { ValidatorService } from '../../../shared/services/validator.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Imagen } from 'src/app/shared/interfaces/imagen.interface'
@@ -31,6 +31,10 @@ export class AgregarComponent implements OnInit {
     idRestoran: string;
     localidades: string[] = [];
     titulo: string = "Nuevo Restaurante";
+    direccionMinLength: number = 3;
+    direccionMaxLength: number = 20;
+    nombreMinLength: number = 3;
+    nombreMaxLength: number = 20;
     mapaTouched: boolean = false;
     widthAllowedEvento: number = 150;
     restaurantes: Restoran[] = [];
@@ -41,19 +45,23 @@ export class AgregarComponent implements OnInit {
     disabledAddPhones: boolean = false;
     private unsubscribe$ = new Subject<void>();
 
+    nroWhatsapp: FormControl = this.fb.control(null, [this.vs.valididarNumeroWhatsapp]);
+
     public restoranForm: FormGroup = this.fb.group({
         carpeta: [null],
         departamento: ['', Validators.required],
-        direccion: [''],
+        direccion: ['', [Validators.required, Validators.minLength(this.direccionMinLength), Validators.maxLength(this.direccionMaxLength)]],
         imagen: [this.imagenDefault],
+        instagram: [null, [this.vs.validarInstagram]],
         localidad: ['', [Validators.required]],
-        nombre: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
+        nombre: ['', [Validators.required, Validators.minLength(this.nombreMinLength), Validators.maxLength(this.nombreMaxLength)]],
         publicado: [false],
         telefonos: this.fb.array([
             this.fb.group({
                 numero: ['', [this.vs.validarTelefono]]
             })
         ]),
+        whatsapp: [null, [this.vs.valididarWhatsapp]],
         ubicacion: [null ,[this.vs.validarUbicacion, Validators.required]],
     });
 
@@ -116,6 +124,7 @@ export class AgregarComponent implements OnInit {
                     }
                 }
                 this.restoranForm.reset(restoranActual);
+                this.setNroWhatsapp(restoranActual.whatsapp);
                 this.titulo = `Editando ${this.restoranForm.controls['nombre'].value}`;
                 this.imagenRestaurante = restoranActual.imagen;
                 this.directorio = this.carpeta.value;
@@ -206,6 +215,33 @@ export class AgregarComponent implements OnInit {
             this.imagenRestaurante = $event;
         } else {
             this.imagenRestaurante = this.imagenDefault;
+        }
+    }
+
+    /** 
+     * Esta función toma el número de celular ingresado en el formulario 
+     * construye el link para whatsapp y lo setea en el formulario como un enlace.
+     */
+    setLinkWhatsapp() {
+        if (this.nroWhatsapp.valid) {
+            let nro: string = this.nroWhatsapp.value;
+            nro = nro.slice(1);
+            let url: string = 'https://api.whatsapp.com/send?phone=598' + nro;
+            this.whatsapp.setValue(url);
+        } else {
+            this.whatsapp.setValue(null);
+        }
+    }
+
+    /**
+     * Función para obtener el celular a partir del link de whatsapp y mostrar
+     * en el formulario solo el número de tetéfono.
+     */
+    setNroWhatsapp(link:string){
+        if ( link !== null) {
+            //let enlace: string = this.whatsapp.value
+            let celular = "0" + link.slice(39)
+            this.nroWhatsapp.setValue(celular)
         }
     }
 
@@ -316,4 +352,6 @@ export class AgregarComponent implements OnInit {
     get publicado() { return this.restoranForm.get('publicado'); }
     get ubicacion() { return this.restoranForm.get('ubicacion'); }
     get telefonos() { return this.restoranForm.get('telefonos') as FormArray; }
+    get whatsapp() { return this.restoranForm.get('whatsapp'); }
+    get instagram() { return this.restoranForm.get('instagram'); }
 }

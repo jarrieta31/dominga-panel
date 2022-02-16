@@ -13,4 +13,6 @@ export interface Restoran {
     imagen: Imagen;
     publicado: boolean;
     ubicacion: Posicion;
+    instagram: string;
+    whatsapp: string;
 }
