@@ -1,43 +1,74 @@
 mat-card {
-    margin-top: 20px;
+    margin-top: 1.25rem;
 }
 
 
 .main {
-    min-height: 600px;
+    min-height: 37.5rem;
 }
 
 .row{
 }
 
 .rowDepartamento {
-    width: 320px;
+/*    
+    width: 20rem;
+ */   
+ background-color: orange;
 }
 
+h3 {
+/*    
+ background-color: orange;
+    background-color: red;
+ */   
+    background-color: red;
+}
 .inputDepartamento {
-    width: 200px;
+    /*
+    width: 20rem;
+    */
 }
 
 .rowLocalidad {
+ /*
     width: 300px;
+ */   
+ background-color: orange;
 }
 
 .inputLocalidad {
-    width: 220px;
+    /*
+    width: 21.25rem;
+    */
 }
 
 .rowActivos {
+    /*
     width: 250px;
+    /*
 }
 
 .inputActivos {
+    /*
     width: 150px;
+    */
 }
 
 .rowPublicados {
+ background-color: orange;
+    /*
     width: 230px;
+    */
 }
 
 .inputPublicados {
+    /*
     width: 130px;
+    */
+}
+
+#lista {
+    width: 95%; 
+    margin: auto;
 }
