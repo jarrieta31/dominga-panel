@@ -30,6 +30,7 @@ mat-divider{
 .container {
     padding: 10px;
     margin-bottom: 2px;
+    width: 100%;
 }
 
 .container-home {
@@ -47,6 +48,19 @@ mat-divider{
     max-width: 1600px;
 }
 
+
 .whatsapp {
     width: 30%;
+}
+
+form {
+    max-width: 100%;
+}
+
+.columna-1{
+    background-color: aqua;
+}
+
+.columna-2{
+    background-color: chartreuse;
 }

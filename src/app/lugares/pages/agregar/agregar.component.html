@@ -13,15 +13,14 @@
     <div fxLayout="row" fxLayoutAlign="space-between stretch" fxLayoutGap="40px">
 
         <!-- ============================== Columna izquierda ==================================== -->
-        <div class="main-column" fxFlex="50" fxLayout="column stretch" fxLayoutGap="20px">
+        <div class="columna-1" fxFlex="50%" fxLayout="column stretch" fxLayoutGap="20px">
 
             <!-- ==============================  Nombre/Publicado ==================================== -->
-            <div class="container" style="height: 124px;">
-                <div>
+            <div fxLayout.lg="column" fxLayoutAlign.lg="center" class="container" style="height: 124px;">
+                <div fxLayout="row" fxLayoutAlign="start end">
                     <h2>Nombre */Estado de publicación</h2>
                 </div>
                 <div fxLayout="row" fxLayoutGap="30px">
-
                     <mat-form-field fxFlex="50%">
                         <mat-label>Nombre del Lugar</mat-label>
                         <input required matInput type="text" formControlName="nombre" (change)="quitarEspacios()">
@@ -167,7 +166,7 @@
 
 
         <!-- ============================== Columna derecha ==================================== -->
-        <div class="main-column" fxFlex="50%" fxLayout="column" fxLayoutAlign="start stretch" fxLayoutGap="10">
+        <div class="columna-2" fxFlex="50%" fxLayout="column" fxLayoutAlign="start stretch" fxLayoutGap="10">
 
             <!-- ============================== Telefonos ==================================== -->
             <div fxLayout="column" class="container">

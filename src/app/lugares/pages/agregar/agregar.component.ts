@@ -103,6 +103,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
         translate: 'no',
         defaultParagraphSeparator: 'p',
         defaultFontName: 'Arial',
+        width: '100%',
         toolbarHiddenButtons: [
             [
                 'subscript',
