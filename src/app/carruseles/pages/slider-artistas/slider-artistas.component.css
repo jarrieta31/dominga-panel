@@ -2,6 +2,10 @@ mat-divider{
     margin-bottom: 40px;
 }
 
+form {
+    width: 100%;
+}
+
 .imagen {
     width: 350px;
     height: 205px;

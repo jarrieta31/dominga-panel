@@ -25,7 +25,7 @@
 
                     <mat-form-field fxFlex="50%">
                         <mat-label>Nombre del Artista</mat-label>
-                        <input required matInput type="text" formControlName="nombre" (change)="quitarEspacios()">
+                        <input required matInput autocomplete="of" type="text" formControlName="nombre" (change)="quitarEspacios()">
                         <ng-container *ngIf="!nombre.valid && nombre.touched">
                             <mat-error *ngIf="nombre.errors.required">El campo nombre del artista es obligatorio.
                             </mat-error>
@@ -83,8 +83,9 @@
                 </div>
                 <div fxLayout="column" fxLayoutAlign="space-evenly" fxLayoutGap="30px">
                     <mat-form-field>
-                        <mat-label>Youtube</mat-label>
-                        <input type="url" matInput formControlName="youtube" placeholder="https://youtube.com">
+                        <mat-label>Video de Youtube</mat-label>
+                        <input type="url" matInput formControlName="youtube" placeholder="https://www.youtube.com/watch?v=df021jGEmPM" 
+                                autocomplete="of" (change)="parseLinkYoutube()">
                         <mat-icon matSuffix>insert_link</mat-icon>
                         <ng-container *ngIf="!youtube.valid && youtube.touched">
                             <mat-error>La URL ingresada no es válida!</mat-error>
@@ -92,7 +93,7 @@
                     </mat-form-field>
                     <mat-form-field>
                         <mat-label>Spotify</mat-label>
-                        <input type="url" matInput formControlName="spotify"
+                        <input autocomplete="of" type="url" matInput formControlName="spotify"
                             placeholder="https://open.spotify.com/artist/1dfeR4HaWDbWqFHLkxsg1d?si=bQ7EkrD9SuCeyrvfzcZizw&nd=1">
                         <mat-icon matSuffix>insert_link</mat-icon>
                         <ng-container *ngIf="!spotify.valid && spotify.touched">
@@ -103,7 +104,7 @@
                     </mat-form-field>
                     <mat-form-field>
                         <mat-label>Instagram</mat-label>
-                        <input type="url" matInput formControlName="instagram" placeholder="http://www.instagram.com/">
+                        <input type="url" autocomplete="of" matInput formControlName="instagram" placeholder="http://www.instagram.com/">
                         <mat-icon matSuffix>insert_link</mat-icon>
                         <ng-container *ngIf="!instagram.valid && instagram.touched">
                             <mat-error>URL no válida! Ejemplo: http://www.instagram.com/mi-perfil</mat-error>
@@ -176,18 +177,5 @@
     </div>
 
     <br><br>
-    <!-- 
-            <div fxFlex>
-                <pre>{{ this.imagenes | json }}</pre>
-            </div>
-
-    <div style="overflow: scroll; width: 100%;height: 200px;">
-        <span>Valores</span>
-        <pre>{{ this.artistaForm.value | json }}</pre>
-    </div>
-
-
--->
-
 
 </form>

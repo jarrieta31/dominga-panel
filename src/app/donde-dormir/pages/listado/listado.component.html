@@ -52,18 +52,19 @@
 </form>
 
 <mat-divider></mat-divider>
+
 <div fxLayout="row" fxLayoutAlign="center start" class="main">
-    <div fxLayout="row wrap" fxLayout.xs="column" fxLayoutAlign="start start" fxLayoutGap="20px">
-        <div *ngFor="let hotel of hoteles | paginate: { itemsPerPage: 12, currentPage: page }">
-            <app-donde-dormir-tarjeta [hotel]="hotel"></app-donde-dormir-tarjeta>
+    <div fxFlex="87%" fxLayout="row" fxLayoutAlign="center start">
+        <div fxLayout="row wrap" fxLayoutAlign="start start" fxLayoutGap="20px">
+            <div *ngFor="let hotel of hoteles | paginate: { itemsPerPage: 12, currentPage: page }">
+                <app-donde-dormir-tarjeta [hotel]="hotel"></app-donde-dormir-tarjeta>
+            </div>
         </div>
     </div>
 </div>
-
 <br>
 <mat-divider></mat-divider>
 <div fxLayout="row" fxLayoutAlign="center center">
     <pagination-controls (pageChange)="page = $event" previousLabel="Anterior" nextLabel="Siguiente">
     </pagination-controls>
 </div>
-

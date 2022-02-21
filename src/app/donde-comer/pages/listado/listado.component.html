@@ -53,9 +53,11 @@
 
 <mat-divider></mat-divider>
 <div fxLayout="row" fxLayoutAlign="center start" class="main">
-    <div fxLayout="row wrap" fxLayout.xs="column" fxLayoutAlign="start start" fxLayoutGap="20px">
-        <div *ngFor="let restoran of restaurantes | paginate: { itemsPerPage: 12, currentPage: page }">
-            <app-donde-comer-tarjeta [restoran]="restoran"></app-donde-comer-tarjeta>
+    <div fxFlex="87%" fxLayout="row" fxLayoutAlign="center start" >
+        <div fxLayout="row wrap" fxLayoutAlign="start start" fxLayoutGap="20px">
+            <div *ngFor="let restoran of restaurantes | paginate: { itemsPerPage: 12, currentPage: page }" class="lista">
+                <app-donde-comer-tarjeta [restoran]="restoran"></app-donde-comer-tarjeta>
+            </div>
         </div>
     </div>
 </div>

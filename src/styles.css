@@ -13,7 +13,6 @@ body {
     font-family: Roboto, "Helvetica Neue", sans-serif; 
     min-height: 100vh;
     width: 100%;
-    background-color: orange;
 }
 
 /*genera el espacio del boton de logout en el navbar*/

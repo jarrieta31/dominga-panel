@@ -71,11 +71,12 @@
 </form>
 <br>
 <mat-divider></mat-divider>
-<div style="width: 1750px; margin: auto;" fxLayout="row" fxLayoutAlign="center start" class="main">
-    <div fxLayout="row wrap" fxLayout.xs="column" fxLayoutAlign="start start" fxLayoutGap="20px">
-        <div *ngFor="let evento of eventos | paginate: { itemsPerPage: 12, currentPage: page }"
-            style="min-height: 390px;">
-            <app-evento-tarjeta [evento]="evento"></app-evento-tarjeta>
+<div fxLayout="row" fxLayoutAlign="center start" class="main">
+    <div fxLayout="row" fxFlex="90%" fxLayoutAlign="center">
+        <div fxLayout="row wrap" fxLayoutAlign="start start" fxLayoutGap="20px">
+            <div *ngFor="let evento of eventos | paginate: { itemsPerPage: 12, currentPage: page }">
+                <app-evento-tarjeta [evento]="evento"></app-evento-tarjeta>
+            </div>
         </div>
     </div>
 </div>

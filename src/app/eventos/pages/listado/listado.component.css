@@ -37,3 +37,7 @@
 .inputPublicados {
     width: 130px;
 }
+
+.lista {
+    min-height: 24.375rem;
+}

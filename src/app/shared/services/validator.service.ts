@@ -109,10 +109,10 @@ export class ValidatorService {
     validarVideoYoutube(control: FormControl): ValidationErrors | null{
         //console.log(control.value)
         // tiene que quedar:    https://www.youtube.com/embed/WEn3eSV-hvw
-        console.log(control.value)
         if ( control.value === null || control.value === '') {
             return null;
         } else {
+            console.log(control.value)
             const valor: string = control.value;
             let regExPersonal = /^https:\/\/(?:www\.)?youtube\.com\/embed\/\b([-a-zA-Z0-9_]{11,})$/g;
             if (regExPersonal.test(valor)) {

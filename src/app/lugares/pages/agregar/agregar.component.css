@@ -16,11 +16,11 @@ mat-divider{
 }
 
 .imagen-home {
-    height: 217px;
+    height: 13.563rem;
 }
 
 .imagen-principal {
-    height: 277px;
+    height: 17.313rem;
 }
 
 .imagen {
@@ -40,12 +40,12 @@ mat-divider{
 
 
 .contenedor_galeria {
-    min-height: 315px;
+    min-height: 19.688rem;
     margin-bottom: 40px;
 }
 
 .galeria {
-    max-width: 1600px;
+    max-width: 95%;
 }
 
 
@@ -58,9 +58,13 @@ form {
 }
 
 .columna-1{
+/*
     background-color: aqua;
+*/
 }
 
 .columna-2{
+/*
     background-color: chartreuse;
+*/
 }

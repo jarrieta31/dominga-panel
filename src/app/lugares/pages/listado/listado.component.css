@@ -12,9 +12,9 @@ mat-card {
 
 .rowDepartamento {
 /*    
+    background-color: orange;
     width: 20rem;
  */   
- background-color: orange;
 }
 
 h3 {
@@ -22,7 +22,6 @@ h3 {
  background-color: orange;
     background-color: red;
  */   
-    background-color: red;
 }
 .inputDepartamento {
     /*
@@ -33,8 +32,8 @@ h3 {
 .rowLocalidad {
  /*
     width: 300px;
- */   
  background-color: orange;
+ */   
 }
 
 .inputLocalidad {
@@ -56,8 +55,8 @@ h3 {
 }
 
 .rowPublicados {
- background-color: orange;
     /*
+ background-color: orange;
     width: 230px;
     */
 }
@@ -71,4 +70,8 @@ h3 {
 #lista {
     width: 95%; 
     margin: auto;
+}
+
+.lista {
+    min-height: 24.375rem;
 }

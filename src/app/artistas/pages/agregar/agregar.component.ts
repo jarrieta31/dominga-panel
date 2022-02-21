@@ -12,6 +12,7 @@ import { ArtistasService } from '../../services/artistas.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { switchMap, takeUntil, tap } from 'rxjs/operators';
 import { DialogPublicarComponent } from '../../components/dialog-publicar/dialog-publicar.component';
+import { Video } from '../../../shared/interfaces/video.interface';
 
 interface Categoria {
     value: string;
@@ -57,7 +58,7 @@ export class AgregarComponent implements OnInit {
         publicado: [false],
         categoria: ['', [Validators.required]],
         spotify: [null, [this.vs.validarPlayListSpotify]],
-        youtube: [null, [this.vs.validarLinkYoutube]],
+        youtube: [null, [this.vs.validarVideoYoutube]],
     });
 
     constructor(
@@ -220,6 +221,22 @@ export class AgregarComponent implements OnInit {
                 })
             }
         }
+    }
+
+    /**
+     * Esta función transforma el link de youtube ingresado en un link para embeber en un sitio web o app.
+     * Al salir del campo lo parsea a la forma correcta ejem.: https://www.youtube.com/embed/WEn3eSV-hvw 
+     * Por ultimo sustitye el valor en el control del formulario.
+     */
+    parseLinkYoutube() {
+        let link:string = this.youtube.value 
+        link = link.replace(/\s/g, "");
+        link = link.replace('watch?v=', 'embed/');
+        let fin = link.indexOf('&');
+        if (fin !== -1) {
+            link = link.slice(0, fin);// si hay una lista al final la quita
+        }
+        this.youtube.setValue(link)
     }
 
     // Getters

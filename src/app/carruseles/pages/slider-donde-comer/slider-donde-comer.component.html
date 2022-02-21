@@ -23,13 +23,6 @@
                         <div fxFlex="50%" fxLayout="column" fxLayoutAlign="space-around center">
                             <mat-card class="container-img">
                                 <img mat-card-image [src]="imagenSlider.url" class="imagen">
-                                <!-- 
-                                <mat-card-actions *ngIf="imagenSlider.name != 'imagen-default'">
-                                    <button type="button" mat-stroked-button color="warn" (click)="setImagenSlider(imagenSlider)">
-                                        <mat-icon>delete</mat-icon> Eliminar
-                                    </button>
-                                </mat-card-actions>
-                                -->
                             </mat-card>
                             <p>Tamaño de imágen: {{widthAllowedEvento}} x {{heightAllowedEvento}} px</p>
                         </div>
@@ -180,6 +173,3 @@
         </div>
     </div>
 </div>
-<pre>
-    {{ this.sliderForm.value | json }} 
-</pre>

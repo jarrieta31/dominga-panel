@@ -1,6 +1,8 @@
 
 .main {
     min-height: 600px;
+    margin: auto;
+    max-width: 95%;
 }
 
 .rowDepartamento {
@@ -33,4 +35,8 @@
 
 .inputPublicados {
     width: 130px;
+}
+
+form {
+    max-width: 100%;
 }
