@@ -61,7 +61,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
     imagenesBorradas: string[] = []; // solo guarda las imagenes que se eliminaron y no se guardo el formulario
     nroWhatsapp: FormControl = this.fb.control(null, [this.vs.valididarNumeroWhatsapp]);
     public lugarForm: FormGroup = this.fb.group({
-        accesibilidad: [false],
+        accesibilidad: [null],
         auto: [false],
         bicicleta: [false],
         caminar: [false],

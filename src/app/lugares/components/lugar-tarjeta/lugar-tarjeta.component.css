@@ -2,9 +2,9 @@
 mat-card {
    margin-top: 1.25rem;
    width: 16.875rem;
-   height: 23.125rem;
+   height: 23rem;
    padding: 0;
-   padding-bottom: 0.75rem;
+   padding-bottom: 0rem;
    background-color: #ffffff;
 }
 
@@ -15,33 +15,49 @@ mat-card img {
     width: 16.875rem;
 }
 
+mat-card-title{
+    width: 85%;
+    margin: 0px;
+    font-size: 0.6875;
+    text-overflow:ellipsis;
+    overflow:hidden;
+    white-space:nowrap;
+}
+
 mat-card-subtitle {
     color: #006CD8;
     font-size: 0.6875;
     width: 15rem;
+    text-overflow:ellipsis;
+    overflow:hidden;
+    white-space:nowrap;
 }
 
 
 mat-card-content {
-    width: 14.375rem;
-    height: 3.75rem;
+    width: 100%;
+    /*height: 3.75rem;*/
+    height: 2.8rem;
     margin: 0px;
     margin-bottom: 0.3125rem;
     padding: 0px 1.25rem 0px 1.25rem;
     color: rgb(96, 96, 96);
     font-size: 12px;
+    text-overflow:ellipsis;
+    overflow:hidden;
+    white-space:normal;
 }
 
 mat-card-actions {
     width: 100%;
-    padding: 0px;
+    padding: 0px 10px 0px 0px;
     margin: 0px;
 }
 
 mat-card-footer {
     width: 14.375rem;
     margin: 0px;
-    padding-bottom: 0.625rem;
+    padding-bottom: 0rem;
     padding-left: 1.25rem;
     display: flex;
     justify-content:flex-start;

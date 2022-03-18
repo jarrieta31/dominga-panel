@@ -1,8 +1,8 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { LugaresService } from '../../services/lugares.service';
 import { Lugar, } from '../../interfaces/lugar.interface';
-import { Observable, Subscription } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { Observable, Subject, Subscription } from 'rxjs';
+import { tap, takeUntil } from 'rxjs/operators';
 import { ConfigService } from '../../../shared/services/config.service';
 import { LocalStorageService } from '../../../shared/services/local-storage.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
@@ -21,10 +21,9 @@ export class ListadoComponent implements OnInit, OnDestroy {
     filtrosGuardados = [];
     localidades: string[] = [];
     departamentos: string[] = [];
+
+    private unsubscribe$ = new Subject<void>();
     public lugares: Lugar[];
-    private sourceDepartamentos: Subscription;
-    private sourceLocalidades: Subscription;
-    private sourceLugares: Subscription;
     departamentos$: Observable<string[]>;
     localidades$: Observable<string[]>;
     lugares$: Observable<Lugar[]>;
@@ -47,11 +46,11 @@ export class ListadoComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        this.sourceDepartamentos = this.configService.getObsDepartamentos().subscribe(dptos => { this.departamentos = dptos });
+        this.configService.getObsDepartamentos().pipe(takeUntil(this.unsubscribe$)).subscribe(dptos => { this.departamentos = dptos });
         this.configService.emitirDepartamentosActivos();
-        this.sourceLocalidades = this.configService.getObsLocalidades().subscribe(locs => this.localidades = locs);
+        this.configService.getObsLocalidades().pipe(takeUntil(this.unsubscribe$)).subscribe(locs => this.localidades = locs);
         this.configService.emitirLocalidades();
-        this.sourceLugares = this.lugaresService.getObsLugares$().subscribe(lugares => this.lugares = lugares);
+        this.lugaresService.getObsLugares$().pipe(takeUntil(this.unsubscribe$)).subscribe(lugares => this.lugares = lugares);
         
         //this.lugares$ = this.lugaresService.getObsLugares$();
         //Chequea si los lugares del departamento actual estan en cache.
@@ -65,9 +64,8 @@ export class ListadoComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.sourceDepartamentos.unsubscribe();
-        this.sourceLocalidades.unsubscribe();
-        this.sourceLugares.unsubscribe();
+        this.unsubscribe$.next();
+        this.unsubscribe$.complete();
     }
 
 

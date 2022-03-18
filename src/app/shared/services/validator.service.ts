@@ -16,7 +16,6 @@ export class ValidatorService {
 
 
     validarWeb(control: FormControl): ValidationErrors | null {
-        //console.log(control.value)
         if (control.value === "" || control.value === null) {
             return null;
         } else {
@@ -32,7 +31,6 @@ export class ValidatorService {
 
     //Falta crear la expresion regular
     validarFacebook(control: FormControl): ValidationErrors | null {
-        //console.log(control.value)
         if (control.value === "" || control.value === null) {
             return null;
         } else {
@@ -107,12 +105,10 @@ export class ValidatorService {
      * @returns 
      */
     validarVideoYoutube(control: FormControl): ValidationErrors | null{
-        //console.log(control.value)
         // tiene que quedar:    https://www.youtube.com/embed/WEn3eSV-hvw
         if ( control.value === null || control.value === '') {
             return null;
         } else {
-            console.log(control.value)
             const valor: string = control.value;
             let regExPersonal = /^https:\/\/(?:www\.)?youtube\.com\/embed\/\b([-a-zA-Z0-9_]{11,})$/g;
             if (regExPersonal.test(valor)) {
@@ -128,9 +124,7 @@ export class ValidatorService {
      * @returns 
      */
     validarLinkYoutube(control: FormControl): ValidationErrors | null{
-        //console.log(control.value)
         // tiene que quedar:    https://www.youtube.com/embed/WEn3eSV-hvw
-        console.log(control.value)
         if ( control.value === null || control.value === '') {
             return null;
         } else {
@@ -167,7 +161,6 @@ export class ValidatorService {
     }
 
     validarTickAntel(control: FormControl): ValidationErrors | null {
-        console.log(control.value)
         if ( control.value === null || control.value === '') {
             return null;
         } else {
@@ -182,7 +175,6 @@ export class ValidatorService {
     }
 
     valididarImagenCarrusel(control: FormControl): ValidationErrors | null {
-        console.log(control.value.name)
         if (control.value.name !== "imagen-default" ) {
             return null;
         } else {
@@ -198,7 +190,6 @@ export class ValidatorService {
     validarPlayListSpotify(control: FormControl): ValidationErrors | null{
         //https://open.spotify.com/playlist/00tfEBrWnJvbSA5VjsjnRA?si=86593d2769974857
         //https://open.spotify.com/artist/1dfeR4HaWDbWqFHLkxsg1d?si=bQ7EkrD9SuCeyrvfzcZizw&nd=1
-        console.log(control.value)
         if ( control.value === null || control.value === '') {
             return null;
         } else {
@@ -218,8 +209,6 @@ export class ValidatorService {
      * @returns 
      */
     validarLatitud(control: FormControl): ValidationErrors | null{
-        console.log(typeof control.value)
-        console.log(control.value)
         if ( control.value === null ) {
             return null;
         } else {

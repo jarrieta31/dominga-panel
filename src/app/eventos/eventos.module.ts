@@ -12,7 +12,7 @@ import { SharedModule } from '../shared/shared.module';
 //Otros Modulos
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { AngularEditorModule } from '@kolkov/angular-editor';
-import { NgxPaginationModule } from 'ngx-pagination'; 
+import { NgxPaginationModule } from 'ngx-pagination';
 
 //Paginas
 import { ListadoComponent } from './pages/listado/listado.component';
@@ -32,8 +32,21 @@ import { HoraPipe } from './pipes/hora.pipe';
 import { RecortarTituloPipe } from '../shared/pipes/recortar-titulo.pipe';
 import { FiltrosPipe } from './pipes/filtros.pipe';
 
+import { NgxMatMomentModule, NgxMatMomentAdapter, NGX_MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular-material-components/moment-adapter';
+import { NgxMatDatetimePickerModule, NgxMatTimepickerModule, NGX_MAT_DATE_FORMATS, NgxMatDateAdapter } from '@angular-material-components/datetime-picker';
+import { MAT_DATE_LOCALE } from '@angular/material/core';
 
-
+export const CUSTOM_MOMENT_FORMATS = {
+    parse: {
+        dateInput: "DD/MM/YYYY, HH:mm"
+    },
+    display: {
+        dateInput: "DD/MM/YYYY, HH:mm",
+        monthYearLabel: "MMM YYYY",
+        dateA11yLabel: "LL",
+        monthYearA11yLabel: "MMMM YYYY"
+    }
+};
 
 @NgModule({
     declarations: [
@@ -58,6 +71,15 @@ import { FiltrosPipe } from './pipes/filtros.pipe';
         NgxPaginationModule,
         ReactiveFormsModule,
         SharedModule,
+        NgxMatMomentModule,
+        NgxMatDatetimePickerModule,
+        NgxMatTimepickerModule,
+    ],
+    providers: [
+        { provide: NGX_MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: false } },
+        { provide: NGX_MAT_DATE_FORMATS, useValue: CUSTOM_MOMENT_FORMATS },
+        { provide: NgxMatDateAdapter, useClass: NgxMatMomentAdapter },
+        {provide: MAT_DATE_LOCALE, useValue: 'es-Uy'},
     ]
 })
 export class EventosModule { }

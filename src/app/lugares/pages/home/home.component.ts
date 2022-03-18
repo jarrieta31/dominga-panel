@@ -31,8 +31,6 @@ export class HomeComponent implements OnInit {
             this.idUser = authData.uid
             this.nameUser = authData.displayName;
             this.emailUser = authData.email;
-            console.log(authData)
-            console.log(authData.email)
         }
     }
     );

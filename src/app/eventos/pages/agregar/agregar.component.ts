@@ -20,6 +20,7 @@ import { DialogPublicarComponent } from '../../components/dialog-publicar/dialog
 import { doc, setDoc, startAt, Timestamp } from "firebase/firestore";
 import { MatDatepicker } from '@angular/material/datepicker';
 import { Moment } from 'moment';
+import { ContentObserver } from '@angular/cdk/observers';
 
 @Component({
     selector: 'app-agregar',
@@ -88,7 +89,6 @@ export class AgregarComponent implements OnInit {
 
     pickerFechIni:  FormControl = this.fb.control(null);
     pickerFechEnd:  FormControl = this.fb.control(null);
-    horaIn:         FormControl = this.fb.control('');
 
 
     editorConfig: AngularEditorConfig = {
@@ -158,13 +158,13 @@ export class AgregarComponent implements OnInit {
             else if (res.marcador === false) {
                 this.ubicacion.setValue(null);
             }
-            console.log(JSON.stringify(res));
+            //console.log(JSON.stringify(res));
         });
     }
 
     ngOnInit(): void {
         this._adapter.setLocale('es');
-        this.horaIn.disable();
+      //  this.horaIn.disable();
         this.pickerFechEnd.disable();
         this.sourceDepartamentos = this.configService.getObsDepartamentos().subscribe(dptos => this.departamentos = dptos)
         this.configService.emitirDepartamentosActivos();
@@ -179,21 +179,21 @@ export class AgregarComponent implements OnInit {
             let eventoActual: Evento = JSON.parse(JSON.stringify(evento));
             if (eventoActual.id !== undefined) {//Si estamos editando un lugar
                 if (evento.fechaInicio !== null && evento.fechaInicio !== undefined) {
-                    const fInicio = new Date(evento.fechaInicio.seconds * 1000);
+                    let fInicio = new Date(evento.fechaInicio.seconds * 1000);
                     this.minDateFin = fInicio;
-                    const anioInicio = fInicio.getFullYear();
-                    const diaInicio = fInicio.getDate();
-                    const mesInicio = fInicio.getMonth();
+                    let anioInicio = fInicio.getFullYear();
+                    let diaInicio = fInicio.getDate();
+                    let mesInicio = fInicio.getMonth();
                     this.startDate = new Date(anioInicio, mesInicio, diaInicio);
                     this.pickerFechIni.setValue(this.startDate);
-                    this.horaIn.setValue(this.getHoraStr(fInicio.getHours(), fInicio.getMinutes()));
-                    this.horaIn.enable();
+                   // this.horaIn.setValue(this.getHoraStr(fInicio.getHours(), fInicio.getMinutes()));
+                  //  this.horaIn.enable();
                     this.pickerFechEnd.enable();
                     if (evento.fechaFin !== null && evento.fechaFin !== undefined) {
-                        const fFin = new Date(evento.fechaFin.seconds * 1000);
-                        const anioFin = fFin.getFullYear();
-                        const diaFin = fFin.getDate();
-                        const mesFin = fFin.getMonth();
+                        let fFin = new Date(evento.fechaFin.seconds * 1000);
+                        let anioFin = fFin.getFullYear();
+                        let diaFin = fFin.getDate();
+                        let mesFin = fFin.getMonth();
                         this.startDateEnd = new Date(anioFin, mesFin, diaFin);
                         this.pickerFechEnd.setValue(this.startDateEnd);
                     }
@@ -237,33 +237,46 @@ export class AgregarComponent implements OnInit {
 
     }
 
+dateUpdated(){
+
+}
+
     /**
      * Funcion que toma la fecha de inicio ingresada y setea los valores inical y el mínimo que se puede seleccionar
      * en el datepicker de fecha final.
      * También habilita el input de la hora y el datepicker de fecha final
      */
     setFechaStart() {
-        if(this.pickerFechEnd.value === null){
+        if(this.pickerFechEnd.value === null || this.pickerFechEnd.value < this.pickerFechIni.value){
             this.startDateEnd = this.pickerFechIni.value; //fecha inicial del picker pickerFechEnd
+            this.pickerFechEnd.setValue(this.pickerFechIni.value);
         }
-        else if(this.pickerFechIni.value !== null && this.horaIn.value !== null){
+        if(this.pickerFechIni.value !== null ){
             this.setFechaHora()
         }
         this.minDateFin = this.pickerFechIni.value; //fecha mínima del picker pickerFechEnd
-        this.horaIn.enable();
+    //    this.horaIn.enable();
         this.pickerFechEnd.enable();
     }
 
     setFechaEnd() {
         let fecha = this.getFechaStr(this.pickerFechEnd.value);
-        let fechaStr: string = `${fecha} ${this.horaIn.value}:00 UTC-0300`;
+        let fechaStr: string = `${fecha} 00:00:00 UTC-0300`;
         this.fechaFin.setValue(Timestamp.fromDate(new Date(fechaStr)));
+        console.log('fechaStr: ', fechaStr)
+        console.log('setFecahEnd: ', Timestamp.fromDate(new Date(fechaStr)))
     }
 
+    /**
+     * Se dispara al seleccionar la hora. Luego toma el valore de la fecha inicial y
+     * las junta para crear la fecha y hora que guarda para el evento.
+     */
     setFechaHora() {
-        let fecha = this.getFechaStr(this.pickerFechIni.value);
-        let fechaStr: string = `${fecha} ${this.horaIn.value}:00 UTC-0300`;
+        const moment = this.pickerFechIni.value;
+        console.log('fechaHora: ', fechaHora);
+        let fechaStr: string = `${fechaHora} 00:00:00 UTC-0300`;
         this.fechaInicio.setValue(Timestamp.fromDate( new Date(fechaStr) ));
+        console.log('fechaStr: ', fechaStr);
     }
 
     /**
@@ -273,17 +286,17 @@ export class AgregarComponent implements OnInit {
      * @param _minutos Minutos en formato numérico. 
      * @returns  Retorna la hora en el siguiente formato "hh:mm" no muestra los segundos.
      */
-    getHoraStr(_hora: number, _minutos: number): string {
-        const horas: string[] = [];
-        const minutos: string[] = [];
-        //crear el array de horas
-        for (let i = 0; i < 24; i++) { horas[i] = (i < 10) ? `0${i}` : `${i}` }
-        //crear el array de minutos
-        for (let i = 0; i < 60; i++) { minutos[i] = (i < 10) ? `0${i}` : `${i}` }
-        let h = horas[_hora];
-        let m = minutos[_minutos];
-        return `${h}:${m}`;
-    }
+//    getHoraStr(_hora: number, _minutos: number): string {
+//        const horas: string[] = [];
+//        const minutos: string[] = [];
+//        //crear el array de horas
+//        for (let i = 0; i < 24; i++) { horas[i] = (i < 10) ? `0${i}` : `${i}` }
+//        //crear el array de minutos
+//        for (let i = 0; i < 60; i++) { minutos[i] = (i < 10) ? `0${i}` : `${i}` }
+//        let h = horas[_hora];
+//        let m = minutos[_minutos];
+//        return `${h}:${m}`;
+//    }
 
     /**
      * Recibe la fecha en un objeto Momente y retorna la fecha en string para poder usarla al crear la fecha del evento
@@ -291,14 +304,19 @@ export class AgregarComponent implements OnInit {
      * @param _date Es la fecha y la obtenida del datapicker 
      * @returns 
      */
-    getFechaStr(_date: Moment): string {
+    getFechaStr(_moment: Moment): string {
+        const formato = 'YYYY-MM-DD hh:mm:ss';
+        
+        const fechaHora = _moment.format(formato);
+        console.log(_moment.unix())
+        
         const dias: string[] = [];
         const meses: string[] = [];
         for (let i = 1; i <= 31; i++) { dias[i] = (i < 10) ? `0${i}` : `${i}` }
         for (let i = 0; i < 12; i++) { meses[i] = (i < 9) ? `0${(i + 1)}` : `${(i + 1)}` }
-        let dd: string = dias[_date.date()];
-        let mm: string = meses[_date.month()];
-        let yyyy: string = `${_date.year()}`;
+        let dd: string = dias[_moment.date()];
+        let mm: string = meses[_moment.month()];
+        let yyyy: string = `${_moment.year()}`;
         return `${yyyy}/${mm}/${dd}`;
     }
 

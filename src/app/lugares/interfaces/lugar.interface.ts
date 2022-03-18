@@ -2,16 +2,17 @@ import { Posicion } from '../../shared/interfaces/datosMapa.interface';
 import { Imagen } from '../../shared/interfaces/imagen.interface';
 import { Telefono } from '../../shared/interfaces/telefono.interface';
 import { Video } from '../../shared/interfaces/video.interface';
+import { Accesibilidad } from '../../shared/interfaces/accesibilidad.interface';
 
 
 export interface Lugar {
-    accesibilidad?: boolean;
+    accesibilidad?:Accesibilidad;
     auto?: boolean;
     bicicleta?: boolean;
     caminar?: boolean;
+    carpeta:string;
     departamento: string;
     descripcion?: string;
-    carpeta:string;
     facebook?: string;
     id?: string;
     imagenHome?: Imagen;

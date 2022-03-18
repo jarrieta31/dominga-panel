@@ -33,6 +33,7 @@ export class AgregarComponent implements OnInit {
     titulo: string = "Nuevo Hotel";
     widthAllowedEvento: number = 150;
     hoteles: Hotel[] = [];
+    nroWhatsapp: FormControl = this.fb.control(null, [this.vs.valididarNumeroWhatsapp]);
     private sourceDepartamentos: Subscription;
     private sourceLocalidades: Subscription;
     prioridades: number[] = [];
@@ -56,7 +57,9 @@ export class AgregarComponent implements OnInit {
                 numero: ['', [this.vs.validarTelefono]]
             })
         ]),
-        ubicacion: [null, [ Validators.required , this.vs.validarUbicacion]]
+        ubicacion: [null, [ Validators.required , this.vs.validarUbicacion]],
+        whatsapp: [null, [this.vs.valididarWhatsapp]],
+        instagram: [null, [this.vs.validarInstagram]],
     });
 
     latitud: FormControl = this.fb.control(null, [ this.vs.validarLatitud ]);
@@ -300,6 +303,21 @@ export class AgregarComponent implements OnInit {
         }
     }
 
+    /** 
+     * Esta función toma el número de celular ingresado en el formulario 
+     * construye el link para whatsapp y lo setea en el formulario como un enlace.
+     */
+    setLinkWhatsapp() {
+        if (this.nroWhatsapp.valid) {
+            let nro: string = this.nroWhatsapp.value;
+            nro = nro.slice(1);
+            let url: string = 'https://api.whatsapp.com/send?phone=598' + nro;
+            this.whatsapp.setValue(url);
+        } else {
+            this.whatsapp.setValue(null);
+        }
+    }
+
     /**
      * Función que agrega un nuevo formControl de tipo telefono
      */
@@ -329,5 +347,7 @@ export class AgregarComponent implements OnInit {
     get publicado() { return this.hotelForm.get('publicado'); }
     get telefonos() { return this.hotelForm.get('telefonos') as FormArray; }
     get ubicacion() { return this.hotelForm.get('ubicacion'); }
+    get whatsapp() { return this.hotelForm.get('whatsapp'); }
+    get instagram() { return this.hotelForm.get('instagram'); }
 
 }

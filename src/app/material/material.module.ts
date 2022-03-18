@@ -30,6 +30,8 @@ import { NgxMatFileInputModule } from '@angular-material-components/file-input';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatMomentDateModule } from '@angular/material-moment-adapter';
 
+import { NgxMatDatetimePickerModule, NgxMatNativeDateModule, NgxMatTimepickerModule } from '@angular-material-components/datetime-picker';
+
 @NgModule({
     declarations: [],
     imports: [
@@ -62,6 +64,9 @@ import { MatMomentDateModule } from '@angular/material-moment-adapter';
         MatToolbarModule,
         MatTreeModule,
         NgxMatFileInputModule,
+        NgxMatDatetimePickerModule,
+        NgxMatNativeDateModule,
+        NgxMatTimepickerModule,
         MatMomentDateModule,
     ]
 })
