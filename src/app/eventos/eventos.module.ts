@@ -38,10 +38,12 @@ import { MAT_DATE_LOCALE } from '@angular/material/core';
 
 export const CUSTOM_MOMENT_FORMATS = {
     parse: {
-        dateInput: "DD/MM/YYYY, HH:mm"
+        dateInput: "DD/MM/YYYY, HH:mm:ss"
+    //  dateInput: "LLLL"
     },
     display: {
-        dateInput: "DD/MM/YYYY, HH:mm",
+        //dateInput: "DD/MM/YYYY, HH:mm:ss",
+        dateInput: "LLLL",
         monthYearLabel: "MMM YYYY",
         dateA11yLabel: "LL",
         monthYearA11yLabel: "MMMM YYYY"

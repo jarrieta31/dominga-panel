@@ -158,39 +158,21 @@
             <!-- =================================== Fecha Inico, Hora, Fecha fin y Tipo ================================ -->
             <div fxLayout="column">
                 <div>
-                    <h2>Fecha Inicio */Hora */Fecha Fin</h2>
+                    <h2>Fecha y hora de Inicio y finalización *</h2>
                 </div>
-                <div fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="40px">
-                    <!--
-                    <div fxFlex="25%">
-                        <mat-form-field class="input">
-                            <mat-label>Fecha de inicio</mat-label>
-                            <input [formControl]="pickerFechIni" matInput placeholder="fecha de inicio"
-                                [matDatepicker]="dp" (dateChange)="setFechaStart()" [min]="minDate" [max]="maxDate">
-                            <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
-                            <mat-datepicker #dp [startAt]="startDate">
-                            </mat-datepicker>
-                        </mat-form-field>
-                    </div>
-                -->
-                    <div fxFlex="20%">
-                        <mat-form-field>
-                            <input [formControl]="pickerFechIni" matInput (dateChange)="setFechaStart()"
-                                [min]="minDate" [ngxMatDatetimePicker]="picker1" placeholder="Fecha y hora de inicio">
-                            <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
-                            <ngx-mat-datetime-picker #picker1 [startAt]="startDate"></ngx-mat-datetime-picker>
-                        </mat-form-field>
-                    </div>
-                    <div fxFlex="25%">
-                        <mat-form-field class="input">
-                            <mat-label>Fecha de Finalización</mat-label>
-                            <input [formControl]="pickerFechEnd" matInput [matDatepicker]="picker2"
-                                (dateChange)="setFechaEnd()" [min]="minDateFin" [max]="maxDateFin">
-                            <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
-                            <mat-datepicker #picker2 [startAt]="startDateEnd">
-                            </mat-datepicker>
-                        </mat-form-field>
-                    </div>
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="40px">
+                    <mat-form-field fxFlex="17rem">
+                        <input [formControl]="pickerFechIni" matInput (dateChange)="setFechaStart()" [min]="minDate"
+                            [ngxMatDatetimePicker]="picker1" placeholder="Fecha y hora de inicio">
+                        <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                        <ngx-mat-datetime-picker #picker1 [startAt]="startDate"></ngx-mat-datetime-picker>
+                    </mat-form-field>
+                    <mat-form-field fxFlex="17rem">
+                        <input [formControl]="pickerFechEnd" matInput (dateChange)="setFechaEnd()" [min]="minDateFin"
+                            [ngxMatDatetimePicker]="picker2" placeholder="Fecha y hora de finalización">
+                        <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                        <ngx-mat-datetime-picker #picker2 [startAt]="startDateEnd"></ngx-mat-datetime-picker>
+                    </mat-form-field>
                 </div>
             </div>
             <!-- =================================== Fin Fecha Hora y Tipo ================================ -->

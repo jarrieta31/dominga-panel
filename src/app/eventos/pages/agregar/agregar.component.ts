@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, AfterViewInit } from '@angular/core';
 import { FormBuilder, Validators, FormControl, FormArray, FormGroup } from '@angular/forms';
 import { ValidatorService } from '../../../shared/services/validator.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -7,27 +7,25 @@ import { Observable, Subscription } from 'rxjs';
 import { AngularEditorConfig } from '@kolkov/angular-editor';
 import { MapaService } from '../../../shared/services/mapa.service';
 import { ConfigService } from '../../../shared/services/config.service';
-import { MatDialog, MatDialogConfig, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MAT_MOMENT_DATE_FORMATS, MomentDateAdapter, MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapter';
-import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
-import 'moment/locale/es';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { DateAdapter } from '@angular/material/core';
 import { DialogMapaComponent } from '../../../shared/components/dialog-mapa/dialog-mapa.component';
 import { Evento } from '../../interfaces/evento.interface';
 import { EventosService } from '../../services/eventos.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { switchMap } from 'rxjs/operators';
 import { DialogPublicarComponent } from '../../components/dialog-publicar/dialog-publicar.component';
-import { doc, setDoc, startAt, Timestamp } from "firebase/firestore";
-import { MatDatepicker } from '@angular/material/datepicker';
+import { Timestamp } from "firebase/firestore";
 import { Moment } from 'moment';
-import { ContentObserver } from '@angular/cdk/observers';
+import * as moment from 'moment';
+import 'moment/locale/es';
 
 @Component({
     selector: 'app-agregar',
     templateUrl: './agregar.component.html',
     styleUrls: ['./agregar.component.css']
 })
-export class AgregarComponent implements OnInit {
+export class AgregarComponent implements OnInit, AfterViewInit {
 
     allowedSizeGallery: number = 150; //kilo bytes
     allowedSizeHome: number = 80; //kilo bytes
@@ -43,16 +41,14 @@ export class AgregarComponent implements OnInit {
     idEvento: string;
     localidades: string[] = [];
     mapaTouched: boolean = false;
-    maxDate = new Date(2050, 1, 1);
-    maxDateFin = new Date(2050, 1, 1);
     mes: number;
     meses: string[] = [];
-    minDate = new Date();
-    minDateFin: Date;
-    monedas = [{tipo: "$"}, {tipo: "U$S"}];
+    minDate: Moment = moment();
+    minDateFin: Moment;
+    monedas = [{ tipo: "$" }, { tipo: "U$S" }];
     precioU: boolean = false;
-    startDate: Date;
-    startDateEnd: Date;
+    startDate: Moment;
+    startDateEnd: Moment;
     titulo: string = "Nuevo Evento";
     widthAllowedEvento: number = 600;
     private sourceDepartamentos: Subscription;
@@ -66,7 +62,7 @@ export class AgregarComponent implements OnInit {
 
     public eventoForm: FormGroup = this.fb.group({
         carpeta: [null],
-        departamento: ['',Validators.required],
+        departamento: ['', Validators.required],
         descripcion: ['', [Validators.minLength(60), Validators.maxLength(4900)]],
         direccion: [''],
         facebook: [null, [this.vs.validarFacebook]],
@@ -74,21 +70,21 @@ export class AgregarComponent implements OnInit {
         fechaInicio: [null],
         imagen: [this.imagenDefault],
         instagram: [null, [this.vs.validarInstagram]],
-        localidad: ['',[Validators.required]],
+        localidad: ['', [Validators.required]],
         lugar: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
-        moneda: [this.monedas[0].tipo,[Validators.required]],
+        moneda: [this.monedas[0].tipo, [Validators.required]],
         nombre: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
         precio: [0, [Validators.required, Validators.min(0)]],
         precioUnico: [true],
         publicado: [false],
         tickAntel: [null, [this.vs.validarTickAntel]],
-        tipo: ['',[Validators.required]],
+        tipo: ['', [Validators.required]],
         ubicacion: [null, [this.vs.validarUbicacion, Validators.required]],
         whatsapp: [null, [this.vs.valididarWhatsapp]],
     });
 
-    pickerFechIni:  FormControl = this.fb.control(null);
-    pickerFechEnd:  FormControl = this.fb.control(null);
+    pickerFechIni: FormControl = this.fb.control(null);
+    pickerFechEnd: FormControl = this.fb.control(null);
 
 
     editorConfig: AngularEditorConfig = {
@@ -99,12 +95,12 @@ export class AgregarComponent implements OnInit {
         placeholder: 'Ingresa una descripción del evento...',
         translate: 'no',
         defaultParagraphSeparator: 'p',
-        defaultFontName: 'Arial',
         toolbarHiddenButtons: [
             [
                 'subscript',
                 'superscript',
                 'strikeThrough',
+                'fontName',
             ],
             [
                 'textColor',
@@ -144,7 +140,7 @@ export class AgregarComponent implements OnInit {
         private mapaService: MapaService,
         private configService: ConfigService,
         private eventosService: EventosService,
-        private _adapter: DateAdapter<any>,
+        private _adapter: DateAdapter<Moment>,
     ) {
 
         /** Observable que se dispara al cambiar el valor del minimapa.
@@ -164,7 +160,7 @@ export class AgregarComponent implements OnInit {
 
     ngOnInit(): void {
         this._adapter.setLocale('es');
-      //  this.horaIn.disable();
+        //  this.horaIn.disable();
         this.pickerFechEnd.disable();
         this.sourceDepartamentos = this.configService.getObsDepartamentos().subscribe(dptos => this.departamentos = dptos)
         this.configService.emitirDepartamentosActivos();
@@ -179,23 +175,13 @@ export class AgregarComponent implements OnInit {
             let eventoActual: Evento = JSON.parse(JSON.stringify(evento));
             if (eventoActual.id !== undefined) {//Si estamos editando un lugar
                 if (evento.fechaInicio !== null && evento.fechaInicio !== undefined) {
-                    let fInicio = new Date(evento.fechaInicio.seconds * 1000);
+                    let fInicio = moment(evento.fechaInicio.seconds * 1000);
                     this.minDateFin = fInicio;
-                    let anioInicio = fInicio.getFullYear();
-                    let diaInicio = fInicio.getDate();
-                    let mesInicio = fInicio.getMonth();
-                    this.startDate = new Date(anioInicio, mesInicio, diaInicio);
-                    this.pickerFechIni.setValue(this.startDate);
-                   // this.horaIn.setValue(this.getHoraStr(fInicio.getHours(), fInicio.getMinutes()));
-                  //  this.horaIn.enable();
+                    this.pickerFechIni.setValue(fInicio);
                     this.pickerFechEnd.enable();
                     if (evento.fechaFin !== null && evento.fechaFin !== undefined) {
-                        let fFin = new Date(evento.fechaFin.seconds * 1000);
-                        let anioFin = fFin.getFullYear();
-                        let diaFin = fFin.getDate();
-                        let mesFin = fFin.getMonth();
-                        this.startDateEnd = new Date(anioFin, mesFin, diaFin);
-                        this.pickerFechEnd.setValue(this.startDateEnd);
+                        let fFin = moment(evento.fechaFin.seconds * 1000);
+                        this.pickerFechEnd.setValue(fFin);
                     }
                 }
                 this.idEvento = eventoActual.id;
@@ -208,7 +194,7 @@ export class AgregarComponent implements OnInit {
                 this.mapaService.dMiniMapa = { centro: eventoActual.ubicacion, zoom: 15, marcador: true };
                 this.mapaService.emitirMiniMapa();
             } else {
-                this.startDate = new Date();
+                this.startDate = moment();
             }
         });
         // Si es un lugar nuevo crear un nombre para la carpeta
@@ -232,14 +218,14 @@ export class AgregarComponent implements OnInit {
     }
 
     ngAfterViewInit(): void {
+        if (this.pickerFechIni.value !== null && this.pickerFechEnd.value !== null) {
+            this.setFechaStart();
+            this.setFechaEnd();
+        }
         //es para que no se vea el error de cambio
         this.cdRef.detectChanges();
 
     }
-
-dateUpdated(){
-
-}
 
     /**
      * Funcion que toma la fecha de inicio ingresada y setea los valores inical y el mínimo que se puede seleccionar
@@ -247,77 +233,28 @@ dateUpdated(){
      * También habilita el input de la hora y el datepicker de fecha final
      */
     setFechaStart() {
-        if(this.pickerFechEnd.value === null || this.pickerFechEnd.value < this.pickerFechIni.value){
+        if (this.pickerFechEnd.value === null || this.pickerFechEnd.value < this.pickerFechIni.value) {
             this.startDateEnd = this.pickerFechIni.value; //fecha inicial del picker pickerFechEnd
             this.pickerFechEnd.setValue(this.pickerFechIni.value);
         }
-        if(this.pickerFechIni.value !== null ){
-            this.setFechaHora()
+        if (this.pickerFechIni.value !== null) {
+            const fechaHoraStart: Moment = this.pickerFechIni.value;
+            const fechaStr: string = `${fechaHoraStart.format('YYYY-MM-DD HH:mm:ss')} UTC${fechaHoraStart.format('Z')}`;
+            this.fechaInicio.setValue(Timestamp.fromDate(new Date(fechaStr)));
         }
-        this.minDateFin = this.pickerFechIni.value; //fecha mínima del picker pickerFechEnd
-    //    this.horaIn.enable();
+        this.minDateFin = this.pickerFechIni.value.clone(); //fecha mínima del picker pickerFechEnd
         this.pickerFechEnd.enable();
     }
 
     setFechaEnd() {
-        let fecha = this.getFechaStr(this.pickerFechEnd.value);
-        let fechaStr: string = `${fecha} 00:00:00 UTC-0300`;
-        this.fechaFin.setValue(Timestamp.fromDate(new Date(fechaStr)));
-        console.log('fechaStr: ', fechaStr)
-        console.log('setFecahEnd: ', Timestamp.fromDate(new Date(fechaStr)))
-    }
-
-    /**
-     * Se dispara al seleccionar la hora. Luego toma el valore de la fecha inicial y
-     * las junta para crear la fecha y hora que guarda para el evento.
-     */
-    setFechaHora() {
-        const moment = this.pickerFechIni.value;
-        console.log('fechaHora: ', fechaHora);
-        let fechaStr: string = `${fechaHora} 00:00:00 UTC-0300`;
-        this.fechaInicio.setValue(Timestamp.fromDate( new Date(fechaStr) ));
-        console.log('fechaStr: ', fechaStr);
-    }
-
-    /**
-     * Recibe la hora y los minutos en formato numúmerico y la convierte a formato string retornando "hh:mm".
-     * Este función sirve para setear y mostrar la hora en el formulario.
-     * @param _hora Hora en formato numérico.
-     * @param _minutos Minutos en formato numérico. 
-     * @returns  Retorna la hora en el siguiente formato "hh:mm" no muestra los segundos.
-     */
-//    getHoraStr(_hora: number, _minutos: number): string {
-//        const horas: string[] = [];
-//        const minutos: string[] = [];
-//        //crear el array de horas
-//        for (let i = 0; i < 24; i++) { horas[i] = (i < 10) ? `0${i}` : `${i}` }
-//        //crear el array de minutos
-//        for (let i = 0; i < 60; i++) { minutos[i] = (i < 10) ? `0${i}` : `${i}` }
-//        let h = horas[_hora];
-//        let m = minutos[_minutos];
-//        return `${h}:${m}`;
-//    }
-
-    /**
-     * Recibe la fecha en un objeto Momente y retorna la fecha en string para poder usarla al crear la fecha del evento
-     * para enviar.
-     * @param _date Es la fecha y la obtenida del datapicker 
-     * @returns 
-     */
-    getFechaStr(_moment: Moment): string {
-        const formato = 'YYYY-MM-DD hh:mm:ss';
-        
-        const fechaHora = _moment.format(formato);
-        console.log(_moment.unix())
-        
-        const dias: string[] = [];
-        const meses: string[] = [];
-        for (let i = 1; i <= 31; i++) { dias[i] = (i < 10) ? `0${i}` : `${i}` }
-        for (let i = 0; i < 12; i++) { meses[i] = (i < 9) ? `0${(i + 1)}` : `${(i + 1)}` }
-        let dd: string = dias[_moment.date()];
-        let mm: string = meses[_moment.month()];
-        let yyyy: string = `${_moment.year()}`;
-        return `${yyyy}/${mm}/${dd}`;
+        if (this.pickerFechEnd.value >= this.pickerFechIni.value && this.pickerFechEnd.value !== null) {
+            const fechaHoraEnd: Moment = this.pickerFechEnd.value.clone();
+            let fechaStr: string = `${fechaHoraEnd.format('YYYY-MM-DD HH:mm:ss')} UTC${fechaHoraEnd.format('Z')}`;
+            this.fechaFin.setValue(Timestamp.fromDate(new Date(fechaStr)));
+        } else {
+            this.startDateEnd = this.pickerFechIni.value; //fecha inicial del picker pickerFechEnd
+            this.pickerFechEnd.setValue(this.pickerFechIni.value);
+        }
     }
 
     /**
@@ -329,6 +266,8 @@ dateUpdated(){
         let _imagen: string = "OK";
         let _ubicacion: string = "OK";
         let _descripcion: string = "OK";
+        let _fechaInicio: string = "OK";
+        let _fechaFin: string = "OK";
         if (this.imagen.value.url === "assets/default-lugar-galeria.jpg") {
             test = false;
             this.publicado.setValue(false);
@@ -420,7 +359,6 @@ dateUpdated(){
         this.eventoForm.controls['imagen'].setValue(this.imagenEvento);
         if (this.eventoForm.valid) {
             this.cambiosConfirmados = true;
-            if (this.fechaFin.value === null){ this.fechaFin.setValue(this.fechaInicio.value) }
             //verifica si es una actualización o un evento nuevo
             if (this.idEvento !== undefined) {//si se esta editando un lugar
                 //this.lugaresService.updateLugar(this.lugarForm.value, this.idLugar);

@@ -102,13 +102,13 @@ export class AgregarComponent implements OnInit, OnDestroy {
         placeholder: 'Ingresa la descripción del lugar...',
         translate: 'no',
         defaultParagraphSeparator: 'p',
-        defaultFontName: 'Arial',
         width: '100%',
         toolbarHiddenButtons: [
             [
                 'subscript',
                 'superscript',
                 'strikeThrough',
+                'fontName',
             ],
             [
                 'textColor',
