@@ -20,8 +20,9 @@ export class MapaComponent implements OnInit {
     zoom: number = 12;
     //@Output() zoomSlider:EventEmitter<MatSliderChange> = new EventEmitter<MatSliderChange>();
 
-    constructor(private mapaService: MapaService,
-        private cdRef: ChangeDetectorRef
+    constructor(
+        private mapaService: MapaService,
+        private cdRef: ChangeDetectorRef,
     ) { }
 
     ngOnInit(): void {
@@ -65,19 +66,14 @@ export class MapaComponent implements OnInit {
         btnZoom.style.top = (map.left + 380) + "px";
         btnZoom.style.left = (map.left + 10) + "px";
         
-        //Queda escuchando el evento zoom del mapa para ver cuando cuambia 
-        // y actualizar el valor zoom que se muestra el la barra deslizable.
-        this.mapa.on('zoom', (event) => {
-            this.zoom = this.mapa.getZoom();
-        })
-
-        /** Queda escuchando el vento zoom del mapa para limitar que
-         * no supere el valor que le asignemos
-         */
+        /** Queda escuchando el evento zoom del mapa para ver cuando cuambia 
+        * y actualizar el valor zoom que se muestra el la barra deslizable.
+        */
         this.mapa.on('zoom', (event) => {
             if( this.mapa.getZoom() > 19 ){
                 this.mapa.zoomTo(19);
             }
+            this.zoom = this.mapa.getZoom();
         })
 
         //es para que no se vea el error de cambio

@@ -28,7 +28,6 @@ export class DondeDormirService {
      */
     getHotelesFirestore(dpto: string) {
         if (!this.mapCache.has(dpto) || this.hoteles.length === 0) {
-            console.log("get hoteles " + dpto + " desde firestore")
             //        this.afs.collection('eventos').ref.where('departamento', "==", departament).where('prioridad', ">", -1).orderBy('prioridad').get().then(
             this.hotelesRef.ref.where('departamento', "==", dpto).get().then(
                 querySnapshot => {

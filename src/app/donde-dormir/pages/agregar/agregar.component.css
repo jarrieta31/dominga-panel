@@ -38,3 +38,14 @@ mat-divider{
 .input{
     min-width: 100%;
 }
+
+.acciones{
+   /* background-color: orange; 
+   */
+}
+
+.filaMapa{
+    /*background-color: burlywood;*/
+    width: 100%;
+    padding: 5px 20px 0px 20px;
+}

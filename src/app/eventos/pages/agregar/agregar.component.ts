@@ -3,7 +3,7 @@ import { FormBuilder, Validators, FormControl, FormArray, FormGroup } from '@ang
 import { ValidatorService } from '../../../shared/services/validator.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Imagen } from 'src/app/shared/interfaces/imagen.interface'
-import { Observable, Subscription } from 'rxjs';
+import { Observable, Subject, Subscription } from 'rxjs';
 import { AngularEditorConfig } from '@kolkov/angular-editor';
 import { MapaService } from '../../../shared/services/mapa.service';
 import { ConfigService } from '../../../shared/services/config.service';
@@ -13,7 +13,7 @@ import { DialogMapaComponent } from '../../../shared/components/dialog-mapa/dial
 import { Evento } from '../../interfaces/evento.interface';
 import { EventosService } from '../../services/eventos.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { switchMap } from 'rxjs/operators';
+import { switchMap, takeUntil } from 'rxjs/operators';
 import { DialogPublicarComponent } from '../../components/dialog-publicar/dialog-publicar.component';
 import { Timestamp } from "firebase/firestore";
 import { Moment } from 'moment';
@@ -25,7 +25,7 @@ import 'moment/locale/es';
     templateUrl: './agregar.component.html',
     styleUrls: ['./agregar.component.css']
 })
-export class AgregarComponent implements OnInit, AfterViewInit {
+export class AgregarComponent implements OnInit, AfterViewInit, OnDestroy {
 
     allowedSizeGallery: number = 150; //kilo bytes
     allowedSizeHome: number = 80; //kilo bytes
@@ -54,6 +54,7 @@ export class AgregarComponent implements OnInit, AfterViewInit {
     private sourceDepartamentos: Subscription;
     private sourceLocalidades: Subscription;
     private sourceMiniMapa: Subscription;
+    private unsubscribe$ = new Subject<void>();
     public prioridades$: Observable<number[]>;
     prioridades: number[] = [];
     private imagenDefault = { "name": "imagen-default", "url": "assets/default-lugar-galeria.jpg" };
@@ -146,29 +147,32 @@ export class AgregarComponent implements OnInit, AfterViewInit {
         /** Observable que se dispara al cambiar el valor del minimapa.
         *  Los datos del formulario cambian en funcion del valor del mimimapa
         */
-        this.sourceMiniMapa = this.mapaService.getObsMiniMapa().subscribe(res => {
-            //si los datos del minimapa son validos y tiene marcado en true
-            if (res !== undefined && res.marcador === true) {
-                this.ubicacion.setValue(res.centro);
-            }
-            else if (res.marcador === false) {
-                this.ubicacion.setValue(null);
-            }
-            //console.log(JSON.stringify(res));
-        });
+        this.mapaService.getObsMiniMapa().pipe(takeUntil(this.unsubscribe$))
+            .subscribe(res => {
+                //si los datos del minimapa son validos y tiene marcado en true
+                if (res !== undefined && res.marcador === true) {
+                    this.ubicacion.setValue(res.centro);
+                }
+                else if (res.marcador === false) {
+                    this.ubicacion.setValue(null);
+                }
+            });
     }
 
     ngOnInit(): void {
         this._adapter.setLocale('es');
         //  this.horaIn.disable();
         this.pickerFechEnd.disable();
-        this.sourceDepartamentos = this.configService.getObsDepartamentos().subscribe(dptos => this.departamentos = dptos)
+        this.configService.getObsDepartamentos().pipe(takeUntil(this.unsubscribe$))
+            .subscribe(dptos => this.departamentos = dptos)
         this.configService.emitirDepartamentosActivos();
-        this.sourceLocalidades = this.configService.getObsLocalidades().subscribe(locs => this.localidades = locs);
+        this.configService.getObsLocalidades().pipe(takeUntil(this.unsubscribe$))
+            .subscribe(locs => this.localidades = locs);
         /**
         * A partir de la ruta y el id recibido obtiene el lugar para mostrar 
         */
         this.activatedRoute.params.pipe(
+            takeUntil(this.unsubscribe$),
             switchMap(({ id }) => this.eventosService.getEventoId(id)),
             //    tap(res => console.log(res))
         ).subscribe(evento => {
@@ -204,17 +208,18 @@ export class AgregarComponent implements OnInit, AfterViewInit {
         }
     }
 
-    OnDestroy(): void {
-        this.sourceDepartamentos.unsubscribe();
-        this.sourceLocalidades.unsubscribe();
-        this.sourceMiniMapa.unsubscribe();
+    ngOnDestroy(): void {
+        this.unsubscribe$.next();
+        this.unsubscribe$.complete();
+
+   //     this.sourceDepartamentos.unsubscribe();
+   //     this.sourceLocalidades.unsubscribe();
+   //     this.sourceMiniMapa.unsubscribe();
+
 
         //limpia el mapa y el mini-mapa
         this.mapaService.resetDataMapa();
         this.mapaService.resetDataMiniMapa();
-        //Limpia el minimapa y el mapa
-        this.mapaService.emitirMiniMapa();
-        this.mapaService.resetDataMapa();
     }
 
     ngAfterViewInit(): void {

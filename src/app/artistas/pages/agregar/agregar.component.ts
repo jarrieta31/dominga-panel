@@ -24,7 +24,7 @@ interface Categoria {
     templateUrl: './agregar.component.html',
     styleUrls: ['./agregar.component.css']
 })
-export class AgregarComponent implements OnInit {
+export class AgregarComponent implements OnInit, OnDestroy {
 
     allowedSizeGallery: number = 150; //kilo bytes
     private unsubscribe$ = new Subject<void>();
@@ -110,7 +110,7 @@ export class AgregarComponent implements OnInit {
         }
     }
 
-    OnDestroy(): void {
+    ngOnDestroy(): void {
         this.unsubscribe$.next();
         this.unsubscribe$.complete();
     }

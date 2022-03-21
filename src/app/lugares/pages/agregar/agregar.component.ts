@@ -4,8 +4,8 @@ import { Lugar } from '../../interfaces/lugar.interface';
 import { Imagen } from '../../../shared/interfaces/imagen.interface';
 import { FormBuilder, Validators, FormGroup, FormControl, FormArray } from '@angular/forms';
 import { StorageService } from '../../../shared/services/storage.service';
-import { Observable, pipe, Subscription, zip } from 'rxjs';
-import { map, filter, tap, switchMap } from 'rxjs/operators';
+import { Observable, pipe, Subject, Subscription, zip } from 'rxjs';
+import { map, filter, tap, switchMap, takeUntil } from 'rxjs/operators';
 import { DialogMapaComponent } from '../../../shared/components/dialog-mapa/dialog-mapa.component';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MapaService } from '../../../shared/services/mapa.service';
@@ -26,7 +26,7 @@ import { DialogPublicarComponent } from '../../components/dialog-publicar/dialog
 export class AgregarComponent implements OnInit, OnDestroy {
 
     allowedSizeGallery: number = 150; //kilo bytes
-    allowedSizeHome: number = 80; //kilo bytes
+    allowedSizeHome: number = 150; //kilo bytes
     cambiosConfirmados: boolean = false;
     departamentos: string[] = [];
     directorio: string = ''; //subcarpeta con el nombre del lugar
@@ -47,11 +47,8 @@ export class AgregarComponent implements OnInit, OnDestroy {
     tituloUploaderHome: string = "Selecciona la imágen del Home";
     widthAllowedGallery: number = 600;
     widthAllowedHome: number = 600;
-    private sourceDepartamentos: Subscription;
-    private sourceLocalidades: Subscription;
-    private sourceMiniMapa: Subscription;
-    private sourcePrioridades: Subscription;
     public prioridades$: Observable<number[]>;
+    private unsubscribe$ = new Subject<void>();
     prioridades: number[] = [];
     private imagenHomeDefault = { "name": "imagen-default", "url": "assets/default-home.jpg" };
     private imagenPrincipalDefault = { "name": "imagen-default", "url": "assets/default-lugar-galeria.jpg" };
@@ -148,21 +145,21 @@ export class AgregarComponent implements OnInit, OnDestroy {
         public dialog: MatDialog,
         private mapaService: MapaService,
         private configService: ConfigService,
-        private _snackBar: MatSnackBar) {
-
+        private _snackBar: MatSnackBar,
+    ) {
         /** Observable que se dispara al cambiar el valor del minimapa.
         *  Los datos del formulario cambian en funcion del valor del mimimapa
         */
-        this.sourceMiniMapa = this.mapaService.getObsMiniMapa().subscribe(res => {
-            //si los datos del minimapa son validos y tiene marcado en true
-            if (res !== undefined && res.marcador === true) {
-                this.ubicacion.setValue(res.centro);
-            }
-            else if (res.marcador === false) {
-                this.ubicacion.setValue(null);
-            }
-            console.log(JSON.stringify(res));
-        });
+        this.mapaService.getObsMiniMapa().pipe(takeUntil(this.unsubscribe$))
+            .subscribe(res => {
+                //si los datos del minimapa son validos y tiene marcado en true
+                if (res !== undefined && res.marcador === true) {
+                    this.ubicacion.setValue(res.centro);
+                }
+                else if (res.marcador === false) {
+                    this.ubicacion.setValue(null);
+                }
+            });
 
     }
 
@@ -176,17 +173,18 @@ export class AgregarComponent implements OnInit, OnDestroy {
         }
 
         // cargando los datos de lugares, departamentos y localidades
-        this.sourceDepartamentos = this.configService.getObsDepartamentos().subscribe(dptos => this.departamentos = dptos);
+        this.configService.getObsDepartamentos().pipe(takeUntil(this.unsubscribe$)).subscribe(dptos => this.departamentos = dptos);
         this.configService.emitirDepartamentosActivos();
-        this.sourceLocalidades = this.configService.getObsLocalidades().subscribe(locs => this.localidades = locs);
+        this.configService.getObsLocalidades().pipe(takeUntil(this.unsubscribe$)).subscribe(locs => this.localidades = locs);
         //this.prioridades$ = this.lugaresService.getObsPrioridades$();
-        this.sourcePrioridades = this.lugaresService.getObsPrioridades$().subscribe(prioridades => this.prioridades = prioridades);
+        this.lugaresService.getObsPrioridades$().pipe(takeUntil(this.unsubscribe$)).subscribe(prioridades => this.prioridades = prioridades);
         this.lugaresService.updateListaPrioridadesLocal(true);
 
         /**
         * A partir de la ruta y el id recibido obtiene el lugar para mostrar 
         */
         this.activatedRoute.params.pipe(
+            takeUntil(this.unsubscribe$),
             switchMap(({ id }) => this.lugaresService.getLugarId(id)),
             //    tap(res => console.log(res))
         ).subscribe(lugar => {
@@ -216,7 +214,6 @@ export class AgregarComponent implements OnInit, OnDestroy {
             this.carpeta.setValue(this.directorio);
         }
 
-
         /**Si el formuario es válido lo guarda en el storage local */
         zip(this.lugarForm.statusChanges, this.lugarForm.valueChanges).pipe(
             filter(([stado, valor]) => stado == 'VALID'), //pasa solo los validos
@@ -233,19 +230,8 @@ export class AgregarComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        //Si las imagenes agregadas no se guardaron debe ser eliminadas de Firebase Storage. 
-    //    if (this.cambiosConfirmados === false) {
-    //        this.galeriaAgregar.forEach(img => {
-    //            this.fbStorage.borrarArchivoStorage(`${this.directorioPadre}/${this.directorio}`, img.name);
-    //        });
-    //        if (this.home.name !== "imagen-default" && this.home.url !== this.imagenHome.value.url) {
-    //            this.fbStorage.borrarArchivoStorage(`${this.directorioPadre}/${this.directorio}`, this.home.name);
-    //        }
-    //    }
-        this.sourceDepartamentos.unsubscribe();
-        this.sourceLocalidades.unsubscribe();
-        this.sourceMiniMapa.unsubscribe();
-        this.sourcePrioridades.unsubscribe();;
+        this.unsubscribe$.next();
+        this.unsubscribe$.complete();
 
         this.lugarForm.reset({
             imagenHome: this.imagenHomeDefault,
@@ -256,10 +242,9 @@ export class AgregarComponent implements OnInit, OnDestroy {
         this.mapaService.resetDataMapa();
         this.mapaService.resetDataMiniMapa();
         //Limpia el minimapa y el mapa
-        this.mapaService.emitirMiniMapa();
-        this.mapaService.resetDataMapa();
+//        this.mapaService.emitirMiniMapa();
+//        this.mapaService.resetDataMapa();
     }
-
 
     /**
      * Función para quitar los espacios en blanco del campo nombre. Al salir del campo
@@ -342,14 +327,14 @@ export class AgregarComponent implements OnInit, OnDestroy {
         /** Utilizando el servicio del FirebaseStorage local se borra la imagen */
         //       this.fbStorage.borrarArchivoStorage(`${this.directorioPadre}/${this.directorio}`, $event);
     }
-    
+
     /**
      * Función que busca en Cloud Storage si quedaron imágenes que no están en el array de Sliders. 
      * Si encuentra imágnes residuales las borra.
      */
-    limpiarImagenesResiduales(){
+    limpiarImagenesResiduales() {
         this.imagenes.value.forEach(element => {
-           console.log(element.name) 
+            console.log(element.name)
         });
         this.fbStorage.listarArchvios(`${this.directorioPadre}/${this.directorio}`)
             .then(res => {
@@ -357,7 +342,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
                     //const existe = (element: Slider) => element.imagen.name === item.name;
                     //if (!this.sliders.some(existe)) {
                     //    this.fbStorage.borrarArchivoStorage(`${this.directorioPadre}/${this.directorio}`, item.name);
-                        console.log("se elimino : "+item.name)
+                    console.log("se elimino : " + item.name)
                     //}
                     console.log(this.imagenes.length)
                 })
@@ -474,8 +459,8 @@ export class AgregarComponent implements OnInit, OnDestroy {
      * Función para obtener el celular a partir del link de whatsapp y mostrar
      * en el formulario solo el número de tetéfono.
      */
-    setNroWhatsapp(link:string){
-        if ( link !== null) {
+    setNroWhatsapp(link: string) {
+        if (link !== null) {
             //let enlace: string = this.whatsapp.value
             let celular = "0" + link.slice(39)
             this.nroWhatsapp.setValue(celular)

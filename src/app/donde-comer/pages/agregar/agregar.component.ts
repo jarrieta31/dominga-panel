@@ -19,7 +19,7 @@ import { DialogMapaComponent } from 'src/app/shared/components/dialog-mapa/dialo
     templateUrl: './agregar.component.html',
     styleUrls: ['./agregar.component.css']
 })
-export class AgregarComponent implements OnInit {
+export class AgregarComponent implements OnInit, OnDestroy {
 
     allowedSizeGallery: number = 150; //kilo bytes
     allowedSizeHome: number = 80; //kilo bytes
@@ -47,6 +47,8 @@ export class AgregarComponent implements OnInit {
 
     nroWhatsapp: FormControl = this.fb.control(null, [this.vs.valididarNumeroWhatsapp]);
 
+    ubicacionManual: FormControl = this.fb.control(null, [this.vs.validarCoordenadas]);
+
     public restoranForm: FormGroup = this.fb.group({
         carpeta: [null],
         departamento: ['', Validators.required],
@@ -62,7 +64,7 @@ export class AgregarComponent implements OnInit {
             })
         ]),
         whatsapp: [null, [this.vs.valididarWhatsapp]],
-        ubicacion: [null ,[this.vs.validarUbicacion, Validators.required]],
+        ubicacion: [null, [this.vs.validarUbicacion, Validators.required]],
     });
 
     constructor(
@@ -75,42 +77,38 @@ export class AgregarComponent implements OnInit {
         public dialog: MatDialog,
         private configService: ConfigService,
         private comerService: DondeComerService,
-        private mapaService:MapaService,
-    ) { }
-
-    ngOnInit(): void {
-        this.configService.getObsDepartamentos()
-            .pipe( takeUntil( this.unsubscribe$ ) )
-            .subscribe(dptos => this.departamentos = dptos)
-        this.configService.getObsLocalidades()
-            .pipe(takeUntil( this.unsubscribe$ ))
-            .subscribe(locs => this.localidades = locs);
-        this.comerService.getObsRestaurantes$()
-            .pipe( takeUntil(this.unsubscribe$) )
-            .subscribe(restaurantes => this.restaurantes = restaurantes);
-        this.configService.emitirDepartamentosActivos();
-        this.configService.emitirLocalidades();
-
+        private mapaService: MapaService,
+    ) {
         /** Observable que se dispara al cambiar el valor del minimapa.
         *  Los datos del formulario cambian en funcion del valor del mimimapa
         */
-        this.mapaService.getObsMiniMapa()
-            .pipe(takeUntil( this.unsubscribe$ ))
+        this.mapaService.getObsMiniMapa().pipe(takeUntil(this.unsubscribe$))
             .subscribe(res => {
-            //si los datos del minimapa son validos y tiene marcado en true
-            if (res !== undefined && res.marcador === true) {
-                this.ubicacion.setValue(res.centro);
-            }
-            else if (res.marcador === false) {
-                this.ubicacion.setValue(null);
-            }
-            console.log(JSON.stringify(res));
-        });
+                //si los datos del minimapa son validos y tiene marcado en true
+                if (res !== undefined && res.marcador === true) {
+                    this.ubicacion.setValue(res.centro);
+                }
+                else if (res.marcador === false) {
+                    this.ubicacion.setValue(null);
+                }
+            });
+    }
+
+    ngOnInit(): void {
+        this.configService.getObsDepartamentos().pipe(takeUntil(this.unsubscribe$))
+            .subscribe(dptos => this.departamentos = dptos)
+        this.configService.getObsLocalidades().pipe(takeUntil(this.unsubscribe$))
+            .subscribe(locs => this.localidades = locs);
+        this.comerService.getObsRestaurantes$().pipe(takeUntil(this.unsubscribe$))
+            .subscribe(restaurantes => this.restaurantes = restaurantes);
+        this.configService.emitirDepartamentosActivos();
+        this.configService.emitirLocalidades();
 
         /**
         * A partir de la ruta y el id recibido obtiene el lugar para mostrar 
         */
         this.activatedRoute.params.pipe(
+            takeUntil(this.unsubscribe$),
             switchMap(({ id }) => this.comerService.geRestoranId(id))
             //    tap(res => console.log(res))
         ).subscribe(restoran => {
@@ -131,8 +129,7 @@ export class AgregarComponent implements OnInit {
                 this.configService.getLocadidadesDepartamento(restoranActual.departamento);
                 this.mapaService.dMiniMapa = { centro: restoranActual.ubicacion, zoom: 15, marcador: true };
                 this.mapaService.emitirMiniMapa();
-            } else {
-            }
+            } 
         });
 
         // Si es un restoran nuevo crear un nombre para la carpeta
@@ -147,7 +144,7 @@ export class AgregarComponent implements OnInit {
         this.cdRef.detectChanges();
     }
 
-    OnDestroy(): void {
+    ngOnDestroy(): void {
         this.unsubscribe$.next();
         this.unsubscribe$.complete();
         //limpia el mapa y el mini-mapa
@@ -233,12 +230,30 @@ export class AgregarComponent implements OnInit {
         }
     }
 
+    /** Función que toma las coordenadas ingresadas en formato google Maps las transforma
+     * y crea el marcador en el miniMapa y guarda la ubicación para el formulario.
+     */
+    setUbicacionManual() {
+        if (this.ubicacionManual.valid) {
+            let coordsStr: string = this.ubicacionManual.value;
+            let arrCoords = coordsStr.split(',');
+            let latitud = Number(arrCoords[0].trim());
+            let longitud = Number(arrCoords[1].trim());
+            console.log("latitud: ", latitud)
+            console.log("longitud: ", longitud);
+            this.ubicacion.setValue({ "lng": longitud, "lat": latitud });
+            this.mapaService.dMiniMapa = { centro: { lng: longitud, lat: latitud }, zoom: 15, marcador: true };
+            this.mapaService.emitirMiniMapa();
+        }
+    }
+
     /**
      * Función para obtener el celular a partir del link de whatsapp y mostrar
      * en el formulario solo el número de tetéfono.
      */
-    setNroWhatsapp(link:string){
-        if ( link !== null) {
+    setNroWhatsapp(link: string) {
+        console.log(link)
+        if (link !== null && link !== undefined) {
             //let enlace: string = this.whatsapp.value
             let celular = "0" + link.slice(39)
             this.nroWhatsapp.setValue(celular)

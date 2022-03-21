@@ -204,19 +204,20 @@ export class ValidatorService {
     }
     
     /**
-     * Valida la latitud.
-     * @param control FormControl latitud
+     * Valida las cooredanas pegadas desde google maps.
+     * @param control FormControl coordenas
      * @returns 
      */
-    validarLatitud(control: FormControl): ValidationErrors | null{
+    validarCoordenadas(control: FormControl): ValidationErrors | null{
         if ( control.value === null ) {
             return null;
         } else {
-            const valor: number = Number(control.value);
-            if (  valor >= -39 && valor <= -30 ){
+            const valor: string = control.value;
+            let regExCoordenadas = /(?:-)?([-0-9]{1,2})\.([0-9]{10,16})\,\s(?:-)?([0-9]{1,2})\.([0-9]{10,16})$/g;
+            if ( regExCoordenadas.test(valor) ){
                 return null;
             }
-            return { latitud: true };
+            return { coordenas: true };
         }
     }
 

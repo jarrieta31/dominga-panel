@@ -19,7 +19,7 @@ import { DialogMapaComponent } from '../../../shared/components/dialog-mapa/dial
     templateUrl: './agregar.component.html',
     styleUrls: ['./agregar.component.css']
 })
-export class AgregarComponent implements OnInit {
+export class AgregarComponent implements OnInit, OnDestroy {
 
     allowedSizeGallery: number = 150; //kilo bytes
     allowedSizeHome: number = 80; //kilo bytes
@@ -34,8 +34,6 @@ export class AgregarComponent implements OnInit {
     widthAllowedEvento: number = 150;
     hoteles: Hotel[] = [];
     nroWhatsapp: FormControl = this.fb.control(null, [this.vs.valididarNumeroWhatsapp]);
-    private sourceDepartamentos: Subscription;
-    private sourceLocalidades: Subscription;
     prioridades: number[] = [];
     private imagenDefault = { "name": "imagen-default", "url": "assets/default-lugar-galeria.jpg" };
     imagenRestaurante: Imagen = this.imagenDefault;
@@ -57,13 +55,12 @@ export class AgregarComponent implements OnInit {
                 numero: ['', [this.vs.validarTelefono]]
             })
         ]),
-        ubicacion: [null, [ Validators.required , this.vs.validarUbicacion]],
+        ubicacion: [null, [Validators.required, this.vs.validarUbicacion]],
         whatsapp: [null, [this.vs.valididarWhatsapp]],
         instagram: [null, [this.vs.validarInstagram]],
     });
 
-    latitud: FormControl = this.fb.control(null, [ this.vs.validarLatitud ]);
-    longitud: FormControl = this.fb.control(null, [ this.vs.validarLongitud ]);
+    ubicacionManual: FormControl = this.fb.control(null, [this.vs.validarCoordenadas]);
 
     constructor(
         private cdRef: ChangeDetectorRef,
@@ -75,42 +72,38 @@ export class AgregarComponent implements OnInit {
         public dialog: MatDialog,
         private configService: ConfigService,
         private dormirService: DondeDormirService,
-        private mapaService:MapaService,
-    ) { }
-
-    ngOnInit(): void {
-        this.configService.getObsDepartamentos()
-            .pipe(takeUntil(this.unsubscribe$))
-            .subscribe(dptos => this.departamentos = dptos)
-        this.configService.getObsLocalidades()
-            .pipe(takeUntil(this.unsubscribe$))
-            .subscribe(locs => this.localidades = locs);
-        this.dormirService.getObsHoteles$()
-            .pipe(takeUntil(this.unsubscribe$))
-            .subscribe(hoteles => this.hoteles = hoteles);
-        this.configService.emitirDepartamentosActivos();
-        this.configService.emitirLocalidades();
-
+        private mapaService: MapaService,
+    ) {
         /** Observable que se dispara al cambiar el valor del minimapa.
         *  Los datos del formulario cambian en funcion del valor del mimimapa
         */
-        this.mapaService.getObsMiniMapa()
-            .pipe(takeUntil( this.unsubscribe$ ))
+        this.mapaService.getObsMiniMapa().pipe(takeUntil(this.unsubscribe$))
             .subscribe(res => {
-            //si los datos del minimapa son validos y tiene marcado en true
-            if (res !== undefined && res.marcador === true) {
-                this.ubicacion.setValue(res.centro);
-            }
-            else if (res.marcador === false) {
-                this.ubicacion.setValue(null);
-            }
-            console.log(JSON.stringify(res));
-        });
+                //si los datos del minimapa son validos y tiene marcado en true
+                if (res !== undefined && res.marcador === true) {
+                    this.ubicacion.setValue(res.centro);
+                }
+                else if (res.marcador === false) {
+                    this.ubicacion.setValue(null);
+                }
+            });
+     }
+
+    ngOnInit(): void {
+        this.configService.getObsDepartamentos().pipe(takeUntil(this.unsubscribe$))
+            .subscribe(dptos => this.departamentos = dptos)
+        this.configService.getObsLocalidades().pipe(takeUntil(this.unsubscribe$))
+            .subscribe(locs => this.localidades = locs);
+        this.dormirService.getObsHoteles$().pipe(takeUntil(this.unsubscribe$))
+            .subscribe(hoteles => this.hoteles = hoteles);
+        this.configService.emitirDepartamentosActivos();
+        this.configService.emitirLocalidades();
 
         /**
         * A partir de la ruta y el id recibido obtiene el lugar para mostrar 
         */
         this.activatedRoute.params.pipe(
+            takeUntil(this.unsubscribe$),
             switchMap(({ id }) => this.dormirService.geHotelId(id))
             //    tap(res => console.log(res))
         ).subscribe(hotel => {
@@ -125,14 +118,15 @@ export class AgregarComponent implements OnInit {
                 }
                 this.hotelForm.reset(restoranActual);
                 this.titulo = `Editando ${this.hotelForm.controls['nombre'].value}`;
-                this.latitud.setValue(this.ubicacion.value.lat);
-                this.longitud.setValue(this.ubicacion.value.lng);
+                //               this.latitud.setValue(this.ubicacion.value.lat);
+                //               this.longitud.setValue(this.ubicacion.value.lng);
                 this.imagenRestaurante = restoranActual.imagen;
                 this.directorio = this.carpeta.value;
                 this.configService.getLocadidadesDepartamento(restoranActual.departamento);
                 this.mapaService.dMiniMapa = { centro: restoranActual.ubicacion, zoom: 15, marcador: true };
                 this.mapaService.emitirMiniMapa();
             } else {
+               this.mapaService.resetDataMiniMapa(); 
             }
         });
 
@@ -148,17 +142,12 @@ export class AgregarComponent implements OnInit {
         this.cdRef.detectChanges();
     }
 
-    OnDestroy(): void {
-        // this.sourceDepartamentos.unsubscribe();
-        // this.sourceLocalidades.unsubscribe();
+    ngOnDestroy(): void {
         this.unsubscribe$.next();
         this.unsubscribe$.complete();
         //limpia el mapa y el mini-mapa
         this.mapaService.resetDataMapa();
         this.mapaService.resetDataMiniMapa();
-        //Limpia el minimapa y el mapa
-        this.mapaService.emitirMiniMapa();
-        this.mapaService.resetDataMapa();
     }
 
     /**
@@ -220,9 +209,20 @@ export class AgregarComponent implements OnInit {
         }
     }
 
-    setUbicacionManual(){
-        if( this.longitud.valid && this.latitud.valid ){
-            this.ubicacion.setValue({"lng": this.longitud.value, "lat": this.latitud.value})
+    /** Función que toma las coordenadas ingresadas en formato google Maps las transforma
+     * y crea el marcador en el miniMapa y guarda la ubicación para el formulario.
+     */
+    setUbicacionManual() {
+        if (this.ubicacionManual.valid) {
+            let coordsStr: string = this.ubicacionManual.value;
+            let arrCoords = coordsStr.split(',');
+            let latitud = Number(arrCoords[0].trim());
+            let longitud = Number(arrCoords[1].trim());
+            console.log("latitud: ", latitud)
+            console.log("longitud: ", longitud);
+//            this.ubicacion.setValue({ "lng": longitud, "lat": latitud });
+//            this.mapaService.dMiniMapa = { centro: { lng: longitud, lat: latitud }, zoom: 15, marcador: true };
+//            this.mapaService.emitirMiniMapa();
         }
     }
 
@@ -246,7 +246,6 @@ export class AgregarComponent implements OnInit {
     getLocalidadesPorDepartamento() {
         this.configService.getLocadidadesDepartamento(this.departamento.value)
     }
-
 
     /** Enviar en formulario a firebase */
     async submitEvento() {

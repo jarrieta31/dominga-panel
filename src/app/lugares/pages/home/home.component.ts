@@ -22,7 +22,6 @@ export class HomeComponent implements OnInit {
     }
     ngOnInit(): void {
         this.subscrictionUser;
-        console.log(this.idUser)
     }
 
     //obtiene el id del usuario actual
