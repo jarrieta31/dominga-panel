@@ -28,7 +28,6 @@ export class ArtistasService {
     getArtistasFirestore(dpto: string) {
 
         if (!this.mapCache.has(dpto)) {
-            console.log("get artistas " + dpto + " desde firestore")
             //this.afs.collection('artistas').ref.where('departamento', "==", dpto).where('fechaFin', ">=", Timestamp.fromDate(fechaActual) ).orderBy('fechaFin').get().then(
             this.artistasRef.ref.where('departamento', "==", dpto).get().then(
                 querySnapshot => {
@@ -46,7 +45,6 @@ export class ArtistasService {
                 console.error("Error en getArtistasFirestore(). error:" + error);
             });
         } else {
-            console.log("get artistas " + dpto + " desde la cache de lugares")
             let arrArtistas: Artista[] = [];
             arrArtistas = this.mapCache.get(dpto);
             this.artistas = arrArtistas.slice();

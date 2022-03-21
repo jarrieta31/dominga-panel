@@ -1,7 +1,7 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { DondeDormirService } from '../../services/donde-dormir.service';
-import { Observable, Subscription, Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { Hotel } from '../../interfaces/hotel.interface';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { LocalStorageService } from '../../../shared/services/local-storage.service';
@@ -13,9 +13,9 @@ import { takeUntil } from 'rxjs/operators';
   templateUrl: './listado.component.html',
   styleUrls: ['./listado.component.css']
 })
-export class ListadoComponent implements OnInit {
+export class ListadoComponent implements OnInit, OnDestroy{
 
-    titulo: string = "Donde Dormir";
+    titulo: string = "Lista donde dormir";
     hoteles$: Observable<Hotel[]>;
     hoteles: Hotel[];
 

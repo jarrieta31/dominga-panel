@@ -15,7 +15,7 @@ import { Router } from '@angular/router';
 })
 export class ListadoComponent implements OnInit {
 
-    titulo: string = "Lista de Eventos"; 
+    titulo: string = "Lista eventos"; 
     eventos: Evento[];
     publicadoSelec: boolean;
     page: number = 1;

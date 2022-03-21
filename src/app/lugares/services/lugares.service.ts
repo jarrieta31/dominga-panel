@@ -176,7 +176,6 @@ export class LugaresService {
      */
     getLugaresFirestore(dpto: string) {
         if (!this.mapCache.has(dpto)) {
-            console.log("get lugares "+dpto + " desde firestore")
             this.afs.collection('lugares').ref.where('departamento', "==", dpto).where('prioridad', ">", -1).orderBy('prioridad').get().then(
                 //this.afs.collection('lugares').ref.where('prioridad', ">", -1).orderBy('prioridad').get().then(
                 querySnapshot => {

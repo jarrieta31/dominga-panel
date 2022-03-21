@@ -61,6 +61,8 @@ export class AgregarComponent implements OnInit, AfterViewInit, OnDestroy {
     imagenEvento: Imagen = this.imagenDefault;
     imagenesBorradas: string[] = []; // solo guarda las imagenes que se eliminaron y no se guardo el formulario
 
+    ubicacionManual: FormControl = this.fb.control(null, [this.vs.validarCoordenadas]);
+
     public eventoForm: FormGroup = this.fb.group({
         carpeta: [null],
         departamento: ['', Validators.required],
@@ -230,6 +232,23 @@ export class AgregarComponent implements OnInit, AfterViewInit, OnDestroy {
         //es para que no se vea el error de cambio
         this.cdRef.detectChanges();
 
+    }
+
+    /** Función que toma las coordenadas ingresadas en formato google Maps las transforma
+     * y crea el marcador en el miniMapa y guarda la ubicación para el formulario.
+     */
+    setUbicacionManual() {
+        if (this.ubicacionManual.valid) {
+            let coordsStr: string = this.ubicacionManual.value;
+            let arrCoords = coordsStr.split(',');
+            let latitud = Number(arrCoords[0].trim());
+            let longitud = Number(arrCoords[1].trim());
+            console.log("latitud: ", latitud)
+            console.log("longitud: ", longitud);
+            this.ubicacion.setValue({ "lng": longitud, "lat": latitud });
+            this.mapaService.dMiniMapa = { centro: { lng: longitud, lat: latitud }, zoom: 15, marcador: true };
+            this.mapaService.emitirMiniMapa();
+        }
     }
 
     /**

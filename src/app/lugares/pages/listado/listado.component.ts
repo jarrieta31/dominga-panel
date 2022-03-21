@@ -21,6 +21,7 @@ export class ListadoComponent implements OnInit, OnDestroy {
     filtrosGuardados = [];
     localidades: string[] = [];
     departamentos: string[] = [];
+    titulo:string = "Lista lugares"
 
     private unsubscribe$ = new Subject<void>();
     public lugares: Lugar[];

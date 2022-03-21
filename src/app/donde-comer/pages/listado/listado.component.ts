@@ -16,7 +16,7 @@ import { takeUntil } from 'rxjs/operators';
 })
 export class ListadoComponent implements OnInit {
 
-    titulo: string = "Lista de Lugares donde comer";
+    titulo: string = "Lista donde comer";
     restaurantes$: Observable<Restoran[]>;
     restaurantes: Restoran[];
 

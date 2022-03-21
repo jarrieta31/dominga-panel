@@ -56,7 +56,10 @@ export class AgregarComponent implements OnInit, OnDestroy {
     galeria: Imagen[] = [];
     galeriaAgregar: Imagen[] = []; //solo guarda las imagenes que se agregan a la galeria
     imagenesBorradas: string[] = []; // solo guarda las imagenes que se eliminaron y no se guardo el formulario
+    
     nroWhatsapp: FormControl = this.fb.control(null, [this.vs.valididarNumeroWhatsapp]);
+    ubicacionManual: FormControl = this.fb.control(null, [this.vs.validarCoordenadas]);
+
     public lugarForm: FormGroup = this.fb.group({
         accesibilidad: [null],
         auto: [false],
@@ -382,6 +385,24 @@ export class AgregarComponent implements OnInit, OnDestroy {
     eliminarVideoDelFormulario(i: number) {
         const videosControl = this.lugarForm.get('videos') as FormArray;
         videosControl.removeAt(i);
+    }
+
+
+    /** Función que toma las coordenadas ingresadas en formato google Maps las transforma
+     * y crea el marcador en el miniMapa y guarda la ubicación para el formulario.
+     */
+    setUbicacionManual() {
+        if (this.ubicacionManual.valid) {
+            let coordsStr: string = this.ubicacionManual.value;
+            let arrCoords = coordsStr.split(',');
+            let latitud = Number(arrCoords[0].trim());
+            let longitud = Number(arrCoords[1].trim());
+            console.log("latitud: ", latitud)
+            console.log("longitud: ", longitud);
+            this.ubicacion.setValue({ "lng": longitud, "lat": latitud });
+            this.mapaService.dMiniMapa = { centro: { lng: longitud, lat: latitud }, zoom: 15, marcador: true };
+            this.mapaService.emitirMiniMapa();
+        }
     }
 
     /**

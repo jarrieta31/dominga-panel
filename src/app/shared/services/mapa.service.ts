@@ -36,7 +36,6 @@ export class MapaService {
   
   /** Limpia los datos del minimapa */
   resetDataMiniMapa() {
-    console.log("reset miniMapa")
     this.dMiniMapa = { centro: { lng: -56.43721973207522, lat: -32.824680163553545 }, zoom: 5, marcador: false };
     this.emitirMiniMapa();
   }
