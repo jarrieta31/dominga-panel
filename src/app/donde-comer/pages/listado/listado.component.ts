@@ -24,10 +24,6 @@ export class ListadoComponent implements OnInit {
     filtrosGuardados = [];
     localidades: string[] = [];
     departamentos: string[] = [];
-//    private sourceDepartamentos: Subscription;
-//    private sourceLocalidades: Subscription;
-//    private sourceLugares: Subscription;
-//    private sourceRestaurantes: Subscription;
     private unsubscribe$ = new Subject<void>();
     departamentos$: Observable<string[]>;
     localidades$: Observable<string[]>;

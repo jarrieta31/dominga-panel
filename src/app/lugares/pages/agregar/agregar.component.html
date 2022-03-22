@@ -77,20 +77,38 @@
                 <!-- ============================== Como llegar ==================================== -->
                 <div class="container">
                     <div>
-                        <h2>Como llegar</h2>
+                        <h2>Como llegar/ Accesibilidad</h2>
                     </div>
-                    <div fxLayout="row" fxLayoutGap="1.5rem">
-                        <div fxFlex="8rem">
-                            <mat-label>Se puede llegar en: </mat-label>
+                    <div fxLayout="row" fxLayoutGap="1.5rem" fxLayoutAlign="space-arownd">
+                        <div fxFlex="50%" fxLayout="row" fxLayoutAlign="start">
+                            <div fxFlex="35%">
+                                <mat-label>Puedes llegar en: </mat-label>
+                            </div>
+                            <div fxFlex="18%">
+                                <mat-checkbox formControlName="auto">Auto</mat-checkbox>
+                            </div>
+                            <div fxFlex="25%">
+                                <mat-checkbox formControlName="bicicleta">Bicicleta</mat-checkbox>
+                            </div>
+                            <div fxFlex="25%">
+                                <mat-checkbox formControlName="caminar">Caminando</mat-checkbox>
+                            </div>
                         </div>
-                        <div fxFlex="15%">
-                            <mat-checkbox formControlName="auto">Auto</mat-checkbox>
-                        </div>
-                        <div fxFlex="15%">
-                            <mat-checkbox formControlName="bicicleta">Bicicleta</mat-checkbox>
-                        </div>
-                        <div fxFlex="15%">
-                            <mat-checkbox formControlName="caminar">Caminando</mat-checkbox>
+                        <div fxFlex="50%" FxLayout="row" fxLayoutAlign="center" fxLayoutGap="10px">
+                            <div fxFlex="25%">
+                                <mat-label>Accesibilidad: </mat-label>
+                            </div>
+                            <div fxFlex="22%">
+                                <mat-checkbox [checked]="rampasChecked" (change)="setAccesibilidadRampas($event)">
+                                    Rampas
+                                </mat-checkbox>
+                            </div>
+                            <div fxFlex="22%">
+                                <mat-checkbox [checked]="baniosChecked" (change)="setAccesibilidadBanios($event)">
+                                    Baños
+                                   <!--  <span class="material-icons">accessible</span>  --> 
+                                </mat-checkbox>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -290,7 +308,7 @@
             <!-- ============================== Fin Sitio Web Y Redes Sociales ==================================== -->
 
             <!-- ============================== Mapa ==================================== -->
-            <div  fxLayout="column" fxLayoutAlign="space-evenly center" class="container">
+            <div fxLayout="column" fxLayoutAlign="space-evenly center" class="container">
                 <h2>Ubicación del lugar *</h2>
                 <div fxLayout="row" class="acciones">
                     <div fxLayout="column" fxLayoutAlign="space-around center" fxLayoutGap="10px">
@@ -481,3 +499,7 @@
     </div>
 
 </form>
+
+<pre>
+    {{lugarForm.value | json}}
+</pre>

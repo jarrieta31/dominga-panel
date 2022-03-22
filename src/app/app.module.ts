@@ -10,6 +10,8 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { environment } from '../environments/environment';
 
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+
 //Módulos Propios
 import { SharedModule } from './shared/shared.module';
 import { MaterialModule } from './material/material.module';
@@ -34,7 +36,8 @@ import { AppComponent } from './app.component';
         AngularFirestoreModule.enablePersistence(),
         AngularFireStorageModule,
         AngularFireAuthModule,
-        AngularFireAuthGuardModule
+        AngularFireAuthGuardModule,
+        FontAwesomeModule,
     ],
     providers: [],
     bootstrap: [AppComponent]

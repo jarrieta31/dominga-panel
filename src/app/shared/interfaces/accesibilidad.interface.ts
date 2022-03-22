@@ -1,4 +1,4 @@
 export interface Accesibilidad{
-    banios?: boolean;
-    rampas?: boolean;
+    banio?: boolean;
+    rampa?: boolean;
 }

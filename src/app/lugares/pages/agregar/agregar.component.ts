@@ -15,7 +15,9 @@ import { LugaresService } from '../../services/lugares.service';
 import { AngularEditorConfig } from '@kolkov/angular-editor';
 import { ValidatorService } from '../../../shared/services/validator.service';
 import { DialogPublicarComponent } from '../../components/dialog-publicar/dialog-publicar.component';
-
+import { Accesibilidad } from '../../../shared/interfaces/accesibilidad.interface';
+import { MatCheckboxChange } from '@angular/material/checkbox';
+import { faToilet } from '@fortawesome/free-solid-svg-icons';
 
 
 @Component({
@@ -25,8 +27,10 @@ import { DialogPublicarComponent } from '../../components/dialog-publicar/dialog
 })
 export class AgregarComponent implements OnInit, OnDestroy {
 
+    faToilet = faToilet;
     allowedSizeGallery: number = 150; //kilo bytes
     allowedSizeHome: number = 150; //kilo bytes
+    accesibilidadDefault: Accesibilidad = { "banio":false, "rampa":false };
     cambiosConfirmados: boolean = false;
     departamentos: string[] = [];
     directorio: string = ''; //subcarpeta con el nombre del lugar
@@ -59,9 +63,13 @@ export class AgregarComponent implements OnInit, OnDestroy {
     
     nroWhatsapp: FormControl = this.fb.control(null, [this.vs.valididarNumeroWhatsapp]);
     ubicacionManual: FormControl = this.fb.control(null, [this.vs.validarCoordenadas]);
+    banios: FormControl = this.fb.control(false, []);
+    baniosChecked:boolean = false;
+    rampas: FormControl = this.fb.control(false, []);
+    rampasChecked:boolean = false;
 
     public lugarForm: FormGroup = this.fb.group({
-        accesibilidad: [null],
+        accesibilidad: [this.accesibilidadDefault],
         auto: [false],
         bicicleta: [false],
         caminar: [false],
@@ -168,13 +176,6 @@ export class AgregarComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         const lugarGuardado = localStorage.getItem('lugar');
-        //this.lugaresService.cargarLugares()
-        //si lugarGuardado no esta vacio lo asigna al formulario
-        if (lugarGuardado) {
-            //descomentar cuando este enviando bien los datos
-            //    this.lugarForm.setValue(JSON.parse(lugarGuardado));
-        }
-
         // cargando los datos de lugares, departamentos y localidades
         this.configService.getObsDepartamentos().pipe(takeUntil(this.unsubscribe$)).subscribe(dptos => this.departamentos = dptos);
         this.configService.emitirDepartamentosActivos();
@@ -193,15 +194,25 @@ export class AgregarComponent implements OnInit, OnDestroy {
         ).subscribe(lugar => {
             let lugarActual: Lugar = JSON.parse(JSON.stringify(lugar));
             if (lugarActual.id !== undefined) {//Si estamos editando un lugar
+
                 this.idLugar = lugarActual.id;
                 let prio = lugarActual.prioridad;
                 this.prioridadAnterior = prio
                 delete lugarActual.id //para setear el formulario es necesario quitar el tatributo id
+                for (let i = 0; i < lugarActual.telefonos.length; i++) {
+                    if (i > 0) {
+                        this.agregarNuevoTelefonoAlFormulario()
+                    }
+                }
                 this.lugarForm.reset(lugarActual);
                 this.setNroWhatsapp(lugarActual.whatsapp);
                 this.titulo = `Editando ${this.lugarForm.controls['nombre'].value}`;
                 this.home = lugarActual.imagenHome;
                 this.galeria = JSON.parse(JSON.stringify(lugarActual.imagenes));
+                this.baniosChecked = lugarActual.accesibilidad.banio;
+                this.rampasChecked = lugarActual.accesibilidad.rampa;
+                console.log(this.accesibilidad.value)
+                console.log(lugarActual.accesibilidad.banio)
                 this.directorio = this.carpeta.value;
                 this.configService.getLocadidadesDepartamento(lugarActual.departamento);
                 this.mapaService.dMiniMapa = { centro: lugarActual.ubicacion, zoom: 15, marcador: true };
@@ -244,9 +255,6 @@ export class AgregarComponent implements OnInit, OnDestroy {
         //limpia el mapa y el mini-mapa
         this.mapaService.resetDataMapa();
         this.mapaService.resetDataMiniMapa();
-        //Limpia el minimapa y el mapa
-//        this.mapaService.emitirMiniMapa();
-//        this.mapaService.resetDataMapa();
     }
 
     /**
@@ -299,6 +307,25 @@ export class AgregarComponent implements OnInit, OnDestroy {
         this.lugarForm.controls['imagenes'].setValue(this.galeria);
     }
 
+    /**
+     * Campura el estado del checkbox de Baño accesibilidad y guarda su estado.
+     * @param onBanios 
+     */
+    setAccesibilidadBanios(onBanios: MatCheckboxChange){
+        console.log("checked banios: ", onBanios.checked)
+        this.accesibilidadDefault.banio = onBanios.checked;
+        this.accesibilidad.setValue(this.accesibilidadDefault);
+    }
+
+    /**
+     * Campura el estado del checkbox de Rampa accesibilidad y guarda su estado.
+     * @param onRampas 
+     */
+    setAccesibilidadRampas(onRampas: MatCheckboxChange){
+        console.log("checked rampas: ", onRampas.checked)
+        this.accesibilidadDefault.rampa = onRampas.checked;
+        this.accesibilidad.setValue(this.accesibilidadDefault);
+    }
 
     /** No se está usando ahora
      * Función para mostrar un mensaje corto al usuario 
@@ -326,9 +353,6 @@ export class AgregarComponent implements OnInit, OnDestroy {
         if (principal.name === $event) {
             this.lugarForm.controls['imagenPrincipal'].setValue(this.imagenPrincipalDefault);
         }
-
-        /** Utilizando el servicio del FirebaseStorage local se borra la imagen */
-        //       this.fbStorage.borrarArchivoStorage(`${this.directorioPadre}/${this.directorio}`, $event);
     }
 
     /**
@@ -611,6 +635,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
     get whatsapp() { return this.lugarForm.get('whatsapp'); }
     get instagram() { return this.lugarForm.get('instagram'); }
     get facebook() { return this.lugarForm.get('facebook'); }
+    get accesibilidad() { return this.lugarForm.get('accesibilidad'); }
     get imagenPrincipal() { return this.lugarForm.get('imagenPrincipal'); }
     get prioridad() { return this.lugarForm.get('prioridad'); }
     get descripcion() { return this.lugarForm.get('descripcion'); }
