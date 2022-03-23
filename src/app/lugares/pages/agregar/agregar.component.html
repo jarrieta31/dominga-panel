@@ -123,8 +123,8 @@
                         <mat-form-field fxFlex="10rem">
                             <span matPrefix>Tipo de Lugar: &nbsp; &nbsp;</span>
                             <mat-select formControlName="tipo">
-                                <mat-option *ngFor="let item of lugaresTipo" [value]="item.tipo">
-                                    {{ item.tipo }}
+                                <mat-option *ngFor="let tipo of tiposLugares" [value]="tipo">
+                                    {{ tipo }}
                                 </mat-option>
                             </mat-select>
                             <mat-hint align="start">

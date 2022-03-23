@@ -55,6 +55,10 @@ export class ListadoComponent implements OnInit, OnDestroy {
         
         //this.lugares$ = this.lugaresService.getObsLugares$();
         //Chequea si los lugares del departamento actual estan en cache.
+
+        //this.configService.cargarTiposArtistas();
+        //this.configService.cargarTiposEventos();
+        //this.configService.cargarTiposLugares();
         if (!this.lugaresService.checkCache(this.departamento.value)) {
             this.lugaresService.getLugaresFirestore(this.departamento.value);
         }

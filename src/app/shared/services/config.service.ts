@@ -4,6 +4,9 @@ import { Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Departamento } from '../interfaces/departamento';
 import { LocalStorageService } from './local-storage.service';
+import { TipoArtista } from '../interfaces/tipoArtista.interface';
+import { TipoLugar } from '../interfaces/tipoLugar.interface';
+import { TipoEvento } from '../interfaces/tipoEvento.interface';
 
 
 
@@ -12,21 +15,46 @@ import { LocalStorageService } from './local-storage.service';
 })
 export class ConfigService {
 
-    localidades$: Subject<string[]>;
-    departamentos$: Subject<string[]>
+    private localidades$: Subject<string[]>;
+    private departamentos$: Subject<string[]>
+    private tiposArtistas$: Subject<string[]>
+    private tiposEventos$: Subject<string[]>
+    private tiposLugares$: Subject<string[]>
+
     listLocalidades: string[] = [];
     listDptosActivos: string[] = [];
     departamentos: Departamento[] = [];
-    tiposEventos: string[] = [];
-    tiposLugares: string[] = [];
-    
+
+    private tiposEventosRef = this.afs.collection('tipos_eventos');
+    private tiposArtistasRef = this.afs.collection('tipos_artistas');
+    private tiposLugaresRef = this.afs.collection('tipos_lugares');
 
     constructor(
         private localStorageService: LocalStorageService,
         private afs: AngularFirestore) {
         this.localidades$ = new Subject();
         this.departamentos$ = new Subject();
+        this.tiposArtistas$ = new Subject();
+        this.tiposEventos$ = new Subject();
+        this.tiposLugares$ = new Subject();
+        this.getTiposLugaresFirestore();
+        this.getTiposArtistasFirestore();
         this.getDepartamentosFirestore();
+    }
+
+    /** retorna el observable de tipos de artista */
+    getObsTiposArtistas(): Observable<string[]> {
+        return this.tiposArtistas$.asObservable();
+    }
+
+    /** retorna el observable de tipos de eventos */
+    getObsTiposEventos(): Observable<string[]> {
+        return this.tiposEventos$.asObservable();
+    }
+
+    /** retorna el observable de tipos de lugares */
+    getObsTiposLugares(): Observable<string[]> {
+        return this.tiposLugares$.asObservable();
     }
 
     /** retorna el observable de localidades */
@@ -64,6 +92,74 @@ export class ConfigService {
 
     }
 
+    /** 
+    */
+    getTiposArtistasFirestore() {
+        this.tiposArtistasRef.ref.get().then(
+            querySnapshot => {
+                const arrTipos: any[] = [];
+                querySnapshot.forEach(item => {
+                    const data: any = item.data()
+                    arrTipos.push({ id: item.id, ...data });
+                })
+                let tipos: string[] = [];
+                arrTipos.forEach(item => {
+                    tipos.push(item.nombre);
+                })
+                tipos.sort();
+                tipos.push("Otros");
+                this.tiposArtistas$.next(tipos)
+            }
+        ).catch(error => {
+            console.error("Error en getTiposArtistasFirestore(). error:" + error);
+        })
+
+    }
+
+    getTiposLugaresFirestore() {
+        this.tiposLugaresRef.ref.get().then(
+            querySnapshot => {
+                const arrTipos: any[] = [];
+                querySnapshot.forEach(item => {
+                    const data: any = item.data()
+                    arrTipos.push({ id: item.id, ...data });
+                })
+                let tipos: string[] = [];
+                arrTipos.forEach(item => {
+                    tipos.push(item.nombre);
+                })
+                tipos.sort();
+                tipos.push("Otros");
+                this.tiposLugares$.next(tipos)
+            }
+        ).catch(error => {
+            console.error("Error en getTiposLugaresFirestore(). error:" + error);
+        })
+
+    }
+    
+    getTiposEventosFirestore() {
+        this.tiposLugaresRef.ref.get().then(
+            querySnapshot => {
+                const arrTipos: any[] = [];
+                querySnapshot.forEach(item => {
+                    const data: any = item.data()
+                    arrTipos.push({ id: item.id, ...data });
+                })
+                let tipos: string[] = [];
+                arrTipos.forEach(item => {
+                    tipos.push(item.nombre);
+                })
+                tipos.sort();
+                tipos.push("Otros");
+                this.tiposEventos$.next(tipos)
+            }
+        ).catch(error => {
+            console.error("Error en getTiposEventosFirestore(). error:" + error);
+        })
+
+    }
+
     /** cargar el subject localidades$ con las localidades
      * del departamento seleccionado y emite sus valores
      */
@@ -87,9 +183,6 @@ export class ConfigService {
         this.localidades$.next(this.listLocalidades);
     }
 
-    //    update(id: string, data: any): Promise<void> {
-    //      return this.afs.collection('departamentos').doc(id).update(data);
-    //}
 
     delete(id: string): Promise<void> {
         return this.afs.collection('departamentos').doc(id).delete();
@@ -831,6 +924,69 @@ export class ConfigService {
         datos.forEach(departamento => {
             this.afs.collection('departamentos').add(departamento);
         });
+    }
+
+    /**
+     * Método para llenar la base de datos con las tipos de artistas.
+     */
+    cargarTiposArtistas() {
+        let tiposArtistas: TipoArtista[] = [
+            {nombre: "Arte circense"},
+            {nombre: "Danza"},
+            {nombre: "Escritura"},
+            {nombre: "Escultura"},
+            {nombre: "Fotografía"},
+            {nombre: "Performance"},
+            {nombre: "Pintura"},
+            {nombre: "Poesía"},
+            {nombre: "Teatro"},
+            {nombre: "Otros"},
+        ]
+
+        tiposArtistas.forEach(tipoArtista => {
+            this.tiposArtistasRef.add(tipoArtista);
+        })
+    }
+
+    /**
+     * Método para llenar la base de datos con las tipos de lugares.
+     */
+    cargarTiposLugares() {
+        let tiposLugares: TipoLugar[] = [
+            {nombre: "Almacenes Artesanales"},
+            {nombre: "Bodegas"},
+            {nombre: "Boliches de Campaña"},
+            {nombre: "Circuito Céntrico"},
+            {nombre: "Club del Queso"},
+            {nombre: "Estancias Turísticas"},
+            {nombre: "Posada de Campo"},
+            {nombre: "Ruta Patrimonial"},
+            {nombre: "Turismo Aventura"},
+            {nombre: "Turismo Deportivo"},
+            {nombre: "Turismo de Playa"},
+            {nombre: "Otros"},
+        ];
+
+        tiposLugares.forEach(tipoLugar => {
+            this.tiposLugaresRef.add(tipoLugar);
+        })
+    }
+
+    /**
+     * Método para llenar la base de datos con las tipos de eventos.
+     */
+    cargarTiposEventos() {
+        let tiposEventos: TipoEvento[] = [
+            {nombre: "Teatro"},
+            {nombre: "Música"},
+            {nombre: "Deportes"},
+            {nombre: "Danza"},
+            {nombre: "Otros"},
+        ];
+
+        tiposEventos.forEach(tipoEvento => {
+            this.tiposEventosRef.add(tipoEvento);
+        })
     }
 
     /**

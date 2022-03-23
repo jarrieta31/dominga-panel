@@ -40,7 +40,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
     idLugar: string;
     idNuevoLugar: string = "";
     localidades: string[] = [];
-    lugaresTipo = [{ tipo: "Urbano" }, { tipo: "Rural" }];
+    tiposLugares: string[] = [];
     mapaTouched: boolean = false;
     opsPatrimonial = [{ texto: "Sí", valor: true }, { texto: "No", valor: false }];
     prioridadAnterior: number;
@@ -180,6 +180,8 @@ export class AgregarComponent implements OnInit, OnDestroy {
         this.configService.getObsDepartamentos().pipe(takeUntil(this.unsubscribe$)).subscribe(dptos => this.departamentos = dptos);
         this.configService.emitirDepartamentosActivos();
         this.configService.getObsLocalidades().pipe(takeUntil(this.unsubscribe$)).subscribe(locs => this.localidades = locs);
+        this.configService.getObsTiposLugares().pipe(takeUntil(this.unsubscribe$)).subscribe(tiposLugares => this.tiposLugares = tiposLugares);
+//        this.configService.emitirTiposLugares();
         //this.prioridades$ = this.lugaresService.getObsPrioridades$();
         this.lugaresService.getObsPrioridades$().pipe(takeUntil(this.unsubscribe$)).subscribe(prioridades => this.prioridades = prioridades);
         this.lugaresService.updateListaPrioridadesLocal(true);
