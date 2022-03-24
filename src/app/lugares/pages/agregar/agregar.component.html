@@ -106,7 +106,6 @@
                             <div fxFlex="22%">
                                 <mat-checkbox [checked]="baniosChecked" (change)="setAccesibilidadBanios($event)">
                                     Baños
-                                   <!--  <span class="material-icons">accessible</span>  --> 
                                 </mat-checkbox>
                             </div>
                         </div>
@@ -359,39 +358,6 @@
                 </div>
             </div>
             <!-- ============================== Fin Mapa ==================================== -->
-            <!-- ============================== Mapa ==================================== 
-            <div fxLayout="column" class="container">
-                <h2>Ubicación del Lugar *</h2>
-                <div fxLayout="row">
-                    <div fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="1.5rem">
-                        <div style="width: 70%;">
-                            <p>Abra el mapa y creé un marcador en la ubicación del lugar para obtener sus coordenadas
-                            </p>
-                        </div>
-
-                        <div>
-                            <button type="button" mat-raised-button color="primary" (click)="abrirMapa()">
-                                <mat-icon>map</mat-icon>
-                                Abrir Mapa
-                            </button>
-                        </div>
-                        <div *ngIf="ubicacion.value !== null">
-                            Longitud: {{ ubicacion.value.lng }}, Latidud: {{ ubicacion.value.lat }}
-                        </div>
-                        <div *ngIf="ubicacion.value === null">
-                            Longitud: 0, Latidud: 0
-                        </div>
-                        <ng-container *ngIf="!ubicacion.valid && mapaTouched">
-                            <mat-error>¡Debe seleccionar la ubicación del lugar creando un marcador en el mapa!
-                            </mat-error>
-                        </ng-container>
-                    </div>
-                    <div fxLayout="column">
-                        <app-mini-mapa></app-mini-mapa>
-                    </div>
-                </div>
-            </div>
-            <!-- ============================== Fin Mapa ==================================== -->
         </div>
 
     </div>
@@ -499,7 +465,3 @@
     </div>
 
 </form>
-
-<pre>
-    {{lugarForm.value | json}}
-</pre>

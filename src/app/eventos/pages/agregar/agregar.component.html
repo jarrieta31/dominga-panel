@@ -216,8 +216,8 @@
                         <mat-form-field class="input">
                             <mat-select formControlName="tipo" required>
                                 <mat-option [value]="">--Seleccione el tipo de evento--</mat-option>
-                                <mat-option *ngFor="let item of eventoTipo" [value]="item.tipo">
-                                    {{ item.tipo }}
+                                <mat-option *ngFor="let tipo of eventosTipos" [value]="tipo">
+                                    {{ tipo }}
                                 </mat-option>
                             </mat-select>
                             <mat-hint align="start">

@@ -33,11 +33,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
     departamentos: string[] = [];
     directorio: string = ''; //subcarpeta con el nombre del lugar
     directorioPadre: string = 'artistas'; //carpeta raíz donde se almacenan los lugares
-    categorias: Categoria[] = [
-        { value: "musica", viewValue: "Música" },
-        { value: "plastico", viewValue: "Plastico" },
-        { value: "fotografia", viewValue: "Fotografía" },
-    ];
+    categorias: string[] = [];
     heightAllowedArtista: number = 150;
     idArtista: string;
     localidades: string[] = [];
@@ -71,19 +67,15 @@ export class AgregarComponent implements OnInit, OnDestroy {
         public dialog: MatDialog,
         private configService: ConfigService,
         private artistasService: ArtistasService,
-    ) {
-
-    }
+    ) {  }
 
     ngOnInit(): void {
         
-        this.configService.getObsDepartamentos()
-            .pipe(takeUntil(this.unsubscribe$))
-            .subscribe(dptos => this.departamentos = dptos)
+        this.configService.getObsDepartamentos().pipe(takeUntil(this.unsubscribe$)).subscribe(dptos => this.departamentos = dptos)
+        this.configService.getObsLocalidades().pipe(takeUntil(this.unsubscribe$)).subscribe(locs => this.localidades = locs);
+        this.configService.getObsTiposArtistas().pipe(takeUntil(this.unsubscribe$)).subscribe(tiposArtistas => this.categorias = tiposArtistas);
         this.configService.emitirDepartamentosActivos();
-        this.configService.getObsLocalidades()
-            .pipe(takeUntil(this.unsubscribe$))
-            .subscribe(locs => this.localidades = locs);
+        this.configService.emitirTiposArtistas();
 
         /**
         * A partir de la ruta y el id recibido obtiene el lugar para mostrar 

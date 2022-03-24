@@ -35,7 +35,7 @@ export class AgregarComponent implements OnInit, AfterViewInit, OnDestroy {
     dia: number;
     directorio: string = ''; //subcarpeta con el nombre del lugar
     directorioPadre: string = 'eventos'; //carpeta raíz donde se almacenan los lugares
-    eventoTipo = [{ tipo: "Teatro" }, { tipo: "Danza" }, { tipo: "Música" }, { tipo: "Deportes" }, { tipo: "Otros" }];
+    eventosTipos: string[] = [];
     fechaHora: Date;
     heightAllowedEvento: number = 450;
     idEvento: string;
@@ -163,13 +163,13 @@ export class AgregarComponent implements OnInit, AfterViewInit, OnDestroy {
 
     ngOnInit(): void {
         this._adapter.setLocale('es');
-        //  this.horaIn.disable();
         this.pickerFechEnd.disable();
-        this.configService.getObsDepartamentos().pipe(takeUntil(this.unsubscribe$))
-            .subscribe(dptos => this.departamentos = dptos)
+        this.configService.getObsDepartamentos().pipe(takeUntil(this.unsubscribe$)).subscribe(dptos => this.departamentos = dptos)
+        this.configService.getObsLocalidades().pipe(takeUntil(this.unsubscribe$)).subscribe(locs => this.localidades = locs);
+        this.configService.getObsTiposEventos().pipe(takeUntil(this.unsubscribe$)).subscribe(eventosTipos => this.eventosTipos = eventosTipos );
+        this.configService.emitirTiposEventos();
         this.configService.emitirDepartamentosActivos();
-        this.configService.getObsLocalidades().pipe(takeUntil(this.unsubscribe$))
-            .subscribe(locs => this.localidades = locs);
+
         /**
         * A partir de la ruta y el id recibido obtiene el lugar para mostrar 
         */

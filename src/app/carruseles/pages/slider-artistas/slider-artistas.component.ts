@@ -19,7 +19,7 @@ import { StorageService } from '../../../shared/services/storage.service';
 export class SliderArtistasComponent implements OnInit {
 
     private unsubscribe$ = new Subject<void>();
-    allowedSizeGallery: number = 150; //kilo bytes
+    allowedSizeGallery: number = 2000; //kilo bytes
     cambiosConfirmados: boolean = false;
     datosInvalidos: boolean = true;
     directorio: string = 'artistas'; //subcarpeta con el nombre del lugar

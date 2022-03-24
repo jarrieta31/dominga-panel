@@ -128,8 +128,8 @@
                     <mat-form-field id="camp-principal2" fxFlex="50%">
                         <mat-label>Selecciona la categoría</mat-label>
                         <mat-select formControlName="categoria" required>
-                            <mat-option *ngFor="let categoria of categorias" [value]="categoria.value">{{
-                                categoria.viewValue }}
+                            <mat-option *ngFor="let categoria of categorias" [value]="categoria">
+                                {{ categoria }}
                             </mat-option>
                         </mat-select>
                     </mat-form-field>

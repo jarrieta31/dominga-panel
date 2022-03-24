@@ -15,12 +15,15 @@ import { TipoEvento } from '../interfaces/tipoEvento.interface';
 })
 export class ConfigService {
 
-    private localidades$: Subject<string[]>;
-    private departamentos$: Subject<string[]>
     private tiposArtistas$: Subject<string[]>
     private tiposEventos$: Subject<string[]>
     private tiposLugares$: Subject<string[]>
+    private tiposArtistas: string[] = [];
+    private tiposEventos: string[]  = [];
+    private tiposLugares: string[]  = [];
 
+    private localidades$: Subject<string[]>;
+    private departamentos$: Subject<string[]>
     listLocalidades: string[] = [];
     listDptosActivos: string[] = [];
     departamentos: Departamento[] = [];
@@ -39,6 +42,7 @@ export class ConfigService {
         this.tiposLugares$ = new Subject();
         this.getTiposLugaresFirestore();
         this.getTiposArtistasFirestore();
+        this.getTiposEventosFirestore();
         this.getDepartamentosFirestore();
     }
 
@@ -102,18 +106,15 @@ export class ConfigService {
                     const data: any = item.data()
                     arrTipos.push({ id: item.id, ...data });
                 })
-                let tipos: string[] = [];
                 arrTipos.forEach(item => {
-                    tipos.push(item.nombre);
+                    this.tiposArtistas.push(item.nombre);
                 })
-                tipos.sort();
-                tipos.push("Otros");
-                this.tiposArtistas$.next(tipos)
+                this.tiposArtistas.sort();
+                this.tiposArtistas.push("Otros");
             }
         ).catch(error => {
             console.error("Error en getTiposArtistasFirestore(). error:" + error);
         })
-
     }
 
     getTiposLugaresFirestore() {
@@ -124,40 +125,34 @@ export class ConfigService {
                     const data: any = item.data()
                     arrTipos.push({ id: item.id, ...data });
                 })
-                let tipos: string[] = [];
                 arrTipos.forEach(item => {
-                    tipos.push(item.nombre);
+                    this.tiposLugares.push(item.nombre);
                 })
-                tipos.sort();
-                tipos.push("Otros");
-                this.tiposLugares$.next(tipos)
+                this.tiposLugares.sort();
+                this.tiposLugares.push("Otros");
             }
         ).catch(error => {
             console.error("Error en getTiposLugaresFirestore(). error:" + error);
         })
-
     }
     
     getTiposEventosFirestore() {
-        this.tiposLugaresRef.ref.get().then(
+        this.tiposEventosRef.ref.get().then(
             querySnapshot => {
                 const arrTipos: any[] = [];
                 querySnapshot.forEach(item => {
                     const data: any = item.data()
                     arrTipos.push({ id: item.id, ...data });
                 })
-                let tipos: string[] = [];
                 arrTipos.forEach(item => {
-                    tipos.push(item.nombre);
+                    this.tiposEventos.push(item.nombre);
                 })
-                tipos.sort();
-                tipos.push("Otros");
-                this.tiposEventos$.next(tipos)
+                this.tiposEventos.sort();
+                this.tiposEventos.push("Otros");
             }
         ).catch(error => {
             console.error("Error en getTiposEventosFirestore(). error:" + error);
         })
-
     }
 
     /** cargar el subject localidades$ con las localidades
@@ -173,6 +168,18 @@ export class ConfigService {
         });
         this.listLocalidades = arrLocalidades;
         this.localidades$.next(arrLocalidades);
+    }
+
+    emitirTiposLugares(): void {
+        this.tiposLugares$.next(this.tiposLugares);
+    }
+
+    emitirTiposArtistas(): void {
+        this.tiposArtistas$.next(this.tiposArtistas);
+    }
+
+    emitirTiposEventos(): void {
+        this.tiposEventos$.next(this.tiposEventos);
     }
 
     emitirDepartamentosActivos(): void {
@@ -937,10 +944,10 @@ export class ConfigService {
             {nombre: "Escultura"},
             {nombre: "Fotografía"},
             {nombre: "Performance"},
+            {nombre: "Música"},
             {nombre: "Pintura"},
             {nombre: "Poesía"},
             {nombre: "Teatro"},
-            {nombre: "Otros"},
         ]
 
         tiposArtistas.forEach(tipoArtista => {
