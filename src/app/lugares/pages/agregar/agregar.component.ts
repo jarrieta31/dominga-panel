@@ -17,7 +17,6 @@ import { ValidatorService } from '../../../shared/services/validator.service';
 import { DialogPublicarComponent } from '../../components/dialog-publicar/dialog-publicar.component';
 import { Accesibilidad } from '../../../shared/interfaces/accesibilidad.interface';
 import { MatCheckboxChange } from '@angular/material/checkbox';
-import { faToilet } from '@fortawesome/free-solid-svg-icons';
 
 
 @Component({
@@ -27,7 +26,6 @@ import { faToilet } from '@fortawesome/free-solid-svg-icons';
 })
 export class AgregarComponent implements OnInit, OnDestroy {
 
-    faToilet = faToilet;
     allowedSizeGallery: number = 150; //kilo bytes
     allowedSizeHome: number = 150; //kilo bytes
     accesibilidadDefault: Accesibilidad = { "banio":false, "rampa":false };
@@ -212,8 +210,6 @@ export class AgregarComponent implements OnInit, OnDestroy {
                 this.galeria = JSON.parse(JSON.stringify(lugarActual.imagenes));
                 this.baniosChecked = lugarActual.accesibilidad.banio;
                 this.rampasChecked = lugarActual.accesibilidad.rampa;
-                console.log(this.accesibilidad.value)
-                console.log(lugarActual.accesibilidad.banio)
                 this.directorio = this.carpeta.value;
                 this.configService.getLocadidadesDepartamento(lugarActual.departamento);
                 this.mapaService.dMiniMapa = { centro: lugarActual.ubicacion, zoom: 15, marcador: true };

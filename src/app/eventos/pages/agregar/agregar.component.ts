@@ -18,7 +18,7 @@ import { DialogPublicarComponent } from '../../components/dialog-publicar/dialog
 import { Timestamp } from "firebase/firestore";
 import { Moment } from 'moment';
 import * as moment from 'moment';
-import 'moment/locale/es';
+//import 'moment/locale/es';
 
 @Component({
     selector: 'app-agregar',

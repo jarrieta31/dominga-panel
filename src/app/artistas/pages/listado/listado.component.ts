@@ -15,7 +15,7 @@ import { Router } from '@angular/router';
 })
 export class ListadoComponent implements OnInit {
 
-    titulo: string = "Lista de Artistas";
+    titulo: string = "Lista Artistas";
     artistas: Artista[];
     publicadoSelec: boolean;
     page: number = 1;
