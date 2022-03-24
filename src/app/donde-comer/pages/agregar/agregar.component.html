@@ -24,7 +24,7 @@
 
                     <mat-form-field fxFlex="50%">
                         <mat-label>Nombre del local de comidas</mat-label>
-                        <input required matInput type="text" formControlName="nombre" (change)="quitarEspacios()">
+                        <input autocomplete="off" required matInput type="text" formControlName="nombre" (change)="quitarEspacios()">
                         <ng-container *ngIf="!nombre.valid && nombre.touched">
                             <mat-error *ngIf="nombre.errors.required">
                                 El campo nombre del evento es obligatorio.
@@ -47,7 +47,7 @@
 
                     <mat-form-field fxFlex="15%">
                         <mat-label>Carperta Cloud Storage</mat-label>
-                        <input matInput type="text" formControlName="carpeta" [readonly]="true">
+                        <input autocomplete="off" matInput type="text" formControlName="carpeta" [readonly]="true">
                     </mat-form-field>
                 </div>
             </div>
@@ -88,7 +88,7 @@
                     <div fxFlex="80%">
                         <mat-form-field class="direccion">
                             <mat-label>Dirección</mat-label>
-                            <input type="text" matInput placeholder="18 de Julio 123" formControlName="direccion"
+                            <input autocomplete="off" type="text" matInput placeholder="18 de Julio 123" formControlName="direccion"
                                 required class="input">
                             <ng-container *ngIf="!direccion.valid && direccion.touched">
                                 <mat-error *ngIf="direccion.errors.required">
@@ -177,7 +177,7 @@
                     <div *ngFor="let telefono of telefonos.controls; let i=index" [formGroupName]="i"
                         style="width: 100%;" fxLayout="row" fxLayoutAling="space-between center" fxLayoutGap="20px">
                         <mat-form-field style="width: 50%;">
-                            <input matInput type="tel" formControlName="numero"
+                            <input autocomplete="off" matInput type="tel" formControlName="numero"
                                 placeholder="43401234 o 43401234-36 o 099123456" style="width: 100%;">
                             <mat-icon matSuffix>phone</mat-icon>
                             <mat-label>Inserte el teléfono {{ i + 1}}</mat-label>
@@ -213,7 +213,7 @@
                 <div fxLayout="column" fxLayoutAlign="space-evenly" fxLayoutGap="30px">
                     <mat-form-field class="whatsapp">
                         <mat-label>Whatsapp</mat-label>
-                        <input type="text" matInput autocomplete="of" [formControl]="nroWhatsapp" (input)="setLinkWhatsapp()"
+                        <input type="text" matInput autocomplete="off" [formControl]="nroWhatsapp" (input)="setLinkWhatsapp()"
                             placeholder="099123456">
                         <mat-icon matSuffix>phone</mat-icon>
                         <ng-container *ngIf="!nroWhatsapp.valid && nroWhatsapp.touched">
@@ -224,7 +224,7 @@
                     </mat-form-field>
                     <mat-form-field>
                         <mat-label>Instagram</mat-label>
-                        <input type="url" matInput formControlName="instagram" placeholder="http://www.instagram.com/">
+                        <input autocomplete="off" type="url" matInput formControlName="instagram" placeholder="http://www.instagram.com/">
                         <mat-icon matSuffix>insert_link</mat-icon>
                         <ng-container *ngIf="!instagram.valid && instagram.touched">
                             <mat-error>URL no válida! Ejemplo: http://www.instagram.com/mi-perfil</mat-error>

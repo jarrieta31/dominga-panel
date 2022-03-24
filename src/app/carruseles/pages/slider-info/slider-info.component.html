@@ -78,7 +78,7 @@
                     <ng-container *ngIf="linkSeleccionado === 'web'">
                         <mat-form-field class="web">
                             <mat-label>Sitio Web</mat-label>
-                            <input type="url" matInput [formControl]="web" (input)="setLinkWeb()"
+                            <input autocomplete="off" type="url" matInput [formControl]="web" (input)="setLinkWeb()"
                                 placeholder="http://www.mi-sitio-web.com/">
                             <mat-icon matSuffix>insert_link</mat-icon>
                             <ng-container *ngIf="!web.valid && web.touched">
@@ -90,7 +90,7 @@
                     <ng-container *ngIf="linkSeleccionado === 'whatsapp'">
                         <mat-form-field class="whatsapp">
                             <mat-label>Whatsapp</mat-label>
-                            <input type="text" matInput [formControl]="whatsapp" (input)="setLinkWhatsapp()"
+                            <input autocomplete="off" type="text" matInput [formControl]="whatsapp" (input)="setLinkWhatsapp()"
                                 placeholder="099123456">
                             <mat-icon matSuffix>phone</mat-icon>
                             <ng-container *ngIf="!whatsapp.valid && whatsapp.touched">
@@ -103,7 +103,7 @@
                     <ng-container *ngIf="linkSeleccionado === 'facebook'">
                         <mat-form-field class="facebook">
                             <mat-label>Facebook</mat-label>
-                            <input type="url" matInput [formControl]="facebook" (input)="setLinkFacebook()"
+                            <input autocomplete="off" type="url" matInput [formControl]="facebook" (input)="setLinkFacebook()"
                                 placeholder="https://m.facebook.com/mi-perfil/">
                             <mat-icon matSuffix>insert_link</mat-icon>
                             <ng-container *ngIf="!facebook.valid && facebook.touched">
@@ -115,7 +115,7 @@
                     <ng-container *ngIf="linkSeleccionado === 'instagram'">
                         <mat-form-field class="instagram">
                             <mat-label>Instagram</mat-label>
-                            <input type="url" matInput [formControl]="instagram" (input)="setLinkInstagram()"
+                            <input autocomplete="off" type="url" matInput [formControl]="instagram" (input)="setLinkInstagram()"
                                 placeholder="http://www.instagram.com/">
                             <mat-icon matSuffix>insert_link</mat-icon>
                             <ng-container *ngIf="!instagram.valid && instagram.touched">

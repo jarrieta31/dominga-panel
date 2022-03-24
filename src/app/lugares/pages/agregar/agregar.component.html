@@ -23,7 +23,7 @@
                 <div fxLayout="row rwap" fxLayoutGap="1.5rem">
                     <mat-form-field fxFlex="15rem">
                         <mat-label>Nombre del Lugar</mat-label>
-                        <input required matInput type="text" formControlName="nombre" (change)="quitarEspacios()">
+                        <input autocomplete="off" required matInput type="text" formControlName="nombre" (change)="quitarEspacios()">
                         <!-- La expresion "nombre" representa "lugarForm.get('nombre')" pero gracias al geter solo escribimos nombre -->
                         <ng-container *ngIf="!nombre.valid && nombre.touched">
                             <mat-error *ngIf="nombre.errors.required">
@@ -43,7 +43,7 @@
 
                     <mat-form-field fxFlex="6rem">
                         <mat-label>Carperta Cloud Storage</mat-label>
-                        <input matInput type="text" formControlName="carpeta" [readonly]="true">
+                        <input autocomplete="off" matInput type="text" formControlName="carpeta" [readonly]="true">
                     </mat-form-field>
                 </div>
                 <!-- ============================== Fin  Nombre/Publicado ==================================== -->
@@ -195,7 +195,7 @@
                     <div *ngFor="let telefono of telefonos.controls; let i=index" [formGroupName]="i" fxLayout="row"
                         fxLayoutAling="space-between center" fxLayoutGap="0.625rem">
                         <mat-form-field>
-                            <input matInput type="tel" formControlName="numero"
+                            <input autocomplete="off" matInput type="tel" formControlName="numero"
                                 placeholder="43401234 o 43401234-36 o 099123456">
                             <mat-icon matSuffix>phone</mat-icon>
                             <mat-label>Inserte el teléfono {{ i + 1}}</mat-label>
@@ -232,7 +232,7 @@
                     <div *ngFor="let video of videos.controls;let j=index" [formGroupName]="j" fxLayout="row"
                         fxLayoutAling="space-between center" fxLayoutGap="0.625rem">
                         <mat-form-field fxFlex="80%">
-                            <input matInput type="url" formControlName="url" (change)="parseLinkYoutube(j)"
+                            <input autocomplete="off" matInput type="url" formControlName="url" (change)="parseLinkYoutube(j)"
                                 placeholder="https://www.youtube.com/watch?v=df021jGEmPM">
                             <mat-icon matSuffix>add_link</mat-icon>
                             <mat-label>Inserte la url del video </mat-label>
@@ -268,7 +268,7 @@
                 <div fxLayout="column" fxLayoutAlign="space-evenly" fxLayoutGap="0.625rem">
                     <mat-form-field>
                         <mat-label>Sitio Web</mat-label>
-                        <input type="url" matInput formControlName="web" placeholder="http://www.mi-sitio-web.com/">
+                        <input autocomplete="off" type="url" matInput formControlName="web" placeholder="http://www.mi-sitio-web.com/">
                         <mat-icon matSuffix>insert_link</mat-icon>
                         <ng-container *ngIf="!web.valid && web.touched">
                             <mat-error>La URL ingresada no es válida!</mat-error>
@@ -276,7 +276,7 @@
                     </mat-form-field>
                     <mat-form-field class="whatsapp">
                         <mat-label>Whatsapp</mat-label>
-                        <input type="text" matInput autocomplete="of" [formControl]="nroWhatsapp"
+                        <input type="text" matInput autocomplete="off" [formControl]="nroWhatsapp"
                             (input)="setLinkWhatsapp()" placeholder="099123456">
                         <mat-icon matSuffix>phone</mat-icon>
                         <ng-container *ngIf="!nroWhatsapp.valid && nroWhatsapp.touched">
@@ -287,7 +287,7 @@
                     </mat-form-field>
                     <mat-form-field>
                         <mat-label>Facebook</mat-label>
-                        <input type="url" matInput formControlName="facebook"
+                        <input autocomplete="off" type="url" matInput formControlName="facebook"
                             placeholder="https://m.facebook.com/mi-perfil/">
                         <mat-icon matSuffix>insert_link</mat-icon>
                         <ng-container *ngIf="!facebook.valid && facebook.touched">
@@ -296,7 +296,7 @@
                     </mat-form-field>
                     <mat-form-field>
                         <mat-label>Instagram</mat-label>
-                        <input type="url" matInput formControlName="instagram" placeholder="http://www.instagram.com/">
+                        <input autocomplete="off" type="url" matInput formControlName="instagram" placeholder="http://www.instagram.com/">
                         <mat-icon matSuffix>insert_link</mat-icon>
                         <ng-container *ngIf="!instagram.valid && instagram.touched">
                             <mat-error>URL no válida! Ejemplo: http://www.instagram.com/mi-perfil</mat-error>

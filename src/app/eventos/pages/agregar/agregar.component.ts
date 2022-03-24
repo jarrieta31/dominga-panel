@@ -63,6 +63,8 @@ export class AgregarComponent implements OnInit, AfterViewInit, OnDestroy {
 
     ubicacionManual: FormControl = this.fb.control(null, [this.vs.validarCoordenadas]);
 
+    nroWhatsapp: FormControl = this.fb.control(null, [this.vs.valididarNumeroWhatsapp]);
+
     public eventoForm: FormGroup = this.fb.group({
         carpeta: [null],
         departamento: ['', Validators.required],
@@ -248,6 +250,21 @@ export class AgregarComponent implements OnInit, AfterViewInit, OnDestroy {
             this.ubicacion.setValue({ "lng": longitud, "lat": latitud });
             this.mapaService.dMiniMapa = { centro: { lng: longitud, lat: latitud }, zoom: 15, marcador: true };
             this.mapaService.emitirMiniMapa();
+        }
+    }
+
+    /** 
+     * Esta función toma el número de celular ingresado en el formulario 
+     * construye el link para whatsapp y lo setea en el formulario como un enlace.
+     */
+    setLinkWhatsapp() {
+        if (this.nroWhatsapp.valid) {
+            let nro: string = this.nroWhatsapp.value;
+            nro = nro.slice(1);
+            let url: string = 'https://api.whatsapp.com/send?phone=598' + nro;
+            this.whatsapp.setValue(url);
+        } else {
+            this.whatsapp.setValue(null);
         }
     }
 
