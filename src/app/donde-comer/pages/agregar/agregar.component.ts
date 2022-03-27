@@ -32,7 +32,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
     localidades: string[] = [];
     titulo: string = "Nuevo Restaurante";
     direccionMinLength: number = 3;
-    direccionMaxLength: number = 20;
+    direccionMaxLength: number = 50;
     nombreMinLength: number = 3;
     nombreMaxLength: number = 20;
     mapaTouched: boolean = false;
@@ -252,7 +252,6 @@ export class AgregarComponent implements OnInit, OnDestroy {
      * en el formulario solo el número de tetéfono.
      */
     setNroWhatsapp(link: string) {
-        console.log(link)
         if (link !== null && link !== undefined) {
             //let enlace: string = this.whatsapp.value
             let celular = "0" + link.slice(39)

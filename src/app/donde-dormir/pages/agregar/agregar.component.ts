@@ -28,7 +28,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
     directorio: string = ''; //subcarpeta con el nombre del lugar
     directorioPadre: string = 'donde_dormir'; //carpeta raíz donde se almacenan los lugares
     heightAllowedEvento: number = 150;
-    idRestoran: string;
+    idHotel: string;
     localidades: string[] = [];
     titulo: string = "Nuevo Hotel";
     widthAllowedEvento: number = 150;
@@ -107,23 +107,24 @@ export class AgregarComponent implements OnInit, OnDestroy {
             switchMap(({ id }) => this.dormirService.geHotelId(id))
             //    tap(res => console.log(res))
         ).subscribe(hotel => {
-            let restoranActual: Hotel = JSON.parse(JSON.stringify(hotel));
-            if (restoranActual.id !== undefined) {//Si estamos editando un lugar
-                this.idRestoran = restoranActual.id;
-                delete restoranActual.id //para setear el formulario es necesario quitar el tatributo id
-                for (let i = 0; i < restoranActual.telefonos.length; i++) {
+            let hotelActual: Hotel = JSON.parse(JSON.stringify(hotel));
+            if (hotelActual.id !== undefined) {//Si estamos editando un lugar
+                this.idHotel = hotelActual.id;
+                delete hotelActual.id //para setear el formulario es necesario quitar el tatributo id
+                for (let i = 0; i < hotelActual.telefonos.length; i++) {
                     if (i > 0) {
                         this.agregarNuevoTelefonoAlFormulario()
                     }
                 }
-                this.hotelForm.reset(restoranActual);
+                this.hotelForm.reset(hotelActual);
                 this.titulo = `Editando ${this.hotelForm.controls['nombre'].value}`;
                 //               this.latitud.setValue(this.ubicacion.value.lat);
                 //               this.longitud.setValue(this.ubicacion.value.lng);
-                this.imagenRestaurante = restoranActual.imagen;
+                this.imagenRestaurante = hotelActual.imagen;
+                this.setNroWhatsapp(hotelActual.whatsapp);
                 this.directorio = this.carpeta.value;
-                this.configService.getLocadidadesDepartamento(restoranActual.departamento);
-                this.mapaService.dMiniMapa = { centro: restoranActual.ubicacion, zoom: 15, marcador: true };
+                this.configService.getLocadidadesDepartamento(hotelActual.departamento);
+                this.mapaService.dMiniMapa = { centro: hotelActual.ubicacion, zoom: 15, marcador: true };
                 this.mapaService.emitirMiniMapa();
             } else {
                this.mapaService.resetDataMiniMapa(); 
@@ -257,11 +258,11 @@ export class AgregarComponent implements OnInit, OnDestroy {
         if (this.hotelForm.valid) {
             this.cambiosConfirmados = true;
             //verifica si es una actualización o un hotel nuevo
-            if (this.idRestoran !== undefined) {//si se esta editando un hotel
+            if (this.idHotel !== undefined) {//si se esta editando un hotel
                 const restauran: Hotel = this.hotelForm.value;
-                restauran.id = this.idRestoran;
+                restauran.id = this.idHotel;
                 this.dormirService.updateHotelLocal(restauran);
-                this.dormirService.updateHotelFirestore(this.hotelForm.value, this.idRestoran)
+                this.dormirService.updateHotelFirestore(this.hotelForm.value, this.idHotel)
                     .then(res => {
                         this.openSnackBarSubmit('¡El hotel se ha actualizado correctamente!');
                     })
@@ -314,6 +315,17 @@ export class AgregarComponent implements OnInit, OnDestroy {
             this.whatsapp.setValue(url);
         } else {
             this.whatsapp.setValue(null);
+        }
+    }
+
+    /**
+     * Función para obtener el celular a partir del link de whatsapp y mostrar
+     * en el formulario solo el número de tetéfono.
+     */
+    setNroWhatsapp(link: string) {
+        if (link !== null && link !== undefined) {
+            let celular = "0" + link.slice(39)
+            this.nroWhatsapp.setValue(celular)
         }
     }
 

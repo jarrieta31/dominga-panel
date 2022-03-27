@@ -14,4 +14,6 @@ export interface Hotel {
     imagen: Imagen;
     publicado: boolean;
     ubicacion: Posicion;
+    instagram: string;
+    whatsapp: string;
 }
