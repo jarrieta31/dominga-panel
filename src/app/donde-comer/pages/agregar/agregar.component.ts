@@ -34,7 +34,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
     direccionMinLength: number = 3;
     direccionMaxLength: number = 50;
     nombreMinLength: number = 3;
-    nombreMaxLength: number = 20;
+    nombreMaxLength: number = 50;
     mapaTouched: boolean = false;
     widthAllowedEvento: number = 150;
     restaurantes: Restoran[] = [];
