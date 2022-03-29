@@ -87,7 +87,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
         tipo: [''],
         telefonos: this.fb.array([
             this.fb.group({
-                numero: ['', [this.vs.validarTelefono]]
+                numero: [null, [this.vs.validarTelefono]]
             })
         ]),
         ubicacion: [null, [this.vs.validarUbicacion, Validators.required]],
@@ -95,7 +95,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
         whatsapp: [null, [this.vs.valididarWhatsapp]],
         videos: this.fb.array([
             this.fb.group({
-                url: ['', [this.vs.validarVideoYoutube]]
+                url: [null, [this.vs.validarVideoYoutube]]
             })
         ])
     });

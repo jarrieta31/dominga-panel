@@ -52,7 +52,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
         publicado: [false],
         telefonos: this.fb.array([
             this.fb.group({
-                numero: ['', [this.vs.validarTelefono]]
+                numero: [null, [this.vs.validarTelefono]]
             })
         ]),
         ubicacion: [null, [Validators.required, this.vs.validarUbicacion]],
