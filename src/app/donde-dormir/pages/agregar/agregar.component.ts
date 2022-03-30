@@ -40,7 +40,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
     mapaTouched: boolean = false;
     imagenesBorradas: string[] = []; // solo guarda las imagenes que se eliminaron y no se guardo el formulario
     disabledAddPhones: boolean = false;
-    private unsubscribe$ = new Subject<void>();
+    private destroy$ = new Subject<void>();
 
     public hotelForm: FormGroup = this.fb.group({
         carpeta: [null],
@@ -77,7 +77,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
         /** Observable que se dispara al cambiar el valor del minimapa.
         *  Los datos del formulario cambian en funcion del valor del mimimapa
         */
-        this.mapaService.getObsMiniMapa().pipe(takeUntil(this.unsubscribe$))
+        this.mapaService.getObsMiniMapa().pipe(takeUntil(this.destroy$))
             .subscribe(res => {
                 //si los datos del minimapa son validos y tiene marcado en true
                 if (res !== undefined && res.marcador === true) {
@@ -90,11 +90,11 @@ export class AgregarComponent implements OnInit, OnDestroy {
      }
 
     ngOnInit(): void {
-        this.configService.getObsDepartamentos().pipe(takeUntil(this.unsubscribe$))
+        this.configService.getObsDepartamentos().pipe(takeUntil(this.destroy$))
             .subscribe(dptos => this.departamentos = dptos)
-        this.configService.getObsLocalidades().pipe(takeUntil(this.unsubscribe$))
+        this.configService.getObsLocalidades().pipe(takeUntil(this.destroy$))
             .subscribe(locs => this.localidades = locs);
-        this.dormirService.getObsHoteles$().pipe(takeUntil(this.unsubscribe$))
+        this.dormirService.getObsHoteles$().pipe(takeUntil(this.destroy$))
             .subscribe(hoteles => this.hoteles = hoteles);
         this.configService.emitirDepartamentosActivos();
         this.configService.emitirLocalidades();
@@ -103,9 +103,8 @@ export class AgregarComponent implements OnInit, OnDestroy {
         * A partir de la ruta y el id recibido obtiene el lugar para mostrar 
         */
         this.activatedRoute.params.pipe(
-            takeUntil(this.unsubscribe$),
-            switchMap(({ id }) => this.dormirService.geHotelId(id))
-            //    tap(res => console.log(res))
+            switchMap(({ id }) => this.dormirService.geHotelId(id)),
+            takeUntil(this.destroy$),
         ).subscribe(hotel => {
             let hotelActual: Hotel = JSON.parse(JSON.stringify(hotel));
             if (hotelActual.id !== undefined) {//Si estamos editando un lugar
@@ -144,8 +143,8 @@ export class AgregarComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.unsubscribe$.next();
-        this.unsubscribe$.complete();
+        this.destroy$.next();
+        this.destroy$.complete();
         //limpia el mapa y el mini-mapa
         this.mapaService.resetDataMapa();
         this.mapaService.resetDataMiniMapa();

@@ -189,11 +189,9 @@ export class AgregarComponent implements OnInit, OnDestroy {
         this.activatedRoute.params.pipe(
             switchMap(({ id }) => this.lugaresService.getLugarId(id)),
             takeUntil(this.destroy$),
-            //    tap(res => console.log(res))
         ).subscribe(lugar => {
             let lugarActual: Lugar = JSON.parse(JSON.stringify(lugar));
             if (lugarActual.id !== undefined) {//Si estamos editando un lugar
-
                 this.idLugar = lugarActual.id;
                 let prio = lugarActual.prioridad;
                 this.prioridadAnterior = prio
@@ -225,14 +223,6 @@ export class AgregarComponent implements OnInit, OnDestroy {
             this.carpeta.setValue(this.directorio);
         }
 
-        /**Si el formuario es válido lo guarda en el storage local */
-        zip(this.lugarForm.statusChanges, this.lugarForm.valueChanges).pipe(
-            filter(([stado, valor]) => stado == 'VALID'), //pasa solo los validos
-            map(([stado, valor]) => valor),//descarta el estado y solo toma el valor
-            //tap(data => console.log(data))//solo es para ver
-        ).subscribe(formValue => {
-            // localStorage.setItem('lugar', JSON.stringify(formValue));
-        })
     }
 
     ngAfterViewInit(): void {
@@ -270,7 +260,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
      * Por ultimo sustitye el valor en el control del formulario.
      * @param i Es el indice que ocupa el FormControl que quiero modificar en el FormArray de videos.
      */
-    parseLinkYoutube(i) {
+    parseLinkYoutube(i:number) {
         let controls = this.videos as FormArray;
         let control = controls.at(i);
         let link: string = control.value.url;
@@ -280,7 +270,6 @@ export class AgregarComponent implements OnInit, OnDestroy {
         if (fin !== -1) {
             link = link.slice(0, fin);// si hay una lista al final la quita
         }
-        console.log(link)
         control.setValue({ url: link })
     }
 
@@ -340,7 +329,6 @@ export class AgregarComponent implements OnInit, OnDestroy {
      */
     eliminarImagenGaleria($event: string) {
         this.imagenesBorradas.push($event)
-        console.log($event)
         this.galeria = this.galeria.filter((item) => {
             return item.name !== $event;
         })
@@ -361,12 +349,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
         this.fbStorage.listarArchvios(`${this.directorioPadre}/${this.directorio}`)
             .then(res => {
                 res.items.forEach(item => {
-                    //const existe = (element: Slider) => element.imagen.name === item.name;
-                    //if (!this.sliders.some(existe)) {
-                    //    this.fbStorage.borrarArchivoStorage(`${this.directorioPadre}/${this.directorio}`, item.name);
                     console.log("se elimino : " + item.name)
-                    //}
-                    console.log(this.imagenes.length)
                 })
             })
             .catch(error => console.log(`Error al intentar borrar la imagen residual. ${error}`))
@@ -416,8 +399,6 @@ export class AgregarComponent implements OnInit, OnDestroy {
             let arrCoords = coordsStr.split(',');
             let latitud = Number(arrCoords[0].trim());
             let longitud = Number(arrCoords[1].trim());
-            console.log("latitud: ", latitud)
-            console.log("longitud: ", longitud);
             this.ubicacion.setValue({ "lng": longitud, "lat": latitud });
             this.mapaService.dMiniMapa = { centro: { lng: longitud, lat: latitud }, zoom: 15, marcador: true };
             this.mapaService.emitirMiniMapa();
@@ -492,7 +473,6 @@ export class AgregarComponent implements OnInit, OnDestroy {
 
     /** Se dispara al seleccionar la imagen Principal desde la galeria, pero por ahora no hace nada */
     setImagenPrincipal() {
-        console.log("estas en setImagenPrincipal ")
     }
 
     /**

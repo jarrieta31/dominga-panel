@@ -43,7 +43,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
     imagenRestaurante: Imagen = this.imagenDefault;
     imagenesBorradas: string[] = []; // solo guarda las imagenes que se eliminaron y no se guardo el formulario
     disabledAddPhones: boolean = false;
-    private unsubscribe$ = new Subject<void>();
+    private destroy$ = new Subject<void>();
 
     nroWhatsapp: FormControl = this.fb.control(null, [this.vs.valididarNumeroWhatsapp]);
 
@@ -82,7 +82,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
         /** Observable que se dispara al cambiar el valor del minimapa.
         *  Los datos del formulario cambian en funcion del valor del mimimapa
         */
-        this.mapaService.getObsMiniMapa().pipe(takeUntil(this.unsubscribe$))
+        this.mapaService.getObsMiniMapa().pipe(takeUntil(this.destroy$))
             .subscribe(res => {
                 //si los datos del minimapa son validos y tiene marcado en true
                 if (res !== undefined && res.marcador === true) {
@@ -95,11 +95,11 @@ export class AgregarComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        this.configService.getObsDepartamentos().pipe(takeUntil(this.unsubscribe$))
+        this.configService.getObsDepartamentos().pipe(takeUntil(this.destroy$))
             .subscribe(dptos => this.departamentos = dptos)
-        this.configService.getObsLocalidades().pipe(takeUntil(this.unsubscribe$))
+        this.configService.getObsLocalidades().pipe(takeUntil(this.destroy$))
             .subscribe(locs => this.localidades = locs);
-        this.comerService.getObsRestaurantes$().pipe(takeUntil(this.unsubscribe$))
+        this.comerService.getObsRestaurantes$().pipe(takeUntil(this.destroy$))
             .subscribe(restaurantes => this.restaurantes = restaurantes);
         this.configService.emitirDepartamentosActivos();
         this.configService.emitirLocalidades();
@@ -108,7 +108,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
         * A partir de la ruta y el id recibido obtiene el lugar para mostrar 
         */
         this.activatedRoute.params.pipe(
-            takeUntil(this.unsubscribe$),
+            takeUntil(this.destroy$),
             switchMap(({ id }) => this.comerService.geRestoranId(id))
             //    tap(res => console.log(res))
         ).subscribe(restoran => {
@@ -145,8 +145,8 @@ export class AgregarComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.unsubscribe$.next();
-        this.unsubscribe$.complete();
+        this.destroy$.next();
+        this.destroy$.complete();
         //limpia el mapa y el mini-mapa
         this.mapaService.resetDataMapa();
         this.mapaService.resetDataMiniMapa();

@@ -27,7 +27,7 @@ interface Categoria {
 export class AgregarComponent implements OnInit, OnDestroy {
 
     allowedSizeGallery: number = 150; //kilo bytes
-    private unsubscribe$ = new Subject<void>();
+    private destroy$ = new Subject<void>();
     allowedSizeHome: number = 80; //kilo bytes
     cambiosConfirmados: boolean = false;
     departamentos: string[] = [];
@@ -71,9 +71,9 @@ export class AgregarComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         
-        this.configService.getObsDepartamentos().pipe(takeUntil(this.unsubscribe$)).subscribe(dptos => this.departamentos = dptos)
-        this.configService.getObsLocalidades().pipe(takeUntil(this.unsubscribe$)).subscribe(locs => this.localidades = locs);
-        this.configService.getObsTiposArtistas().pipe(takeUntil(this.unsubscribe$)).subscribe(tiposArtistas => this.categorias = tiposArtistas);
+        this.configService.getObsDepartamentos().pipe(takeUntil(this.destroy$)).subscribe(dptos => this.departamentos = dptos)
+        this.configService.getObsLocalidades().pipe(takeUntil(this.destroy$)).subscribe(locs => this.localidades = locs);
+        this.configService.getObsTiposArtistas().pipe(takeUntil(this.destroy$)).subscribe(tiposArtistas => this.categorias = tiposArtistas);
         this.configService.emitirDepartamentosActivos();
         this.configService.emitirTiposArtistas();
 
@@ -83,6 +83,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
         this.activatedRoute.params.pipe(
             switchMap(({ id }) => this.artistasService.getArtistaId(id)),
             //   tap(res => console.log(res))
+            takeUntil(this.destroy$)
         ).subscribe(artista => {
             let artistaActual: Artista = JSON.parse(JSON.stringify(artista));
             if (artistaActual.id !== undefined) {//Si estamos editando un artista
@@ -103,8 +104,8 @@ export class AgregarComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.unsubscribe$.next();
-        this.unsubscribe$.complete();
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
     ngAfterViewInit(): void {

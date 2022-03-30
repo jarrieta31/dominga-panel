@@ -24,7 +24,7 @@ export class ListadoComponent implements OnInit {
     filtrosGuardados = [];
     localidades: string[] = [];
     departamentos: string[] = [];
-    private unsubscribe$ = new Subject<void>();
+    private destroy$ = new Subject<void>();
     departamentos$: Observable<string[]>;
     localidades$: Observable<string[]>;
     page: number = 1;
@@ -48,13 +48,13 @@ export class ListadoComponent implements OnInit {
 
     ngOnInit(): void {
         this.configService.getObsDepartamentos()
-            .pipe( takeUntil( this.unsubscribe$ ) )
+            .pipe( takeUntil( this.destroy$ ) )
             .subscribe(dptos => this.departamentos = dptos)
         this.configService.getObsLocalidades()
-            .pipe(takeUntil( this.unsubscribe$ ))
+            .pipe(takeUntil( this.destroy$ ))
             .subscribe(locs => this.localidades = locs);
         this.comerService.getObsRestaurantes$()
-            .pipe( takeUntil(this.unsubscribe$) )
+            .pipe( takeUntil(this.destroy$) )
             .subscribe(restaurantes => this.restaurantes = restaurantes);
         this.configService.emitirDepartamentosActivos();
         this.configService.emitirLocalidades();
@@ -62,8 +62,8 @@ export class ListadoComponent implements OnInit {
     }
 
     ngOnDestroy(): void {
-        this.unsubscribe$.next();
-        this.unsubscribe$.complete();
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
     /** 

@@ -51,10 +51,7 @@ export class AgregarComponent implements OnInit, AfterViewInit, OnDestroy {
     startDateEnd: Moment;
     titulo: string = "Nuevo Evento";
     widthAllowedEvento: number = 600;
-    private sourceDepartamentos: Subscription;
-    private sourceLocalidades: Subscription;
-    private sourceMiniMapa: Subscription;
-    private unsubscribe$ = new Subject<void>();
+    private destroy$ = new Subject<void>();
     public prioridades$: Observable<number[]>;
     prioridades: number[] = [];
     private imagenDefault = { "name": "imagen-default", "url": "assets/default-lugar-galeria.jpg" };
@@ -151,7 +148,7 @@ export class AgregarComponent implements OnInit, AfterViewInit, OnDestroy {
         /** Observable que se dispara al cambiar el valor del minimapa.
         *  Los datos del formulario cambian en funcion del valor del mimimapa
         */
-        this.mapaService.getObsMiniMapa().pipe(takeUntil(this.unsubscribe$))
+        this.mapaService.getObsMiniMapa().pipe(takeUntil(this.destroy$))
             .subscribe(res => {
                 //si los datos del minimapa son validos y tiene marcado en true
                 if (res !== undefined && res.marcador === true) {
@@ -166,9 +163,9 @@ export class AgregarComponent implements OnInit, AfterViewInit, OnDestroy {
     ngOnInit(): void {
         this._adapter.setLocale('es');
         this.pickerFechEnd.disable();
-        this.configService.getObsDepartamentos().pipe(takeUntil(this.unsubscribe$)).subscribe(dptos => this.departamentos = dptos)
-        this.configService.getObsLocalidades().pipe(takeUntil(this.unsubscribe$)).subscribe(locs => this.localidades = locs);
-        this.configService.getObsTiposEventos().pipe(takeUntil(this.unsubscribe$)).subscribe(eventosTipos => this.eventosTipos = eventosTipos );
+        this.configService.getObsDepartamentos().pipe(takeUntil(this.destroy$)).subscribe(dptos => this.departamentos = dptos)
+        this.configService.getObsLocalidades().pipe(takeUntil(this.destroy$)).subscribe(locs => this.localidades = locs);
+        this.configService.getObsTiposEventos().pipe(takeUntil(this.destroy$)).subscribe(eventosTipos => this.eventosTipos = eventosTipos );
         this.configService.emitirTiposEventos();
         this.configService.emitirDepartamentosActivos();
 
@@ -176,9 +173,9 @@ export class AgregarComponent implements OnInit, AfterViewInit, OnDestroy {
         * A partir de la ruta y el id recibido obtiene el lugar para mostrar 
         */
         this.activatedRoute.params.pipe(
-            takeUntil(this.unsubscribe$),
             switchMap(({ id }) => this.eventosService.getEventoId(id)),
             //    tap(res => console.log(res))
+            takeUntil(this.destroy$),
         ).subscribe(evento => {
             let eventoActual: Evento = JSON.parse(JSON.stringify(evento));
             if (eventoActual.id !== undefined) {//Si estamos editando un lugar
@@ -213,14 +210,8 @@ export class AgregarComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.unsubscribe$.next();
-        this.unsubscribe$.complete();
-
-   //     this.sourceDepartamentos.unsubscribe();
-   //     this.sourceLocalidades.unsubscribe();
-   //     this.sourceMiniMapa.unsubscribe();
-
-
+        this.destroy$.next();
+        this.destroy$.complete();
         //limpia el mapa y el mini-mapa
         this.mapaService.resetDataMapa();
         this.mapaService.resetDataMiniMapa();
@@ -355,7 +346,6 @@ export class AgregarComponent implements OnInit, AfterViewInit, OnDestroy {
     quitarEspacios() {
 
     }
-
 
     /** No se está usando ahora
          * Función para mostrar un mensaje corto al usuario 

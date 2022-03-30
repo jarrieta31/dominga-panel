@@ -52,9 +52,6 @@ export class ListadoComponent implements OnInit, OnDestroy {
         this.configService.getObsLocalidades().pipe(takeUntil(this.destroy$)).subscribe(locs => this.localidades = locs);
         this.configService.emitirLocalidades();
         this.lugaresService.getObsLugares$().pipe(takeUntil(this.destroy$)).subscribe(lugares => this.lugares = lugares);
-        
-        //this.lugares$ = this.lugaresService.getObsLugares$();
-        //Chequea si los lugares del departamento actual estan en cache.
 
         //this.configService.cargarTiposArtistas();
         //this.configService.cargarTiposEventos();

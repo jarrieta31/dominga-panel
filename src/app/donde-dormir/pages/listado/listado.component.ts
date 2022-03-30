@@ -23,11 +23,7 @@ export class ListadoComponent implements OnInit, OnDestroy{
     filtrosGuardados = [];
     localidades: string[] = [];
     departamentos: string[] = [];
-//    private sourceDepartamentos: Subscription;
-//    private sourceLocalidades: Subscription;
-//    private sourceLugares: Subscription;
-//    private sourceRestaurantes: Subscription;
-    private unsubscribe$ = new Subject<void>();
+    private destroy$ = new Subject<void>();
     departamentos$: Observable<string[]>;
     localidades$: Observable<string[]>;
     page: number = 1;
@@ -51,13 +47,13 @@ export class ListadoComponent implements OnInit, OnDestroy{
 
     ngOnInit(): void {
         this.configService.getObsDepartamentos()
-            .pipe( takeUntil( this.unsubscribe$ ) )
+            .pipe( takeUntil( this.destroy$ ) )
             .subscribe(dptos => this.departamentos = dptos)
         this.configService.getObsLocalidades()
-            .pipe(takeUntil( this.unsubscribe$ ))
+            .pipe(takeUntil( this.destroy$ ))
             .subscribe(locs => this.localidades = locs);
         this.dormirService.getObsHoteles$()
-            .pipe( takeUntil(this.unsubscribe$) )
+            .pipe( takeUntil(this.destroy$) )
             .subscribe(hoteles => this.hoteles = hoteles);
         this.configService.emitirDepartamentosActivos();
         this.configService.emitirLocalidades();
@@ -66,8 +62,8 @@ export class ListadoComponent implements OnInit, OnDestroy{
     }
 
     ngOnDestroy(): void {
-        this.unsubscribe$.next();
-        this.unsubscribe$.complete();
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
     /** 

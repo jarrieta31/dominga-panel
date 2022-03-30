@@ -19,13 +19,11 @@ export class ConfigService {
     private tiposArtistas$: Subject<string[]>
     private tiposEventos$: Subject<string[]>
     private tiposLugares$: Subject<string[]>
-    private config$: Subject<Config>
+    private localidades$: Subject<string[]>;
+    private departamentos$: Subject<string[]>
     private tiposArtistas: string[] = [];
     private tiposEventos: string[] = [];
     private tiposLugares: string[] = [];
-
-    private localidades$: Subject<string[]>;
-    private departamentos$: Subject<string[]>
     listLocalidades: string[] = [];
     listDptosActivos: string[] = [];
     departamentos: Departamento[] = [];
@@ -35,6 +33,10 @@ export class ConfigService {
     private tiposLugaresRef = this.afs.collection('tipos_lugares');
     private configRef = this.afs.collection('config');
 
+    heightArtista: number;
+    heightComer: number;
+    heightDormir: number;
+    heightEvento: number;
     heightGallery: number;
     heightHome: number;
     heightSlider: number;
@@ -43,10 +45,18 @@ export class ConfigService {
     maxLengthNombre: number;
     minLengthDescripcion: number;
     minLengthNombre: number;
+    sizeArtista: number ;
+    sizeComer: number ;
+    sizeDormir: number ;
+    sizeEvento: number ;
     sizeGallery: number ;
     sizeHome: number;
     sizeSlider: number;
     sizeSliderArtista: number;
+    widthArtista: number;
+    widthComer: number;
+    widthDormir: number;
+    widthEvento: number;
     widthGallery: number;
     widthHome: number;
     widthSlider: number;
@@ -181,7 +191,10 @@ export class ConfigService {
         this.configRef.ref.get().then(querySnapshot => {
             querySnapshot.forEach(item => {
                 const data: any = item.data();
-                console.log(data.heightGallery)
+                this.heightArtista = data.heightArtista;
+                this.heightComer = data.heightComer;
+                this.heightDormir = data.heightDormir;
+                this.heightEvento = data.heightEvento;
                 this.heightGallery = data.heightGallery;
                 this.heightHome = data.heightHome;
                 this.heightSlider = data.heightSlider;
@@ -190,17 +203,24 @@ export class ConfigService {
                 this.maxLengthNombre = data.maxLengthNombre;
                 this.minLengthDescripcion = data.minLengthDescripcion;
                 this.minLengthNombre = data.minLengthNombre;
+                this.sizeArtista = data.sizeArtista;
+                this.sizeComer = data.sizeComer;
+                this.sizeDormir = data.sizeDormir;
+                this.sizeEvento = data.sizeEvento;
                 this.sizeGallery = data.sizeGallery;
                 this.sizeHome = data.sizeHome;
                 this.sizeSlider = data.sizeSlider;
                 this.sizeSliderArtista = data.sizeSliderArtista;
+                this.widthArtista = data.widthArtista;
+                this.widthComer = data.widthComer;
+                this.widthDormir = data.widthDormir;
+                this.widthEvento = data.widthEvento;
                 this.widthGallery = data.widthGallery;
                 this.widthHome = data.widthHome;
                 this.widthSlider = data.widthSlider;
                 this.widthSliderArtista = data.widthSliderArtista;
 
             })
-            console.log(this.sizeGallery)
         })
     }
 
@@ -1052,33 +1072,33 @@ export class ConfigService {
 
         let config:Config = {
             heightArtista: 150,            //px
-            heightComer: 450,         //px
+            heightComer: 150,         //px
             heightDormir: 150,         //px
             heightEvento: 450,            //px
             heightGallery: 450,         //px
             heightHome: 353,            //px
-            heightSlider: 353,          //px
-            heightSliderArtista: 353,   //px
+            heightSlider: 500,          //px
+            heightSliderArtista: 500,   //px
             maxLengthDescripcion: 4900, //caracteres
             maxLengthNombre: 50,        //caracteres
             minLengthDescripcion: 50,   //caracteres
             minLengthNombre: 2,         //caracteres
-            sizeArtista: 150,            //kilo bytes
-            sizeComer: 150,            //kilo bytes
-            sizeDormir: 150,            //kilo bytes
+            sizeArtista: 12,            //kilo bytes
+            sizeComer: 12,            //kilo bytes
+            sizeDormir: 12,            //kilo bytes
             sizeEvento: 150,            //kilo bytes
             sizeGallery: 150,           //kilo bytes
             sizeHome: 150,              //kilo bytes
-            sizeSlider: 150,            //kilo bytes
-            sizeSliderArtista: 150,     //kilo bytes
+            sizeSlider: 170,            //kilo bytes
+            sizeSliderArtista: 1500,     //kilo bytes
             widthArtista: 150,          //px
             widthComer: 150,          //px
             widthDormir: 150,          //px
             widthEvento: 600,          //px
             widthGallery: 600,          //px
             widthHome: 600,             //px
-            widthSlider: 600,           //px
-            widthSliderArtista: 600,    //px
+            widthSlider: 850,           //px
+            widthSliderArtista: 850,    //px
         }
 
         this.configRef.add(config);
