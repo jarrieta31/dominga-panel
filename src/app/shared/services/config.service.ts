@@ -7,6 +7,7 @@ import { LocalStorageService } from './local-storage.service';
 import { TipoArtista } from '../interfaces/tipoArtista.interface';
 import { TipoLugar } from '../interfaces/tipoLugar.interface';
 import { TipoEvento } from '../interfaces/tipoEvento.interface';
+import { Config } from '../interfaces/config.interface';
 
 
 
@@ -18,9 +19,10 @@ export class ConfigService {
     private tiposArtistas$: Subject<string[]>
     private tiposEventos$: Subject<string[]>
     private tiposLugares$: Subject<string[]>
+    private config$: Subject<Config>
     private tiposArtistas: string[] = [];
-    private tiposEventos: string[]  = [];
-    private tiposLugares: string[]  = [];
+    private tiposEventos: string[] = [];
+    private tiposLugares: string[] = [];
 
     private localidades$: Subject<string[]>;
     private departamentos$: Subject<string[]>
@@ -31,6 +33,24 @@ export class ConfigService {
     private tiposEventosRef = this.afs.collection('tipos_eventos');
     private tiposArtistasRef = this.afs.collection('tipos_artistas');
     private tiposLugaresRef = this.afs.collection('tipos_lugares');
+    private configRef = this.afs.collection('config');
+
+    heightGallery: number;
+    heightHome: number;
+    heightSlider: number;
+    heightSliderArtista: number;
+    maxLengthDescripcion: number;
+    maxLengthNombre: number;
+    minLengthDescripcion: number;
+    minLengthNombre: number;
+    sizeGallery: number ;
+    sizeHome: number;
+    sizeSlider: number;
+    sizeSliderArtista: number;
+    widthGallery: number;
+    widthHome: number;
+    widthSlider: number;
+    widthSliderArtista: number;
 
     constructor(
         private localStorageService: LocalStorageService,
@@ -40,10 +60,12 @@ export class ConfigService {
         this.tiposArtistas$ = new Subject();
         this.tiposEventos$ = new Subject();
         this.tiposLugares$ = new Subject();
+        this.getConfig()
         this.getTiposLugaresFirestore();
         this.getTiposArtistasFirestore();
         this.getTiposEventosFirestore();
         this.getDepartamentosFirestore();
+    
     }
 
     /** retorna el observable de tipos de artista */
@@ -135,7 +157,7 @@ export class ConfigService {
             console.error("Error en getTiposLugaresFirestore(). error:" + error);
         })
     }
-    
+
     getTiposEventosFirestore() {
         this.tiposEventosRef.ref.get().then(
             querySnapshot => {
@@ -152,6 +174,33 @@ export class ConfigService {
             }
         ).catch(error => {
             console.error("Error en getTiposEventosFirestore(). error:" + error);
+        })
+    }
+
+    getConfig(){
+        this.configRef.ref.get().then(querySnapshot => {
+            querySnapshot.forEach(item => {
+                const data: any = item.data();
+                console.log(data.heightGallery)
+                this.heightGallery = data.heightGallery;
+                this.heightHome = data.heightHome;
+                this.heightSlider = data.heightSlider;
+                this.heightSliderArtista = data.heightSliderArtista;
+                this.maxLengthDescripcion = data.maxLengthDescripcion;
+                this.maxLengthNombre = data.maxLengthNombre;
+                this.minLengthDescripcion = data.minLengthDescripcion;
+                this.minLengthNombre = data.minLengthNombre;
+                this.sizeGallery = data.sizeGallery;
+                this.sizeHome = data.sizeHome;
+                this.sizeSlider = data.sizeSlider;
+                this.sizeSliderArtista = data.sizeSliderArtista;
+                this.widthGallery = data.widthGallery;
+                this.widthHome = data.widthHome;
+                this.widthSlider = data.widthSlider;
+                this.widthSliderArtista = data.widthSliderArtista;
+
+            })
+            console.log(this.sizeGallery)
         })
     }
 
@@ -938,16 +987,16 @@ export class ConfigService {
      */
     cargarTiposArtistas() {
         let tiposArtistas: TipoArtista[] = [
-            {nombre: "Arte circense"},
-            {nombre: "Danza"},
-            {nombre: "Escritura"},
-            {nombre: "Escultura"},
-            {nombre: "Fotografía"},
-            {nombre: "Performance"},
-            {nombre: "Música"},
-            {nombre: "Pintura"},
-            {nombre: "Poesía"},
-            {nombre: "Teatro"},
+            { nombre: "Arte circense" },
+            { nombre: "Danza" },
+            { nombre: "Escritura" },
+            { nombre: "Escultura" },
+            { nombre: "Fotografía" },
+            { nombre: "Performance" },
+            { nombre: "Música" },
+            { nombre: "Pintura" },
+            { nombre: "Poesía" },
+            { nombre: "Teatro" },
         ]
 
         tiposArtistas.forEach(tipoArtista => {
@@ -960,18 +1009,18 @@ export class ConfigService {
      */
     cargarTiposLugares() {
         let tiposLugares: TipoLugar[] = [
-            {nombre: "Almacenes Artesanales"},
-            {nombre: "Bodegas"},
-            {nombre: "Boliches de Campaña"},
-            {nombre: "Circuito Céntrico"},
-            {nombre: "Club del Queso"},
-            {nombre: "Estancias Turísticas"},
-            {nombre: "Posada de Campo"},
-            {nombre: "Ruta Patrimonial"},
-            {nombre: "Turismo Aventura"},
-            {nombre: "Turismo Deportivo"},
-            {nombre: "Turismo de Playa"},
-            {nombre: "Otros"},
+            { nombre: "Almacenes Artesanales" },
+            { nombre: "Bodegas" },
+            { nombre: "Boliches de Campaña" },
+            { nombre: "Circuito Céntrico" },
+            { nombre: "Club del Queso" },
+            { nombre: "Estancias Turísticas" },
+            { nombre: "Posada de Campo" },
+            { nombre: "Ruta Patrimonial" },
+            { nombre: "Turismo Aventura" },
+            { nombre: "Turismo Deportivo" },
+            { nombre: "Turismo de Playa" },
+            { nombre: "Otros" },
         ];
 
         tiposLugares.forEach(tipoLugar => {
@@ -984,16 +1033,55 @@ export class ConfigService {
      */
     cargarTiposEventos() {
         let tiposEventos: TipoEvento[] = [
-            {nombre: "Teatro"},
-            {nombre: "Música"},
-            {nombre: "Deportes"},
-            {nombre: "Danza"},
-            {nombre: "Otros"},
+            { nombre: "Teatro" },
+            { nombre: "Música" },
+            { nombre: "Deportes" },
+            { nombre: "Danza" },
+            { nombre: "Otros" },
         ];
 
         tiposEventos.forEach(tipoEvento => {
             this.tiposEventosRef.add(tipoEvento);
         })
+    }
+
+    /**
+     * Método para llenar la base de datos con los datos de configuración.
+     */
+    cargarConfiguracion() {
+
+        let config:Config = {
+            heightArtista: 150,            //px
+            heightComer: 450,         //px
+            heightDormir: 150,         //px
+            heightEvento: 450,            //px
+            heightGallery: 450,         //px
+            heightHome: 353,            //px
+            heightSlider: 353,          //px
+            heightSliderArtista: 353,   //px
+            maxLengthDescripcion: 4900, //caracteres
+            maxLengthNombre: 50,        //caracteres
+            minLengthDescripcion: 50,   //caracteres
+            minLengthNombre: 2,         //caracteres
+            sizeArtista: 150,            //kilo bytes
+            sizeComer: 150,            //kilo bytes
+            sizeDormir: 150,            //kilo bytes
+            sizeEvento: 150,            //kilo bytes
+            sizeGallery: 150,           //kilo bytes
+            sizeHome: 150,              //kilo bytes
+            sizeSlider: 150,            //kilo bytes
+            sizeSliderArtista: 150,     //kilo bytes
+            widthArtista: 150,          //px
+            widthComer: 150,          //px
+            widthDormir: 150,          //px
+            widthEvento: 600,          //px
+            widthGallery: 600,          //px
+            widthHome: 600,             //px
+            widthSlider: 600,           //px
+            widthSliderArtista: 600,    //px
+        }
+
+        this.configRef.add(config);
     }
 
     /**
@@ -1015,6 +1103,8 @@ export class ConfigService {
         // a debe ser igual b
         return 0;
     }
+
+    
 
 
 }

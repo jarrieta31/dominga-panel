@@ -1,0 +1,30 @@
+export interface Config{
+    heightArtista: number;
+    heightComer: number;
+    heightDormir: number;
+    heightEvento: number;
+    heightGallery: number;
+    heightHome: number;
+    heightSlider: number;
+    heightSliderArtista: number;
+    maxLengthDescripcion: number;
+    maxLengthNombre: number;
+    minLengthDescripcion: number;
+    minLengthNombre: number;
+    sizeArtista: number ;
+    sizeComer: number ;
+    sizeDormir: number ;
+    sizeEvento: number ;
+    sizeGallery: number ;
+    sizeHome: number;
+    sizeSlider: number;
+    sizeSliderArtista: number;
+    widthArtista: number;
+    widthComer: number;
+    widthDormir: number;
+    widthEvento: number;
+    widthGallery: number;
+    widthHome: number;
+    widthSlider: number;
+    widthSliderArtista: number;
+}

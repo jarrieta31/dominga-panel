@@ -50,7 +50,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
     widthAllowedGallery: number = 600;
     widthAllowedHome: number = 600;
     public prioridades$: Observable<number[]>;
-    private unsubscribe$ = new Subject<void>();
+    private destroy$ = new Subject<void>();
     prioridades: number[] = [];
     private imagenHomeDefault = { "name": "imagen-default", "url": "assets/default-home.jpg" };
     private imagenPrincipalDefault = { "name": "imagen-default", "url": "assets/default-lugar-galeria.jpg" };
@@ -159,7 +159,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
         /** Observable que se dispara al cambiar el valor del minimapa.
         *  Los datos del formulario cambian en funcion del valor del mimimapa
         */
-        this.mapaService.getObsMiniMapa().pipe(takeUntil(this.unsubscribe$))
+        this.mapaService.getObsMiniMapa().pipe(takeUntil(this.destroy$))
             .subscribe(res => {
                 //si los datos del minimapa son validos y tiene marcado en true
                 if (res !== undefined && res.marcador === true) {
@@ -174,21 +174,21 @@ export class AgregarComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         const lugarGuardado = localStorage.getItem('lugar');
         // cargando los datos de lugares, departamentos y localidades
-        this.configService.getObsDepartamentos().pipe(takeUntil(this.unsubscribe$)).subscribe(dptos => this.departamentos = dptos);
+        this.configService.getObsDepartamentos().pipe(takeUntil(this.destroy$)).subscribe(dptos => this.departamentos = dptos);
         this.configService.emitirDepartamentosActivos();
-        this.configService.getObsLocalidades().pipe(takeUntil(this.unsubscribe$)).subscribe(locs => this.localidades = locs);
-        this.configService.getObsTiposLugares().pipe(takeUntil(this.unsubscribe$)).subscribe(tiposLugares => this.tiposLugares = tiposLugares);
+        this.configService.getObsLocalidades().pipe(takeUntil(this.destroy$)).subscribe(locs => this.localidades = locs);
+        this.configService.getObsTiposLugares().pipe(takeUntil(this.destroy$)).subscribe(tiposLugares => this.tiposLugares = tiposLugares);
         this.configService.emitirTiposLugares();
         //this.prioridades$ = this.lugaresService.getObsPrioridades$();
-        this.lugaresService.getObsPrioridades$().pipe(takeUntil(this.unsubscribe$)).subscribe(prioridades => this.prioridades = prioridades);
+        this.lugaresService.getObsPrioridades$().pipe(takeUntil(this.destroy$)).subscribe(prioridades => this.prioridades = prioridades);
         this.lugaresService.updateListaPrioridadesLocal(true);
 
         /**
         * A partir de la ruta y el id recibido obtiene el lugar para mostrar 
         */
         this.activatedRoute.params.pipe(
-            takeUntil(this.unsubscribe$),
             switchMap(({ id }) => this.lugaresService.getLugarId(id)),
+            takeUntil(this.destroy$),
             //    tap(res => console.log(res))
         ).subscribe(lugar => {
             let lugarActual: Lugar = JSON.parse(JSON.stringify(lugar));
@@ -241,8 +241,8 @@ export class AgregarComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.unsubscribe$.next();
-        this.unsubscribe$.complete();
+        this.destroy$.next();
+        this.destroy$.complete();
 
         this.lugarForm.reset({
             imagenHome: this.imagenHomeDefault,
@@ -305,21 +305,19 @@ export class AgregarComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * Campura el estado del checkbox de Baño accesibilidad y guarda su estado.
+     * Captura el estado del checkbox de Baño accesibilidad y guarda su estado.
      * @param onBanios 
      */
     setAccesibilidadBanios(onBanios: MatCheckboxChange){
-        console.log("checked banios: ", onBanios.checked)
         this.accesibilidadDefault.banio = onBanios.checked;
         this.accesibilidad.setValue(this.accesibilidadDefault);
     }
 
     /**
-     * Campura el estado del checkbox de Rampa accesibilidad y guarda su estado.
+     * Captura el estado del checkbox de Rampa accesibilidad y guarda su estado.
      * @param onRampas 
      */
     setAccesibilidadRampas(onRampas: MatCheckboxChange){
-        console.log("checked rampas: ", onRampas.checked)
         this.accesibilidadDefault.rampa = onRampas.checked;
         this.accesibilidad.setValue(this.accesibilidadDefault);
     }
@@ -531,7 +529,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * Abre el dialog con para el mapa
+     * Abre el dialog para el mapa
      */
     abrirMapa() {
         this.mapaTouched = true;
@@ -539,8 +537,6 @@ export class AgregarComponent implements OnInit, OnDestroy {
         dialogConfig.disableClose = false;
         dialogConfig.autoFocus = true;
         dialogConfig.minHeight = "565px";
-        //dialogConfig.minHeight = "450px";
-        //dialogConfig.minWidth = "900px";
         dialogConfig.minWidth = "1400px";
         dialogConfig.id = "dialogMapa";
         dialogConfig.data = 0;

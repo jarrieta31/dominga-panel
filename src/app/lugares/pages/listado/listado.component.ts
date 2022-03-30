@@ -23,7 +23,7 @@ export class ListadoComponent implements OnInit, OnDestroy {
     departamentos: string[] = [];
     titulo:string = "Lista lugares"
 
-    private unsubscribe$ = new Subject<void>();
+    private destroy$ = new Subject<void>();
     public lugares: Lugar[];
     departamentos$: Observable<string[]>;
     localidades$: Observable<string[]>;
@@ -47,11 +47,11 @@ export class ListadoComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        this.configService.getObsDepartamentos().pipe(takeUntil(this.unsubscribe$)).subscribe(dptos => { this.departamentos = dptos });
+        this.configService.getObsDepartamentos().pipe(takeUntil(this.destroy$)).subscribe(dptos => { this.departamentos = dptos });
         this.configService.emitirDepartamentosActivos();
-        this.configService.getObsLocalidades().pipe(takeUntil(this.unsubscribe$)).subscribe(locs => this.localidades = locs);
+        this.configService.getObsLocalidades().pipe(takeUntil(this.destroy$)).subscribe(locs => this.localidades = locs);
         this.configService.emitirLocalidades();
-        this.lugaresService.getObsLugares$().pipe(takeUntil(this.unsubscribe$)).subscribe(lugares => this.lugares = lugares);
+        this.lugaresService.getObsLugares$().pipe(takeUntil(this.destroy$)).subscribe(lugares => this.lugares = lugares);
         
         //this.lugares$ = this.lugaresService.getObsLugares$();
         //Chequea si los lugares del departamento actual estan en cache.
@@ -59,6 +59,7 @@ export class ListadoComponent implements OnInit, OnDestroy {
         //this.configService.cargarTiposArtistas();
         //this.configService.cargarTiposEventos();
         //this.configService.cargarTiposLugares();
+        //this.configService.cargarConfiguracion();
         if (!this.lugaresService.checkCache(this.departamento.value)) {
             this.lugaresService.getLugaresFirestore(this.departamento.value);
         }
@@ -69,8 +70,8 @@ export class ListadoComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.unsubscribe$.next();
-        this.unsubscribe$.complete();
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
 
