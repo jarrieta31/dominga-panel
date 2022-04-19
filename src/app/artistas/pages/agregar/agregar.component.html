@@ -25,18 +25,24 @@
 
                     <mat-form-field fxFlex="50%">
                         <mat-label>Nombre del Artista</mat-label>
-                        <input required matInput autocomplete="off" type="text" formControlName="nombre" (change)="quitarEspacios()">
+                        <input required matInput autocomplete="off" type="text" formControlName="nombre" (change)="clearNombre()">
                         <ng-container *ngIf="!nombre.valid && nombre.touched">
-                            <mat-error *ngIf="nombre.errors.required">El campo nombre del artista es obligatorio.
+                            <mat-error *ngIf="nombre.errors.required">
+                                El campo nombre del artista es obligatorio.
                             </mat-error>
-                            <mat-error *ngIf="nombre.errors.minlength">El nombre de tener un mínimo de 2 caracteres.
+                            <mat-error *ngIf="nombre.errors.minlength && !nombre.errors.required ">
+                                El nombre de tener un mínimo de {{ nombreMinLength }} caracteres.
+                            </mat-error>
+                            <mat-error *ngIf="nombre.errors.maxlength && !nombre.errors.required ">
+                                El nombre de tener un máximo de {{ nombreMaxLength }} caracteres.
                             </mat-error>
                         </ng-container>
                     </mat-form-field>
 
                     <div fxFlex="35%">
                         Activar para que sea visible en la app: &nbsp; &nbsp;
-                        <mat-slide-toggle (change)="switchPublicar()" formControlName="publicado">Publicado
+                        <mat-slide-toggle (change)="switchPublicar()" formControlName="publicado">
+                            Publicado
                         </mat-slide-toggle>
                     </div>
 
@@ -93,7 +99,7 @@
                     </mat-form-field>
                     <mat-form-field>
                         <mat-label>Spotify</mat-label>
-                        <input autocomplete="off" type="url" matInput formControlName="spotify"
+                        <input autocomplete="off" type="url" matInput formControlName="spotify" (change)="clearSpotify()"
                             placeholder="https://open.spotify.com/artist/1dfeR4HaWDbWqFHLkxsg1d?si=bQ7EkrD9SuCeyrvfzcZizw&nd=1">
                         <mat-icon matSuffix>insert_link</mat-icon>
                         <ng-container *ngIf="!spotify.valid && spotify.touched">
@@ -104,7 +110,8 @@
                     </mat-form-field>
                     <mat-form-field>
                         <mat-label>Instagram</mat-label>
-                        <input type="url" autocomplete="off" matInput formControlName="instagram" placeholder="http://www.instagram.com/">
+                        <input type="url" autocomplete="off" matInput formControlName="instagram"
+                                (change)="clearInstagram()"  placeholder="http://www.instagram.com/">
                         <mat-icon matSuffix>insert_link</mat-icon>
                         <ng-container *ngIf="!instagram.valid && instagram.touched">
                             <mat-error>URL no válida! Ejemplo: http://www.instagram.com/mi-perfil</mat-error>
@@ -154,12 +161,12 @@
                                     </button>
                                 </mat-card-actions>
                             </mat-card>
-                            <p>Tamaño de imágen: {{widthAllowedArtista}} x {{heightAllowedArtista}} px</p>
+                            <p>Tamaño de imágen: {{widthArtista}} px {{heightArtista}} px</p>
                         </div>
                         <div class="home">
                             <app-upload-files [DirectorioPadre]="directorioPadre" [Directorio]="directorio"
-                                [widthAllowed]="widthAllowedArtista" [heightAllowed]="heightAllowedArtista"
-                                [allowedSize]="allowedSizeGallery" (imagenSubidaUploader)="setImagenArtista($event)">
+                                [widthAllowed]="widthArtista" [heightAllowed]="heightArtista"
+                                [allowedSize]="sizeArtista" (imagenSubidaUploader)="setImagenArtista($event)">
                             </app-upload-files>
                         </div>
                     </div>

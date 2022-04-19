@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollection, DocumentChangeAction, DocumentReference, DocumentData } from '@angular/fire/compat/firestore';
 import { Observable, Subject } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { Departamento } from '../interfaces/departamento';
 import { LocalStorageService } from './local-storage.service';
 import { TipoArtista } from '../interfaces/tipoArtista.interface';
@@ -32,50 +31,91 @@ export class ConfigService {
     private tiposArtistasRef = this.afs.collection('tipos_artistas');
     private tiposLugaresRef = this.afs.collection('tipos_lugares');
     private configRef = this.afs.collection('config');
+    
+    /** Largo máximo de un nombre */
+    nombreMaxLength: number = 50;
+    /** Largo mínimo de un nombre */
+    nombreMinLength: number = 2;
+    /** Largo máximo de una dirección */
+    direccionMaxLength: number = 60;
+    /** Largo mínimo de una dirección */
+    direccionMinLength: number = 3;
 
-    heightArtista: number;
-    heightComer: number;
-    heightDormir: number;
-    heightEvento: number;
-    heightGallery: number;
-    heightHome: number;
-    heightSlider: number;
-    heightSliderArtista: number;
-    maxLengthDescripcion: number;
-    maxLengthNombre: number;
-    minLengthDescripcion: number;
-    minLengthNombre: number;
-    sizeArtista: number ;
-    sizeComer: number ;
-    sizeDormir: number ;
-    sizeEvento: number ;
-    sizeGallery: number ;
-    sizeHome: number;
-    sizeSlider: number;
-    sizeSliderArtista: number;
-    widthArtista: number;
-    widthComer: number;
-    widthDormir: number;
-    widthEvento: number;
-    widthGallery: number;
-    widthHome: number;
-    widthSlider: number;
-    widthSliderArtista: number;
+    /** Peso en kb de la foto de artista */
+    sizeArtista: number = 12;                
+    /** Ancho en px de la foto de artista */
+    heightArtista: number = 150;                  
+    /** Ancho de imagen Artista */
+    widthArtista: number = 150;
+
+    /** Peso en kb de la foto de artista */
+    sizeEvento: number = 80;                
+    /** Ancho en px de la foto de artista */
+    heightEvento: number = 450;                  
+    /** Ancho de imagen Artista */
+    widthEvento: number = 600;
+    /** Largo máximo de la descrión de un evento */
+    eventoDescripcionMinLength: number = 50;
+    /** Largo mínimo de la descrión de un evento */
+    eventoDescripcionMaxLength: number = 2000;
+
+    /** Peso en kb de la foto de comer */
+    sizeComer: number = 12;                
+    /** Ancho en px de la foto de comer */
+    heightComer: number = 150;                  
+    /** Ancho de imagen comer */
+    widthComer: number = 150;
+
+    /** Peso en kb de la foto de dormir */
+    sizeDormir: number = 12;                
+    /** Ancho en px de la foto de dormir */
+    heightDormir: number = 150;                  
+    /** Ancho de imagen dormir */
+    widthDormir: number = 150;
+
+    /** Peso en kb de la foto de un lugar */
+    sizeLugar: number = 150;                
+    /** Alto en px de la foto de un lugar */
+    heightLugar: number  = 450 ;                   
+    /** Ancho de imagen Lugar */
+    widthLugar: number = 600;
+    /** Largo máximo de la descrión de un lugar */
+    lugarDescripcionMinLength: number = 60;
+    /** Largo mínimo de la descrión de un lugar */
+    lugarDescripcionMaxLength: number = 4900;
+
+    /** Peso en kb de la foto de artista */
+    sizeHome: number = 150;                
+    /** Alto en px de la foto de un lugar */
+    heightHome: number = 353;                   
+    /** Ancho de imagen Home */
+    widthHome: number = 600;
+
+    /** Peso en kb de la foto de artista */
+    sizeSlider: number = 150;                
+    /** Largo máximo de la descrión de un evento */
+    heightSlider: number = 450;                   
+    /** Ancho de imagen slider */
+    widthSlider: number = 600;
+    /** Ancho en px de la foto de artista */
+    sizeSliderArtista: number = 1500;                
+
+
+
 
     constructor(
         private localStorageService: LocalStorageService,
-        private afs: AngularFirestore) {
+        private afs: AngularFirestore,
+    ) {
         this.localidades$ = new Subject();
         this.departamentos$ = new Subject();
         this.tiposArtistas$ = new Subject();
         this.tiposEventos$ = new Subject();
         this.tiposLugares$ = new Subject();
-        this.getConfig()
         this.getTiposLugaresFirestore();
         this.getTiposArtistasFirestore();
         this.getTiposEventosFirestore();
         this.getDepartamentosFirestore();
-    
     }
 
     /** retorna el observable de tipos de artista */
@@ -184,43 +224,6 @@ export class ConfigService {
             }
         ).catch(error => {
             console.error("Error en getTiposEventosFirestore(). error:" + error);
-        })
-    }
-
-    getConfig(){
-        this.configRef.ref.get().then(querySnapshot => {
-            querySnapshot.forEach(item => {
-                const data: any = item.data();
-                this.heightArtista = data.heightArtista;
-                this.heightComer = data.heightComer;
-                this.heightDormir = data.heightDormir;
-                this.heightEvento = data.heightEvento;
-                this.heightGallery = data.heightGallery;
-                this.heightHome = data.heightHome;
-                this.heightSlider = data.heightSlider;
-                this.heightSliderArtista = data.heightSliderArtista;
-                this.maxLengthDescripcion = data.maxLengthDescripcion;
-                this.maxLengthNombre = data.maxLengthNombre;
-                this.minLengthDescripcion = data.minLengthDescripcion;
-                this.minLengthNombre = data.minLengthNombre;
-                this.sizeArtista = data.sizeArtista;
-                this.sizeComer = data.sizeComer;
-                this.sizeDormir = data.sizeDormir;
-                this.sizeEvento = data.sizeEvento;
-                this.sizeGallery = data.sizeGallery;
-                this.sizeHome = data.sizeHome;
-                this.sizeSlider = data.sizeSlider;
-                this.sizeSliderArtista = data.sizeSliderArtista;
-                this.widthArtista = data.widthArtista;
-                this.widthComer = data.widthComer;
-                this.widthDormir = data.widthDormir;
-                this.widthEvento = data.widthEvento;
-                this.widthGallery = data.widthGallery;
-                this.widthHome = data.widthHome;
-                this.widthSlider = data.widthSlider;
-                this.widthSliderArtista = data.widthSliderArtista;
-
-            })
         })
     }
 
@@ -1070,38 +1073,72 @@ export class ConfigService {
      */
     cargarConfiguracion() {
 
-        let config:Config = {
-            heightArtista: 150,            //px
-            heightComer: 150,         //px
-            heightDormir: 150,         //px
-            heightEvento: 450,            //px
-            heightGallery: 450,         //px
-            heightHome: 353,            //px
-            heightSlider: 500,          //px
-            heightSliderArtista: 500,   //px
-            maxLengthDescripcion: 4900, //caracteres
-            maxLengthNombre: 50,        //caracteres
-            minLengthDescripcion: 50,   //caracteres
-            minLengthNombre: 2,         //caracteres
-            sizeArtista: 12,            //kilo bytes
-            sizeComer: 12,            //kilo bytes
-            sizeDormir: 12,            //kilo bytes
-            sizeEvento: 150,            //kilo bytes
-            sizeGallery: 150,           //kilo bytes
-            sizeHome: 150,              //kilo bytes
-            sizeSlider: 170,            //kilo bytes
-            sizeSliderArtista: 1500,     //kilo bytes
-            widthArtista: 150,          //px
-            widthComer: 150,          //px
-            widthDormir: 150,          //px
-            widthEvento: 600,          //px
-            widthGallery: 600,          //px
-            widthHome: 600,             //px
-            widthSlider: 850,           //px
-            widthSliderArtista: 850,    //px
-        }
+        let listaConfig: Config[] = [
+            {
+                nombre: "artistas",
+                nombreMinLength: 2,
+                nombreMaxLength: 50,
+                height: 150,
+                size: 12,
+                width: 150
+            },
+            {
+                descripcionMinLength: 50,
+                descripcionMaxLength: 4000,
+                direccionMaxLength: 50,
+                direccionMinLength: 5,
+                nombre: "eventos",
+                nombreMinLength: 2,
+                nombreMaxLength: 50,
+                height: 450,
+                size: 80,
+                width: 600
+            },
+            {
+                nombre: "lugares",
+                height: 353,
+                size: 150,
+                width: 600
+            },
+            {
+                nombre: "gallery",
+                height: 450,
+                width: 600,
+                size: 150
+            },
+            {
+                nombre: "sliderArtista",
+                height: 500,
+                width: 850,
+                size: 1500
+            },
+            {
+                nombre: "slider",
+                height: 500,
+                width: 850,
+                size: 170
+            },
+            {
+                direccionMaxLength: 50,
+                direccionMinLength: 5,
+                nombre: "dormir",
+                height: 150,
+                width: 150,
+                size: 12
+            },
+            {
+                direccionMaxLength: 50,
+                direccionMinLength: 5,
+                nombre: "comer",
+                height: 150,
+                width: 150,
+                size: 12
+            }
+        ];
 
-        this.configRef.add(config);
+        listaConfig.forEach(conf => {
+            this.configRef.add(conf);
+        })
     }
 
     /**
@@ -1117,14 +1154,14 @@ export class ConfigService {
         if (a < b) {
             return -1;
         }
-        if (a > b) {
+        else if (a > b) {
             return 1;
         }
         // a debe ser igual b
         return 0;
     }
 
-    
+
 
 
 }

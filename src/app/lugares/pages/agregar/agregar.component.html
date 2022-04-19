@@ -1,5 +1,4 @@
 <div fxLayout='row' fxLayoutAlign="space-between center">
-
     <button mat-button type="button" color="primary" (click)="regresar()">
         <mat-icon>arrow_back_ios</mat-icon>
         Lista lugares
@@ -23,14 +22,17 @@
                 <div fxLayout="row rwap" fxLayoutGap="1.5rem">
                     <mat-form-field fxFlex="15rem">
                         <mat-label>Nombre del Lugar</mat-label>
-                        <input autocomplete="off" required matInput type="text" formControlName="nombre" (change)="quitarEspacios()">
+                        <input autocomplete="off" required matInput type="text" formControlName="nombre" (change)="clearNombre()">
                         <!-- La expresion "nombre" representa "lugarForm.get('nombre')" pero gracias al geter solo escribimos nombre -->
                         <ng-container *ngIf="!nombre.valid && nombre.touched">
                             <mat-error *ngIf="nombre.errors.required">
                                 El campo nombre es obligatorio.
                             </mat-error>
-                            <mat-error *ngIf="nombre.errors.minlength">
-                                El nombre de tener un mínimo de 2 caracteres.
+                            <mat-error *ngIf="nombre.errors.minlength && !nombre.required">
+                                El nombre de tener un mínimo de {{nombreMinLength}} caracteres.
+                            </mat-error>
+                            <mat-error *ngIf="nombre.errors.maxlength && !nombre.required">
+                                El nombre de tener un máximo de {{nombreMaxLength}} caracteres.
                             </mat-error>
                         </ng-container>
                     </mat-form-field>
@@ -166,11 +168,11 @@
                             </angular-editor>
                             <br>
                             <ng-container *ngIf="!descripcion.valid && descripcion.touched">
-                                <mat-error *ngIf="descripcion.errors.maxlength">
-                                    La descripción del lugar no puede superar los 4000 caracteres.
+                                <mat-error *ngIf="descripcion.errors.maxlength && !descripcion.errors.required">
+                                    La descripción del lugar no puede superar los {{descripcionMaxLength}} caracteres.
                                 </mat-error>
-                                <mat-error *ngIf="descripcion.errors.minlength">
-                                    La descripción del lugar no puede ser menor a 50 carcacteres. caracteres.
+                                <mat-error *ngIf="descripcion.errors.minlength && !descripcion.errors.required">
+                                    La descripción del lugar no puede ser menor a {{descripcionMinLength}} caracteres.
                                 </mat-error>
                             </ng-container>
                         </div>
@@ -195,7 +197,7 @@
                     <div *ngFor="let telefono of telefonos.controls; let i=index" [formGroupName]="i" fxLayout="row"
                         fxLayoutAling="space-between center" fxLayoutGap="0.625rem">
                         <mat-form-field>
-                            <input autocomplete="off" matInput type="tel" formControlName="numero"
+                            <input autocomplete="off" matInput type="tel" formControlName="numero" (change)="clearTelefono(i)"
                                 placeholder="43401234 o 43401234-36 o 099123456">
                             <mat-icon matSuffix>phone</mat-icon>
                             <mat-label>Inserte el teléfono {{ i + 1}}</mat-label>
@@ -268,7 +270,7 @@
                 <div fxLayout="column" fxLayoutAlign="space-evenly" fxLayoutGap="0.625rem">
                     <mat-form-field>
                         <mat-label>Sitio Web</mat-label>
-                        <input autocomplete="off" type="url" matInput formControlName="web" placeholder="http://www.mi-sitio-web.com/">
+                        <input autocomplete="off" type="url" matInput formControlName="web" (change)="clearWeb()" placeholder="http://www.mi-sitio-web.com/">
                         <mat-icon matSuffix>insert_link</mat-icon>
                         <ng-container *ngIf="!web.valid && web.touched">
                             <mat-error>La URL ingresada no es válida!</mat-error>
@@ -276,7 +278,7 @@
                     </mat-form-field>
                     <mat-form-field class="whatsapp">
                         <mat-label>Whatsapp</mat-label>
-                        <input type="text" matInput autocomplete="off" [formControl]="nroWhatsapp"
+                        <input type="text" matInput autocomplete="off" [formControl]="nroWhatsapp" (change)="clearWhatsapp()"
                             (input)="setLinkWhatsapp()" placeholder="099123456">
                         <mat-icon matSuffix>phone</mat-icon>
                         <ng-container *ngIf="!nroWhatsapp.valid && nroWhatsapp.touched">
@@ -287,7 +289,7 @@
                     </mat-form-field>
                     <mat-form-field>
                         <mat-label>Facebook</mat-label>
-                        <input autocomplete="off" type="url" matInput formControlName="facebook"
+                        <input autocomplete="off" type="url" matInput formControlName="facebook" (change)="clearFacebook()"
                             placeholder="https://m.facebook.com/mi-perfil/">
                         <mat-icon matSuffix>insert_link</mat-icon>
                         <ng-container *ngIf="!facebook.valid && facebook.touched">
@@ -296,7 +298,8 @@
                     </mat-form-field>
                     <mat-form-field>
                         <mat-label>Instagram</mat-label>
-                        <input autocomplete="off" type="url" matInput formControlName="instagram" placeholder="http://www.instagram.com/">
+                        <input autocomplete="off" type="url" matInput formControlName="instagram" (change)="clearInstagram()" 
+                         placeholder="http://www.instagram.com/">
                         <mat-icon matSuffix>insert_link</mat-icon>
                         <ng-container *ngIf="!instagram.valid && instagram.touched">
                             <mat-error>URL no válida! Ejemplo: http://www.instagram.com/mi-perfil</mat-error>
@@ -380,12 +383,12 @@
                         </button>
                     </mat-card-actions>
                 </mat-card>
-                <p>Tamaño de imágen: {{widthAllowedHome}} x {{heightAllowedHome}} px</p>
+                <p>Tamaño de imágen: {{widthHome}} x {{heightHome}} px</p>
             </div>
             <div fxFlex="50%" class="home">
                 <app-upload-files [DirectorioPadre]="directorioPadre" [Directorio]="directorio"
-                    [widthAllowed]="widthAllowedHome" [heightAllowed]="heightAllowedHome"
-                    [allowedSize]="allowedSizeHome" (imagenSubidaUploader)="setImagenHome($event)">
+                    [widthAllowed]="widthHome" [heightAllowed]="heightHome"
+                    [allowedSize]="sizeHome" (imagenSubidaUploader)="setImagenHome($event)">
                 </app-upload-files>
             </div>
         </div>
@@ -403,14 +406,14 @@
                         <mat-card-footer>
                         </mat-card-footer>
                     </mat-card>
-                    <p>Tamaño de imágen: {{widthAllowedGallery}} x {{heightAllowedGallery}} px</p>
+                    <p>Tamaño de imágen: {{widthLugar}} x {{heightLugar}} px</p>
                 </div>
 
                 <div fxFlex="50%" fxLayout="column" fxFlexAlign="space-around center">
                     <!-- Módulo para subir archivos -->
                     <app-upload-files [tituloUploader]="tituloUploaderGaleria" [DirectorioPadre]="directorioPadre"
-                        [Directorio]="directorio" [widthAllowed]="widthAllowedGallery"
-                        [heightAllowed]="heightAllowedGallery" [allowedSize]="allowedSizeGallery"
+                        [Directorio]="directorio" [widthAllowed]="widthLugar"
+                        [heightAllowed]="heightLugar" [allowedSize]="sizeLugar"
                         (imagenSubidaUploader)="agregarImagenSubidaAGaleria($event)">
                     </app-upload-files>
                     <h4>Imágen Principal</h4>

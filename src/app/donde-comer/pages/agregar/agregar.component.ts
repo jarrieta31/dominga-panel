@@ -13,6 +13,7 @@ import { DialogPublicarComponent } from '../../components/dialog-publicar/dialog
 import { DondeComerService } from '../../services/donde-comer.service';
 import { MapaService } from '../../../shared/services/mapa.service';
 import { DialogMapaComponent } from 'src/app/shared/components/dialog-mapa/dialog-mapa.component';
+import { Telefono } from '../../../shared/interfaces/telefono.interface';
 
 @Component({
     selector: 'app-agregar',
@@ -21,8 +22,13 @@ import { DialogMapaComponent } from 'src/app/shared/components/dialog-mapa/dialo
 })
 export class AgregarComponent implements OnInit, OnDestroy {
 
-    allowedSizeGallery: number = 150; //kilo bytes
-    allowedSizeHome: number = 80; //kilo bytes
+    sizeComer: number = 0;
+    widthComer: number = 0;
+    heightComer: number = 0;
+    nombreMinLength: number = 0;
+    nombreMaxLength: number = 0;
+    direccionMaxLength: number = 0;
+    direccionMinLength: number = 0;
     cambiosConfirmados: boolean = false;
     departamentos: string[] = [];
     directorio: string = ''; //subcarpeta con el nombre del lugar
@@ -31,10 +37,6 @@ export class AgregarComponent implements OnInit, OnDestroy {
     idRestoran: string;
     localidades: string[] = [];
     titulo: string = "Nuevo Restaurante";
-    direccionMinLength: number = 3;
-    direccionMaxLength: number = 50;
-    nombreMinLength: number = 3;
-    nombreMaxLength: number = 50;
     mapaTouched: boolean = false;
     widthAllowedEvento: number = 150;
     restaurantes: Restoran[] = [];
@@ -49,24 +51,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
 
     ubicacionManual: FormControl = this.fb.control(null, [this.vs.validarCoordenadas]);
 
-    public restoranForm: FormGroup = this.fb.group({
-        carpeta: [null],
-        departamento: ['', Validators.required],
-        direccion: ['', [Validators.required, Validators.minLength(this.direccionMinLength), Validators.maxLength(this.direccionMaxLength)]],
-        imagen: [this.imagenDefault],
-        instagram: [null, [this.vs.validarInstagram]],
-        localidad: ['', [Validators.required]],
-        nombre: ['', [Validators.required, Validators.minLength(this.nombreMinLength), Validators.maxLength(this.nombreMaxLength)]],
-        publicado: [false],
-        telefonos: this.fb.array([
-            this.fb.group({
-                numero: [null, [this.vs.validarTelefono]]
-            })
-        ]),
-        whatsapp: [null, [this.vs.valididarWhatsapp]],
-        ubicacion: [null, [this.vs.validarUbicacion, Validators.required]],
-    });
-
+    public restoranForm: FormGroup;
     constructor(
         private cdRef: ChangeDetectorRef,
         private fb: FormBuilder,
@@ -79,6 +64,34 @@ export class AgregarComponent implements OnInit, OnDestroy {
         private comerService: DondeComerService,
         private mapaService: MapaService,
     ) {
+
+        this.heightComer = this.configService.heightComer;
+        this.widthComer = this.configService.widthComer;
+        this.sizeComer = this.configService.sizeComer;
+        this.nombreMinLength = this.configService.nombreMinLength;
+        this.nombreMaxLength = this.configService.nombreMaxLength;
+        this.direccionMinLength = this.configService.direccionMinLength;
+        this.direccionMaxLength  =  this.configService.direccionMaxLength;
+
+        this.restoranForm = this.fb.group({
+            carpeta: [null],
+            departamento: ['', Validators.required],
+            direccion: ['', [Validators.required, Validators.minLength(this.direccionMinLength), Validators.maxLength(this.direccionMaxLength)]],
+            imagen: [this.imagenDefault],
+            instagram: [null, [this.vs.validarInstagram]],
+            localidad: ['', [Validators.required]],
+            nombre: ['', [Validators.required, Validators.minLength(this.nombreMinLength), Validators.maxLength(this.nombreMaxLength)]],
+            publicado: [false],
+            telefonos: this.fb.array([
+                this.fb.group({
+                    numero: [null, [this.vs.validarTelefono]]
+                })
+            ]),
+            whatsapp: [null, [this.vs.valididarWhatsapp]],
+            ubicacion: [null, [this.vs.validarUbicacion, Validators.required]],
+        });
+
+
         /** Observable que se dispara al cambiar el valor del minimapa.
         *  Los datos del formulario cambian en funcion del valor del mimimapa
         */
@@ -129,7 +142,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
                 this.configService.getLocadidadesDepartamento(restoranActual.departamento);
                 this.mapaService.dMiniMapa = { centro: restoranActual.ubicacion, zoom: 15, marcador: true };
                 this.mapaService.emitirMiniMapa();
-            } 
+            }
         });
 
         // Si es un restoran nuevo crear un nombre para la carpeta
@@ -259,11 +272,6 @@ export class AgregarComponent implements OnInit, OnDestroy {
         }
     }
 
-    quitarEspacios() {
-
-    }
-
-
     /** No se está usando ahora
          * Función para mostrar un mensaje corto al usuario 
          * @param message Es el texto que se muestra en el snackBar
@@ -354,6 +362,58 @@ export class AgregarComponent implements OnInit, OnDestroy {
         const telefonosControl = this.restoranForm.get('telefonos') as FormArray;
         telefonosControl.removeAt(i);
         this.disabledAddPhones = telefonosControl.length >= 2 ? true : false;
+    }
+
+
+    /**
+     * Función para quitar los espacios en blanco del campo nombre.  
+     */
+    clearNombre() {
+        let _nombre: string = this.nombre.value;
+        _nombre = _nombre.trim();
+        this.nombre.setValue(_nombre);
+    }
+
+    /**
+     * Función para quitar los espacios en blanco del campo dirección.  
+     */
+    clearDireccion() {
+        let _direccion: string = this.direccion.value;
+        _direccion = _direccion.trim();
+        this.direccion.setValue(_direccion);
+    }
+
+    /**
+     * Función para quitar los espacios en blanco del campo instagram.  
+     */
+    clearInstagram() {
+        let _link: string = this.instagram.value;
+        _link = _link.trim();
+        this.instagram.setValue(_link);
+        console.log(_link)
+    }
+
+    /**
+     * Función para quitar los espacios en blanco del campo whatsapp.  
+     */
+    clearWhatsapp() {
+        let _link: string = this.nroWhatsapp.value;
+        _link = _link.trim();
+        this.nroWhatsapp.setValue(_link);
+        console.log(_link)
+    }
+
+    /**
+     * Función para quitar los espacios en blanco del campo teléfono.  
+     */
+    clearTelefono(i: number) {
+        let controls = this.telefonos as FormArray;
+        let control = controls.at(i);
+        let telefono: Telefono = control.value;
+        let numero: string = telefono.numero;
+        numero = numero.trim();
+        telefono.numero = numero
+        control.setValue(telefono);
     }
 
     // Getters

@@ -1,34 +1,30 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, AfterViewInit } from '@angular/core';
 import { FormBuilder, Validators, FormControl, FormArray, FormGroup } from '@angular/forms';
 import { ValidatorService } from '../../../shared/services/validator.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Imagen } from 'src/app/shared/interfaces/imagen.interface'
 import { Observable, Subscription, Subject } from 'rxjs';
-import { AngularEditorConfig } from '@kolkov/angular-editor';
 import { ConfigService } from '../../../shared/services/config.service';
 import { MatDialog } from '@angular/material/dialog';
 import { Artista } from '../../interfaces/artista.interface';
 import { ArtistasService } from '../../services/artistas.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { switchMap, takeUntil, tap } from 'rxjs/operators';
+import { switchMap, takeUntil, tap, filter } from 'rxjs/operators';
 import { DialogPublicarComponent } from '../../components/dialog-publicar/dialog-publicar.component';
-import { Video } from '../../../shared/interfaces/video.interface';
-
-interface Categoria {
-    value: string;
-    viewValue: string;
-}
 
 @Component({
     selector: 'app-agregar',
     templateUrl: './agregar.component.html',
     styleUrls: ['./agregar.component.css']
 })
-export class AgregarComponent implements OnInit, OnDestroy {
+export class AgregarComponent implements OnInit, OnDestroy, AfterViewInit {
 
-    allowedSizeGallery: number = 150; //kilo bytes
+    sizeArtista: number = 0; //kilo bytes
+    widthArtista: number = 0;
+    heightArtista: number = 0;
+    nombreMaxLength: number;
+    nombreMinLength: number;
     private destroy$ = new Subject<void>();
-    allowedSizeHome: number = 80; //kilo bytes
     cambiosConfirmados: boolean = false;
     departamentos: string[] = [];
     directorio: string = ''; //subcarpeta con el nombre del lugar
@@ -38,24 +34,11 @@ export class AgregarComponent implements OnInit, OnDestroy {
     idArtista: string;
     localidades: string[] = [];
     titulo: string = "Nuevo Artista";
-    widthAllowedArtista: number = 150;
     prioridades: number[] = [];
     private imagenDefault = { "name": "imagen-default", "url": "assets/default-lugar-galeria.jpg" };
     imagenArtista: Imagen = this.imagenDefault;
     imagenesBorradas: string[] = []; // solo guarda las imagenes que se eliminaron y no se guardo el formulario
-
-    public artistaForm: FormGroup = this.fb.group({
-        carpeta: [null],
-        departamento: ['', Validators.required],
-        imagen: [this.imagenDefault],
-        instagram: [null, [this.vs.validarInstagram]],
-        localidad: ['', [Validators.required]],
-        nombre: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
-        publicado: [false],
-        categoria: ['', [Validators.required]],
-        spotify: [null, [this.vs.validarPlayListSpotify]],
-        youtube: [null, [this.vs.validarVideoYoutube]],
-    });
+    public artistaForm: FormGroup;
 
     constructor(
         private cdRef: ChangeDetectorRef,
@@ -67,10 +50,28 @@ export class AgregarComponent implements OnInit, OnDestroy {
         public dialog: MatDialog,
         private configService: ConfigService,
         private artistasService: ArtistasService,
-    ) {  }
+    ) {
+        this.nombreMaxLength = this.configService.nombreMaxLength;
+        this.nombreMinLength = this.configService.nombreMinLength;
+        this.sizeArtista = this.configService.sizeArtista;
+        this.heightArtista = this.configService.heightArtista;
+        this.widthArtista = this.configService.widthArtista;
+
+        this.artistaForm = this.fb.group({
+            carpeta: [null],
+            departamento: ['', Validators.required],
+            imagen: [this.imagenDefault],
+            instagram: [null, [this.vs.validarInstagram]],
+            localidad: ['', [Validators.required]],
+            nombre: ['', [Validators.required, Validators.minLength(this.nombreMinLength), Validators.maxLength(this.nombreMaxLength)]],
+            publicado: [false],
+            categoria: ['', [Validators.required]],
+            spotify: [null, [this.vs.validarPlayListSpotify]],
+            youtube: [null, [this.vs.validarVideoYoutube]],
+        });
+    }
 
     ngOnInit(): void {
-        
         this.configService.getObsDepartamentos().pipe(takeUntil(this.destroy$)).subscribe(dptos => this.departamentos = dptos)
         this.configService.getObsLocalidades().pipe(takeUntil(this.destroy$)).subscribe(locs => this.localidades = locs);
         this.configService.getObsTiposArtistas().pipe(takeUntil(this.destroy$)).subscribe(tiposArtistas => this.categorias = tiposArtistas);
@@ -154,11 +155,6 @@ export class AgregarComponent implements OnInit, OnDestroy {
         }
     }
 
-    quitarEspacios() {
-
-    }
-
-
     /** No se está usando ahora
          * Función para mostrar un mensaje corto al usuario 
          * @param message Es el texto que se muestra en el snackBar
@@ -222,7 +218,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
      * Por ultimo sustitye el valor en el control del formulario.
      */
     parseLinkYoutube() {
-        let link:string = this.youtube.value 
+        let link: string = this.youtube.value
         link = link.replace(/\s/g, "");
         link = link.replace('watch?v=', 'embed/');
         let fin = link.indexOf('&');
@@ -230,6 +226,47 @@ export class AgregarComponent implements OnInit, OnDestroy {
             link = link.slice(0, fin);// si hay una lista al final la quita
         }
         this.youtube.setValue(link)
+    }
+
+    /**
+         * Función para quitar los espacios en blanco del campo nombre. 
+         */
+    clearNombre() {
+        let _nombre: string = this.nombre.value;
+        _nombre = _nombre.trim();
+        this.nombre.setValue(_nombre);
+        console.log(_nombre)
+    }
+
+
+    /**
+     * Función para quitar los espacios en blanco del campo spotify.  
+     */
+    clearSpotify() {
+        let _link: string = this.spotify.value;
+        _link = _link.trim();
+        this.spotify.setValue(_link);
+        console.log(_link)
+    }
+
+    /**
+     * Función para quitar los espacios en blanco del campo dirección.  
+     */
+    clearDireccion() {
+        let _link: string = this.direccion.value;
+        _link = _link.trim();
+        this.direccion.setValue(_link);
+        console.log(_link)
+    }
+
+    /**
+     * Función para quitar los espacios en blanco del campo instagram.  
+     */
+    clearInstagram() {
+        let _link: string = this.instagram.value;
+        _link = _link.trim();
+        this.instagram.setValue(_link);
+        console.log(_link)
     }
 
     // Getters
