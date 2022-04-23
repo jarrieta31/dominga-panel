@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Config } from '../interfaces/config.interface';
 
 
 @Injectable({
@@ -78,6 +79,12 @@ export class LocalStorageService {
         }
         this._slider = localStorage.getItem('slider');
         return this._slider;
+    }
+
+    get config():Config{
+        let c = JSON.parse(localStorage.getItem('config'));
+       // console.log(c);
+        return null 
     }
 
     

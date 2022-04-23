@@ -1,7 +1,7 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { DondeDormirService } from '../../services/donde-dormir.service';
-import { Observable, Subscription, Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { Hotel } from '../../interfaces/hotel.interface';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { LocalStorageService } from '../../../shared/services/local-storage.service';
@@ -13,9 +13,9 @@ import { takeUntil } from 'rxjs/operators';
   templateUrl: './listado.component.html',
   styleUrls: ['./listado.component.css']
 })
-export class ListadoComponent implements OnInit {
+export class ListadoComponent implements OnInit, OnDestroy{
 
-    titulo: string = "Donde Dormir";
+    titulo: string = "Lista donde dormir";
     hoteles$: Observable<Hotel[]>;
     hoteles: Hotel[];
 
@@ -23,11 +23,7 @@ export class ListadoComponent implements OnInit {
     filtrosGuardados = [];
     localidades: string[] = [];
     departamentos: string[] = [];
-//    private sourceDepartamentos: Subscription;
-//    private sourceLocalidades: Subscription;
-//    private sourceLugares: Subscription;
-//    private sourceRestaurantes: Subscription;
-    private unsubscribe$ = new Subject<void>();
+    private destroy$ = new Subject<void>();
     departamentos$: Observable<string[]>;
     localidades$: Observable<string[]>;
     page: number = 1;
@@ -51,13 +47,13 @@ export class ListadoComponent implements OnInit {
 
     ngOnInit(): void {
         this.configService.getObsDepartamentos()
-            .pipe( takeUntil( this.unsubscribe$ ) )
+            .pipe( takeUntil( this.destroy$ ) )
             .subscribe(dptos => this.departamentos = dptos)
         this.configService.getObsLocalidades()
-            .pipe(takeUntil( this.unsubscribe$ ))
+            .pipe(takeUntil( this.destroy$ ))
             .subscribe(locs => this.localidades = locs);
         this.dormirService.getObsHoteles$()
-            .pipe( takeUntil(this.unsubscribe$) )
+            .pipe( takeUntil(this.destroy$) )
             .subscribe(hoteles => this.hoteles = hoteles);
         this.configService.emitirDepartamentosActivos();
         this.configService.emitirLocalidades();
@@ -66,8 +62,8 @@ export class ListadoComponent implements OnInit {
     }
 
     ngOnDestroy(): void {
-        this.unsubscribe$.next();
-        this.unsubscribe$.complete();
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
     /** 

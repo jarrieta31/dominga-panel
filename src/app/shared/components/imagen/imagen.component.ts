@@ -41,9 +41,7 @@ private cdRef: ChangeDetectorRef,
     }
 
     mostrarImagen(){
-        console.log("carga finalizada")
         this.viewImage = true;
-        console.log(this.viewImage)
     }
 
     removerImagen(imagen: string) {

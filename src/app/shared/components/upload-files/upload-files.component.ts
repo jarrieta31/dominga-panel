@@ -2,8 +2,6 @@ import { Component, Input, Output, EventEmitter, OnInit, ViewChild, ElementRef, 
 import { FormControl, FormGroup, Validators, ValidationErrors, AbstractControl, FormBuilder } from '@angular/forms';
 import { StorageService } from '../../../shared/services/storage.service';
 import { Imagen } from '../../../shared/interfaces/imagen.interface';
-import { Video } from '../../../shared/interfaces/video.interface';
-import * as CryptoJS from 'crypto-js';
 
 @Component({
     selector: 'app-upload-files',
@@ -107,9 +105,6 @@ export class UploadFilesComponent implements OnInit {
                         this.alto = true;
                     }
                 };
-                var md5 = CryptoJS.MD5(fr).toString();
-                this.hash =md5;
-                console.log(md5 )
                 img.src = fr.result as string; // The data URL 
             };
             fr.readAsDataURL(image);

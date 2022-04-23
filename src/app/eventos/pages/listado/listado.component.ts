@@ -1,8 +1,8 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { EventosService } from '../../services/eventos.service';
 import { Evento } from '../../interfaces/evento.interface';
-import { Observable, Subscription } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { Observable, Subscription, Subject } from 'rxjs';
+import { tap, takeUntil } from 'rxjs/operators';
 import { ConfigService } from '../../../shared/services/config.service';
 import { LocalStorageService } from '../../../shared/services/local-storage.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
@@ -15,13 +15,11 @@ import { Router } from '@angular/router';
 })
 export class ListadoComponent implements OnInit {
 
-    titulo: string = "Lista de Eventos"; 
+    titulo: string = "Lista eventos"; 
     eventos: Evento[];
     publicadoSelec: boolean;
     page: number = 1;
-    private sourceDepartamentos: Subscription;
-    private sourceLocalidades: Subscription;
-    private sourceEventos: Subscription;
+    private destroy$ = new Subject<void>();
     filtrosGuardados = [];
     localidades: string[] = [];
     departamentos: string[] = [];
@@ -47,18 +45,17 @@ export class ListadoComponent implements OnInit {
 
 
     ngOnInit(): void {
-        this.sourceDepartamentos = this.configService.getObsDepartamentos().subscribe(dptos => { this.departamentos = dptos });
+        this.configService.getObsDepartamentos().pipe(takeUntil(this.destroy$)).subscribe(dptos => { this.departamentos = dptos });
         this.configService.emitirDepartamentosActivos();
-        this.sourceLocalidades = this.configService.getObsLocalidades().subscribe(locs => this.localidades = locs);
+        this.configService.getObsLocalidades().pipe(takeUntil(this.destroy$)).subscribe(locs => this.localidades = locs);
         this.configService.emitirLocalidades();
-        this.sourceEventos = this.eventosService.getObsEventos$().subscribe(eventos => this.eventos = eventos);
+        this.eventosService.getObsEventos$().pipe(takeUntil(this.destroy$)).subscribe(eventos => this.eventos = eventos);
         this.eventosService.getEventosFirestore(localStorage.getItem("departamento"));
     }
 
     ngOnDestroy(): void {
-        this.sourceDepartamentos.unsubscribe();
-        this.sourceLocalidades.unsubscribe();
-        this.sourceEventos.unsubscribe();
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
 

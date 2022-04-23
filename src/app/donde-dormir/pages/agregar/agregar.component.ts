@@ -13,6 +13,8 @@ import { DialogPublicarComponent } from '../../components/dialog-publicar/dialog
 import { DondeDormirService } from '../../services/donde-dormir.service';
 import { MapaService } from '../../../shared/services/mapa.service';
 import { DialogMapaComponent } from '../../../shared/components/dialog-mapa/dialog-mapa.component';
+import { MatGridTileHeaderCssMatStyler } from '@angular/material/grid-list';
+import { Telefono } from '../../../shared/interfaces/telefono.interface';
 
 @Component({
     selector: 'app-agregar',
@@ -21,17 +23,20 @@ import { DialogMapaComponent } from '../../../shared/components/dialog-mapa/dial
 })
 export class AgregarComponent implements OnInit, OnDestroy {
 
-    allowedSizeGallery: number = 150; //kilo bytes
-    allowedSizeHome: number = 80; //kilo bytes
+    sizeDormir: number = 0; //kilo bytes
+    widthDormir: number = 0;
+    heightDormir: number = 0;
+    nombreMinLength: number = 0;
+    nombreMaxLength: number = 0;
+    direccionMinLength: number = 0;
+    direccionMaxLength: number = 0;
     cambiosConfirmados: boolean = false;
     departamentos: string[] = [];
     directorio: string = ''; //subcarpeta con el nombre del lugar
     directorioPadre: string = 'donde_dormir'; //carpeta raíz donde se almacenan los lugares
-    heightAllowedEvento: number = 150;
-    idRestoran: string;
+    idHotel: string;
     localidades: string[] = [];
     titulo: string = "Nuevo Hotel";
-    widthAllowedEvento: number = 150;
     hoteles: Hotel[] = [];
     nroWhatsapp: FormControl = this.fb.control(null, [this.vs.valididarNumeroWhatsapp]);
     prioridades: number[] = [];
@@ -40,25 +45,9 @@ export class AgregarComponent implements OnInit, OnDestroy {
     mapaTouched: boolean = false;
     imagenesBorradas: string[] = []; // solo guarda las imagenes que se eliminaron y no se guardo el formulario
     disabledAddPhones: boolean = false;
-    private unsubscribe$ = new Subject<void>();
+    private destroy$ = new Subject<void>();
 
-    public hotelForm: FormGroup = this.fb.group({
-        carpeta: [null],
-        departamento: ['', Validators.required],
-        direccion: [''],
-        imagen: [this.imagenDefault],
-        localidad: ['', [Validators.required]],
-        nombre: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
-        publicado: [false],
-        telefonos: this.fb.array([
-            this.fb.group({
-                numero: ['', [this.vs.validarTelefono]]
-            })
-        ]),
-        ubicacion: [null, [Validators.required, this.vs.validarUbicacion]],
-        whatsapp: [null, [this.vs.valididarWhatsapp]],
-        instagram: [null, [this.vs.validarInstagram]],
-    });
+    public hotelForm: FormGroup;
 
     ubicacionManual: FormControl = this.fb.control(null, [this.vs.validarCoordenadas]);
 
@@ -74,10 +63,38 @@ export class AgregarComponent implements OnInit, OnDestroy {
         private dormirService: DondeDormirService,
         private mapaService: MapaService,
     ) {
+
+        this.heightDormir = this.configService.heightDormir;
+        this.widthDormir = this.configService.widthDormir;
+        this.sizeDormir = this.configService.sizeDormir;
+        this.nombreMinLength = this.configService.nombreMinLength;
+        this.nombreMaxLength = this.configService.nombreMaxLength;
+        this.direccionMinLength = this.configService.direccionMinLength;
+        this.direccionMaxLength = this.configService.direccionMaxLength;
+
+        this.hotelForm = this.fb.group({
+            carpeta: [null],
+            departamento: ['', Validators.required],
+            direccion: ['', [Validators.required, Validators.minLength(this.direccionMinLength), Validators.maxLength(this.direccionMaxLength)]],
+            imagen: [this.imagenDefault],
+            localidad: ['', [Validators.required]],
+            nombre: ['', [Validators.required, Validators.minLength(this.nombreMinLength), Validators.maxLength(this.nombreMaxLength)]],
+            publicado: [false],
+            telefonos: this.fb.array([
+                this.fb.group({
+                    numero: [null, [this.vs.validarTelefono]]
+                })
+            ]),
+            ubicacion: [null, [Validators.required, this.vs.validarUbicacion]],
+            whatsapp: [null, [this.vs.valididarWhatsapp]],
+            instagram: [null, [this.vs.validarInstagram]],
+        });
+
+
         /** Observable que se dispara al cambiar el valor del minimapa.
         *  Los datos del formulario cambian en funcion del valor del mimimapa
         */
-        this.mapaService.getObsMiniMapa().pipe(takeUntil(this.unsubscribe$))
+        this.mapaService.getObsMiniMapa().pipe(takeUntil(this.destroy$))
             .subscribe(res => {
                 //si los datos del minimapa son validos y tiene marcado en true
                 if (res !== undefined && res.marcador === true) {
@@ -87,14 +104,14 @@ export class AgregarComponent implements OnInit, OnDestroy {
                     this.ubicacion.setValue(null);
                 }
             });
-     }
+    }
 
     ngOnInit(): void {
-        this.configService.getObsDepartamentos().pipe(takeUntil(this.unsubscribe$))
+        this.configService.getObsDepartamentos().pipe(takeUntil(this.destroy$))
             .subscribe(dptos => this.departamentos = dptos)
-        this.configService.getObsLocalidades().pipe(takeUntil(this.unsubscribe$))
+        this.configService.getObsLocalidades().pipe(takeUntil(this.destroy$))
             .subscribe(locs => this.localidades = locs);
-        this.dormirService.getObsHoteles$().pipe(takeUntil(this.unsubscribe$))
+        this.dormirService.getObsHoteles$().pipe(takeUntil(this.destroy$))
             .subscribe(hoteles => this.hoteles = hoteles);
         this.configService.emitirDepartamentosActivos();
         this.configService.emitirLocalidades();
@@ -103,30 +120,30 @@ export class AgregarComponent implements OnInit, OnDestroy {
         * A partir de la ruta y el id recibido obtiene el lugar para mostrar 
         */
         this.activatedRoute.params.pipe(
-            takeUntil(this.unsubscribe$),
-            switchMap(({ id }) => this.dormirService.geHotelId(id))
-            //    tap(res => console.log(res))
+            switchMap(({ id }) => this.dormirService.geHotelId(id)),
+            takeUntil(this.destroy$),
         ).subscribe(hotel => {
-            let restoranActual: Hotel = JSON.parse(JSON.stringify(hotel));
-            if (restoranActual.id !== undefined) {//Si estamos editando un lugar
-                this.idRestoran = restoranActual.id;
-                delete restoranActual.id //para setear el formulario es necesario quitar el tatributo id
-                for (let i = 0; i < restoranActual.telefonos.length; i++) {
+            let hotelActual: Hotel = JSON.parse(JSON.stringify(hotel));
+            if (hotelActual.id !== undefined) {//Si estamos editando un lugar
+                this.idHotel = hotelActual.id;
+                delete hotelActual.id //para setear el formulario es necesario quitar el tatributo id
+                for (let i = 0; i < hotelActual.telefonos.length; i++) {
                     if (i > 0) {
                         this.agregarNuevoTelefonoAlFormulario()
                     }
                 }
-                this.hotelForm.reset(restoranActual);
+                this.hotelForm.reset(hotelActual);
                 this.titulo = `Editando ${this.hotelForm.controls['nombre'].value}`;
                 //               this.latitud.setValue(this.ubicacion.value.lat);
                 //               this.longitud.setValue(this.ubicacion.value.lng);
-                this.imagenRestaurante = restoranActual.imagen;
+                this.imagenRestaurante = hotelActual.imagen;
+                this.setNroWhatsapp(hotelActual.whatsapp);
                 this.directorio = this.carpeta.value;
-                this.configService.getLocadidadesDepartamento(restoranActual.departamento);
-                this.mapaService.dMiniMapa = { centro: restoranActual.ubicacion, zoom: 15, marcador: true };
+                this.configService.getLocadidadesDepartamento(hotelActual.departamento);
+                this.mapaService.dMiniMapa = { centro: hotelActual.ubicacion, zoom: 15, marcador: true };
                 this.mapaService.emitirMiniMapa();
             } else {
-               this.mapaService.resetDataMiniMapa(); 
+                this.mapaService.resetDataMiniMapa();
             }
         });
 
@@ -143,8 +160,8 @@ export class AgregarComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.unsubscribe$.next();
-        this.unsubscribe$.complete();
+        this.destroy$.next();
+        this.destroy$.complete();
         //limpia el mapa y el mini-mapa
         this.mapaService.resetDataMapa();
         this.mapaService.resetDataMiniMapa();
@@ -220,9 +237,9 @@ export class AgregarComponent implements OnInit, OnDestroy {
             let longitud = Number(arrCoords[1].trim());
             console.log("latitud: ", latitud)
             console.log("longitud: ", longitud);
-//            this.ubicacion.setValue({ "lng": longitud, "lat": latitud });
-//            this.mapaService.dMiniMapa = { centro: { lng: longitud, lat: latitud }, zoom: 15, marcador: true };
-//            this.mapaService.emitirMiniMapa();
+            //            this.ubicacion.setValue({ "lng": longitud, "lat": latitud });
+            //            this.mapaService.dMiniMapa = { centro: { lng: longitud, lat: latitud }, zoom: 15, marcador: true };
+            //            this.mapaService.emitirMiniMapa();
         }
     }
 
@@ -257,11 +274,11 @@ export class AgregarComponent implements OnInit, OnDestroy {
         if (this.hotelForm.valid) {
             this.cambiosConfirmados = true;
             //verifica si es una actualización o un hotel nuevo
-            if (this.idRestoran !== undefined) {//si se esta editando un hotel
+            if (this.idHotel !== undefined) {//si se esta editando un hotel
                 const restauran: Hotel = this.hotelForm.value;
-                restauran.id = this.idRestoran;
+                restauran.id = this.idHotel;
                 this.dormirService.updateHotelLocal(restauran);
-                this.dormirService.updateHotelFirestore(this.hotelForm.value, this.idRestoran)
+                this.dormirService.updateHotelFirestore(this.hotelForm.value, this.idHotel)
                     .then(res => {
                         this.openSnackBarSubmit('¡El hotel se ha actualizado correctamente!');
                     })
@@ -318,6 +335,17 @@ export class AgregarComponent implements OnInit, OnDestroy {
     }
 
     /**
+     * Función para obtener el celular a partir del link de whatsapp y mostrar
+     * en el formulario solo el número de tetéfono.
+     */
+    setNroWhatsapp(link: string) {
+        if (link !== null && link !== undefined) {
+            let celular = "0" + link.slice(39)
+            this.nroWhatsapp.setValue(celular)
+        }
+    }
+
+    /**
      * Función que agrega un nuevo formControl de tipo telefono
      */
     agregarNuevoTelefonoAlFormulario() {
@@ -334,6 +362,58 @@ export class AgregarComponent implements OnInit, OnDestroy {
         const telefonosControl = this.hotelForm.get('telefonos') as FormArray;
         telefonosControl.removeAt(i);
         this.disabledAddPhones = telefonosControl.length >= 2 ? true : false;
+    }
+
+
+    /**
+     * Función para quitar los espacios en blanco del campo nombre.  
+     */
+    clearNombre() {
+        let _nombre: string = this.nombre.value;
+        _nombre = _nombre.trim();
+        this.nombre.setValue(_nombre);
+    }
+
+    /**
+     * Función para quitar los espacios en blanco del campo dirección.  
+     */
+    clearDireccion() {
+        let _direccion: string = this.direccion.value;
+        _direccion = _direccion.trim();
+        this.direccion.setValue(_direccion);
+    }
+
+    /**
+     * Función para quitar los espacios en blanco del campo instagram.  
+     */
+    clearInstagram() {
+        let _link: string = this.instagram.value;
+        _link = _link.trim();
+        this.instagram.setValue(_link);
+        console.log(_link)
+    }
+
+    /**
+     * Función para quitar los espacios en blanco del campo whatsapp.  
+     */
+    clearWhatsapp() {
+        let _link: string = this.nroWhatsapp.value;
+        _link = _link.trim();
+        this.nroWhatsapp.setValue(_link);
+        console.log(_link)
+    }
+
+    /**
+     * Función para quitar los espacios en blanco del campo teléfono.  
+     */
+    clearTelefono(i: number) {
+        let controls = this.telefonos as FormArray;
+        let control = controls.at(i);
+        let telefono: Telefono = control.value;
+        let numero: string = telefono.numero;
+        numero = numero.trim();
+        telefono.numero = numero
+        control.setValue(telefono);
     }
 
     // Getters

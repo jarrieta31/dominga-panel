@@ -165,7 +165,7 @@ export class ValidatorService {
             return null;
         } else {
             const valor: string = control.value;
-            let regExPersonal = /^https:\/\/tickantel.com.uy\/\b([-a-zA-Z0-9_]{11,})$/g;
+            let regExPersonal = /^https:\/\/tickantel.com.uy\/\b([-a-zA-Z0-9_\?\/\%]{11,})$/g;
             if (regExPersonal.test(valor)) {
                 return null;
             }

@@ -2,7 +2,7 @@
 
     <button mat-button type="button" color="primary" (click)="regresar()">
         <mat-icon>arrow_back_ios</mat-icon>
-        Atras
+        Lista eventos
     </button>
     <h1>{{titulo}}</h1>
     <div></div>
@@ -25,11 +25,16 @@
 
                     <mat-form-field fxFlex="50%">
                         <mat-label>Nombre del Evento</mat-label>
-                        <input required matInput type="text" formControlName="nombre" (change)="quitarEspacios()">
+                        <input required matInput type="text" autocomplete="off" formControlName="nombre" (change)="clearNombre()">
                         <ng-container *ngIf="!nombre.valid && nombre.touched">
-                            <mat-error *ngIf="nombre.errors.required">El campo nombre del evento es obligatorio.
+                            <mat-error *ngIf="nombre.errors.required">
+                                El campo nombre del evento es obligatorio.
                             </mat-error>
-                            <mat-error *ngIf="nombre.errors.minlength">El nombre de tener un mínimo de 2 caracteres.
+                            <mat-error *ngIf="nombre.errors.minlength && !nombre.errors.required">
+                                El nombre de tener un mínimo de {{ nombreMinLength }} caracteres.
+                            </mat-error>
+                            <mat-error *ngIf="nombre.errors.maxlength && !nombre.errors.required">
+                                El nombre de tener un máximo de {{ nombreMaxLength }} caracteres.
                             </mat-error>
                         </ng-container>
                     </mat-form-field>
@@ -42,7 +47,7 @@
 
                     <mat-form-field fxFlex="20%">
                         <mat-label>Carperta Cloud Storage</mat-label>
-                        <input matInput type="text" formControlName="carpeta" [readonly]="true">
+                        <input  autocomplete="off" matInput type="text" formControlName="carpeta" [readonly]="true">
                     </mat-form-field>
                     <div fxFlex></div>
                 </div>
@@ -119,16 +124,17 @@
                     <div fxFlex="50%">
                         <mat-form-field class="lugar">
                             <mat-label>Nombre del Lugar</mat-label>
-                            <input matInput placeholder="Nombre del lugar" formControlName="lugar" required>
+                            <input matInput autocomplete="off" placeholder="Nombre del lugar" formControlName="lugar" required
+                                   (change)="clearNombreLugar()" >
                             <ng-container *ngIf="!lugar.valid && lugar.touched">
                                 <mat-error *ngIf="lugar.errors.required">
                                     El lugar del evento es obligatorio.
                                 </mat-error>
-                                <mat-error *ngIf="lugar.errors.minlength">
-                                    El lugar de tener un mínimo de 3 caracteres.
+                                <mat-error *ngIf="lugar.errors.minlength && !lugar.errors.required">
+                                    El lugar de tener un mínimo de {{ nombreMinLength }} caracteres.
                                 </mat-error>
-                                <mat-error *ngIf="lugar.errors.maxlength">
-                                    El lugar de tener un máximo de 50 caracteres.
+                                <mat-error *ngIf="lugar.errors.maxlength && !lugar.errors.required">
+                                    El lugar de tener un máximo de {{ nombreMaxLength }} caracteres.
                                 </mat-error>
                             </ng-container>
                         </mat-form-field>
@@ -136,17 +142,17 @@
                     <div fxFlex="50%">
                         <mat-form-field class="direccion">
                             <mat-label>Dirección</mat-label>
-                            <input type="text" matInput placeholder="18 de Julio 123" formControlName="direccion"
-                                required>
+                            <input type="text" autocomplete="off" matInput placeholder="18 de Julio 123"
+                                formControlName="direccion" (change)="clearDireccion()" required>
                             <ng-container *ngIf="!direccion.valid && direccion.touched">
                                 <mat-error *ngIf="direccion.errors.required">
                                     La direccion del evento es obligatoria.
                                 </mat-error>
-                                <mat-error *ngIf="direccion.errors.minlength">
-                                    La direccion de tener un mínimo de 3 caracteres.
+                                <mat-error *ngIf="direccion.errors.minlength && !direccion.errors.required">
+                                    La direccion de tener un mínimo de {{ direccionMinLength }} caracteres.
                                 </mat-error>
-                                <mat-error *ngIf="direccion.errors.maxlength">
-                                    La direccion de tener un máximo de 50 caracteres.
+                                <mat-error *ngIf="direccion.errors.maxlength && !direccion.errors.required">
+                                    La direccion de tener un máximo de {{ direccionMaxLength }} caracteres.
                                 </mat-error>
                             </ng-container>
                         </mat-form-field>
@@ -162,13 +168,13 @@
                 </div>
                 <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="40px">
                     <mat-form-field fxFlex="17rem">
-                        <input [formControl]="pickerFechIni" matInput (dateChange)="setFechaStart()" [min]="minDate"
+                        <input [formControl]="pickerFechIni" autocomplete="off" matInput (dateChange)="setFechaStart()" [min]="minDate"
                             [ngxMatDatetimePicker]="picker1" placeholder="Fecha y hora de inicio">
                         <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
                         <ngx-mat-datetime-picker #picker1 [startAt]="startDate"></ngx-mat-datetime-picker>
                     </mat-form-field>
                     <mat-form-field fxFlex="17rem">
-                        <input [formControl]="pickerFechEnd" matInput (dateChange)="setFechaEnd()" [min]="minDateFin"
+                        <input [formControl]="pickerFechEnd" autocomplete="off" matInput (dateChange)="setFechaEnd()" [min]="minDateFin"
                             [ngxMatDatetimePicker]="picker2" placeholder="Fecha y hora de finalización">
                         <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
                         <ngx-mat-datetime-picker #picker2 [startAt]="startDateEnd"></ngx-mat-datetime-picker>
@@ -185,9 +191,9 @@
 
                 <div fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="30px">
                     <div>
-                        <mat-form-field class="input" fxFlex="20%">
+                        <mat-form-field class="input" autocomplete="off" fxFlex="20%">
                             <mat-label>Precio</mat-label>
-                            <input matInput type="number" formControlName="precio" required>
+                            <input matInput type="number"  autocomplete="off" formControlName="precio" required>
                             <ng-container *ngIf="!precio.valid && precio.touched">
                                 <mat-error *ngIf="precio.errors.min">
                                     El precio no puede ser un valor negativo.
@@ -216,8 +222,8 @@
                         <mat-form-field class="input">
                             <mat-select formControlName="tipo" required>
                                 <mat-option [value]="">--Seleccione el tipo de evento--</mat-option>
-                                <mat-option *ngFor="let item of eventoTipo" [value]="item.tipo">
-                                    {{ item.tipo }}
+                                <mat-option *ngFor="let tipo of eventosTipos" [value]="tipo">
+                                    {{ tipo }}
                                 </mat-option>
                             </mat-select>
                             <mat-hint align="start">
@@ -240,25 +246,27 @@
                 <div fxLayout="column" fxLayoutAlign="space-evenly" fxLayoutGap="30px">
                     <mat-form-field>
                         <mat-label>TickAntel</mat-label>
-                        <input type="url" matInput formControlName="tickAntel" placeholder="https://tickantel.com.uy/">
+                        <input type="url" matInput autocomplete="off" formControlName="tickAntel" (change)="clearTickAntel()"
+                             placeholder="https://tickantel.com.uy/">
                         <mat-icon matSuffix>insert_link</mat-icon>
                         <ng-container *ngIf="!tickAntel.valid && tickAntel.touched">
                             <mat-error>La URL ingresada no es válida!</mat-error>
                         </ng-container>
                     </mat-form-field>
-                    <mat-form-field>
+                    <mat-form-field class="whatsapp">
                         <mat-label>Whatsapp</mat-label>
-                        <input type="url" matInput formControlName="whatsapp"
-                            placeholder="https://api.whatsapp.com/send?phone=598123456">
-                        <mat-icon matSuffix>insert_link</mat-icon>
-                        <ng-container *ngIf="!whatsapp.valid && whatsapp.touched">
-                            <mat-error>URL no válida! Ejemplo: https://api.whatsapp.com/send?phone=598123456
+                        <input type="text" matInput autocomplete="off" [formControl]="nroWhatsapp" (change)="clearWhatsapp()"
+                            (input)="setLinkWhatsapp()" placeholder="099123456">
+                        <mat-icon matSuffix>phone</mat-icon>
+                        <ng-container *ngIf="!nroWhatsapp.valid && nroWhatsapp.touched">
+                            <mat-error>
+                                Número no valido. Ejemplo: 098123456
                             </mat-error>
                         </ng-container>
                     </mat-form-field>
                     <mat-form-field>
                         <mat-label>Facebook</mat-label>
-                        <input type="url" matInput formControlName="facebook"
+                        <input type="url" matInput autocomplete="off" formControlName="facebook" (change)="clearFacebook()"
                             placeholder="https://m.facebook.com/mi-perfil/">
                         <mat-icon matSuffix>insert_link</mat-icon>
                         <ng-container *ngIf="!facebook.valid && facebook.touched">
@@ -267,7 +275,8 @@
                     </mat-form-field>
                     <mat-form-field>
                         <mat-label>Instagram</mat-label>
-                        <input type="url" matInput formControlName="instagram" placeholder="http://www.instagram.com/">
+                        <input autocomplete="off" type="url" matInput formControlName="instagram" (change)="clearInstagram()"
+                                placeholder="http://www.instagram.com/">
                         <mat-icon matSuffix>insert_link</mat-icon>
                         <ng-container *ngIf="!instagram.valid && instagram.touched">
                             <mat-error>URL no válida! Ejemplo: http://www.instagram.com/mi-perfil</mat-error>
@@ -298,12 +307,12 @@
                         </button>
                     </mat-card-actions>
                 </mat-card>
-                <p>Tamaño de imágen: {{widthAllowedEvento}} x {{heightAllowedEvento}} px</p>
+                <p>Tamaño de imágen: {{widthEvento}} x {{heightEvento}} px</p>
             </div>
             <div fxFlex="50%" class="home">
                 <app-upload-files [DirectorioPadre]="directorioPadre" [Directorio]="directorio"
-                    [widthAllowed]="widthAllowedEvento" [heightAllowed]="heightAllowedEvento"
-                    [allowedSize]="allowedSizeGallery" (imagenSubidaUploader)="setImagenEvento($event)">
+                    [widthAllowed]="widthEvento" [heightAllowed]="heightEvento"
+                    [allowedSize]="sizeEvento" (imagenSubidaUploader)="setImagenEvento($event)">
                 </app-upload-files>
             </div>
         </div>
@@ -312,29 +321,47 @@
         <!-- ============================== Mapa ==================================== -->
         <div fxFlex="50%" fxLayout="column" fxLayoutAlign="space-evenly center" class="container">
             <h2>Ubicación del Evento *</h2>
-            <div fxLayout="row">
-                <div fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="30px">
-                    <div style="width: 70%;">
-                        <p>Abra el mapa y creé un marcador en la ubicación del evento para obtener sus coordenadas
-                        </p>
+            <div fxLayout="row" class="acciones">
+                <div fxLayout="column" fxLayoutAlign="space-around center" fxLayoutGap="10px">
+                    <div fxLayout="row" fxLayoutAlign="start start" class="filaMapa">
+                        <div fxFlex="68%">
+                            <p>Abra el mapa y creé un marcador en la ubicación del evento para obtener sus
+                                coordenadas.
+                            </p>
+                        </div>
+                        <div fxFlex="30%">
+                            <button type="button" mat-raised-button color="primary" (click)="abrirMapa()">
+                                <mat-icon>map</mat-icon>
+                                Abrir Mapa
+                            </button>
+                        </div>
                     </div>
-
                     <div>
-                        <button type="button" mat-raised-button color="primary" (click)="abrirMapa()">
-                            <mat-icon>map</mat-icon>
-                            Abrir Mapa
-                        </button>
-                    </div>
-                    <div *ngIf="ubicacion.value !== null">
-                        Longitud: {{ ubicacion.value.lng }}, Latidud: {{ ubicacion.value.lat }}
-                    </div>
-                    <div *ngIf="ubicacion.value === null">
-                        Longitud: 0, Latidud: 0
+                        <div fxLayout="row" class="filaMapa">
+                            <p>También puedes copiar y pegar las coordenadas del lugar desde Google Maps.</p>
+                        </div>
+                        <div class="filaMapa" fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="10px">
+                            <mat-form-field fxFlex="19rem">
+                                <mat-label>Latitud, Longitud</mat-label>
+                                <input type="text" matInput placeholder="-34.33741708147928, -56.71104671476904"
+                                    [formControl]="ubicacionManual" autocomplete="off" required class="input">
+                                <ng-container *ngIf="!ubicacionManual.valid && ubicacionManual.touched">
+                                    <mat-error>
+                                        ¡Las coordenadas son inválidas!
+                                    </mat-error>
+                                </ng-container>
+                            </mat-form-field>
+                            <div fxFlex="9rem">
+                                <button mat-raised-button type="button" color="primary"
+                                    (click)="setUbicacionManual()">Crear marcador</button>
+                            </div>
+                        </div>
                     </div>
                     <ng-container *ngIf="!ubicacion.valid && mapaTouched">
                         <mat-error>¡Debe seleccionar la ubicación del lugar creando un marcador en el mapa!
                         </mat-error>
                     </ng-container>
+
                 </div>
                 <div fxLayout="column">
                     <app-mini-mapa></app-mini-mapa>
@@ -355,18 +382,6 @@
     </div>
 
     <br><br>
-    <!-- 
-            <div fxFlex>
-                <pre>{{ this.imagenes | json }}</pre>
-            </div>
-
-    <div style="overflow: scroll; width: 100%;height: 200px;">
-        <span>Valores</span>
-        <pre>{{ this.eventoForm.value | json }}</pre>
-    </div>
-
-
--->
 
 
 </form>

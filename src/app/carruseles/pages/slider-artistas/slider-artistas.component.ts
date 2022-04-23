@@ -18,8 +18,8 @@ import { StorageService } from '../../../shared/services/storage.service';
 })
 export class SliderArtistasComponent implements OnInit {
 
-    private unsubscribe$ = new Subject<void>();
-    allowedSizeGallery: number = 150; //kilo bytes
+    private destroy$ = new Subject<void>();
+    allowedSizeGallery: number = 2000; //kilo bytes
     cambiosConfirmados: boolean = false;
     datosInvalidos: boolean = true;
     directorio: string = 'artistas'; //subcarpeta con el nombre del lugar
@@ -67,7 +67,7 @@ export class SliderArtistasComponent implements OnInit {
 
     ngOnInit() {
         this.slidersService.getObsSliders$()
-            .pipe(takeUntil(this.unsubscribe$))
+            .pipe(takeUntil(this.destroy$))
             .subscribe(sliders => this.sliders = sliders)
         this.pantalla.setValue(this.directorio);
         this.slidersService.getSliderFirestore(this.directorio);
@@ -75,8 +75,8 @@ export class SliderArtistasComponent implements OnInit {
 
     ngOnDestroy(): void {
         this.limpiarImagenesResiduales();
-        this.unsubscribe$.next();
-        this.unsubscribe$.complete();
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
     /**

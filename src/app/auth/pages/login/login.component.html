@@ -16,7 +16,7 @@
                 <div fxLayout="row" fxLayoutAlign="center center" class="row">
                     <mat-form-field appearance="fill" class="row">
                         <mat-label>Ingrese su email</mat-label>
-                        <input matInput formControlName="email" type="email" placeholder="pat@gmail.com" required>
+                        <input autocomplete="off" matInput formControlName="email" type="email" placeholder="pat@gmail.com" required>
                         <ng-container *ngIf="!email.valid && email.touched">
                             <mat-error>
                                 Correo no válido 
@@ -28,7 +28,7 @@
                 <div fxLayout="row" fxLayoutAlign="center center">
                     <mat-form-field appearance="fill" class="row">
                         <mat-label>Ingrese su contraseña</mat-label>
-                        <input placeholder="Ingrese su contraseña" matInput [type]="hide ? 'password' : 'text'"
+                        <input autocomplete="off" placeholder="Ingrese su contraseña" matInput [type]="hide ? 'password' : 'text'"
                             formControlName="password">
                         <button  mat-icon-button matSuffix (click)="hide = !hide"
                             [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">

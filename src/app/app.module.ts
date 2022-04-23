@@ -34,7 +34,7 @@ import { AppComponent } from './app.component';
         AngularFirestoreModule.enablePersistence(),
         AngularFireStorageModule,
         AngularFireAuthModule,
-        AngularFireAuthGuardModule
+        AngularFireAuthGuardModule,
     ],
     providers: [],
     bootstrap: [AppComponent]

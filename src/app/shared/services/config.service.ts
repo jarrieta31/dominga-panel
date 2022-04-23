@@ -1,9 +1,12 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollection, DocumentChangeAction, DocumentReference, DocumentData } from '@angular/fire/compat/firestore';
 import { Observable, Subject } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { Departamento } from '../interfaces/departamento';
 import { LocalStorageService } from './local-storage.service';
+import { TipoArtista } from '../interfaces/tipoArtista.interface';
+import { TipoLugar } from '../interfaces/tipoLugar.interface';
+import { TipoEvento } from '../interfaces/tipoEvento.interface';
+import { Config } from '../interfaces/config.interface';
 
 
 
@@ -12,21 +15,122 @@ import { LocalStorageService } from './local-storage.service';
 })
 export class ConfigService {
 
-    localidades$: Subject<string[]>;
-    departamentos$: Subject<string[]>
+    private tiposArtistas$: Subject<string[]>
+    private tiposEventos$: Subject<string[]>
+    private tiposLugares$: Subject<string[]>
+    private localidades$: Subject<string[]>;
+    private departamentos$: Subject<string[]>
+    private tiposArtistas: string[] = [];
+    private tiposEventos: string[] = [];
+    private tiposLugares: string[] = [];
     listLocalidades: string[] = [];
     listDptosActivos: string[] = [];
     departamentos: Departamento[] = [];
-    tiposEventos: string[] = [];
-    tiposLugares: string[] = [];
+
+    private tiposEventosRef = this.afs.collection('tipos_eventos');
+    private tiposArtistasRef = this.afs.collection('tipos_artistas');
+    private tiposLugaresRef = this.afs.collection('tipos_lugares');
+    private configRef = this.afs.collection('config');
     
+    /** Largo máximo de un nombre */
+    nombreMaxLength: number = 50;
+    /** Largo mínimo de un nombre */
+    nombreMinLength: number = 2;
+    /** Largo máximo de una dirección */
+    direccionMaxLength: number = 60;
+    /** Largo mínimo de una dirección */
+    direccionMinLength: number = 3;
+
+    /** Peso en kb de la foto de artista */
+    sizeArtista: number = 12;                
+    /** Ancho en px de la foto de artista */
+    heightArtista: number = 150;                  
+    /** Ancho de imagen Artista */
+    widthArtista: number = 150;
+
+    /** Peso en kb de la foto de artista */
+    sizeEvento: number = 80;                
+    /** Ancho en px de la foto de artista */
+    heightEvento: number = 450;                  
+    /** Ancho de imagen Artista */
+    widthEvento: number = 600;
+    /** Largo máximo de la descrión de un evento */
+    eventoDescripcionMinLength: number = 50;
+    /** Largo mínimo de la descrión de un evento */
+    eventoDescripcionMaxLength: number = 2000;
+
+    /** Peso en kb de la foto de comer */
+    sizeComer: number = 12;                
+    /** Ancho en px de la foto de comer */
+    heightComer: number = 150;                  
+    /** Ancho de imagen comer */
+    widthComer: number = 150;
+
+    /** Peso en kb de la foto de dormir */
+    sizeDormir: number = 12;                
+    /** Ancho en px de la foto de dormir */
+    heightDormir: number = 150;                  
+    /** Ancho de imagen dormir */
+    widthDormir: number = 150;
+
+    /** Peso en kb de la foto de un lugar */
+    sizeLugar: number = 150;                
+    /** Alto en px de la foto de un lugar */
+    heightLugar: number  = 450 ;                   
+    /** Ancho de imagen Lugar */
+    widthLugar: number = 600;
+    /** Largo máximo de la descrión de un lugar */
+    lugarDescripcionMinLength: number = 60;
+    /** Largo mínimo de la descrión de un lugar */
+    lugarDescripcionMaxLength: number = 4900;
+
+    /** Peso en kb de la foto de artista */
+    sizeHome: number = 150;                
+    /** Alto en px de la foto de un lugar */
+    heightHome: number = 353;                   
+    /** Ancho de imagen Home */
+    widthHome: number = 600;
+
+    /** Peso en kb de la foto de artista */
+    sizeSlider: number = 150;                
+    /** Largo máximo de la descrión de un evento */
+    heightSlider: number = 450;                   
+    /** Ancho de imagen slider */
+    widthSlider: number = 600;
+    /** Ancho en px de la foto de artista */
+    sizeSliderArtista: number = 1500;                
+
+
+
 
     constructor(
         private localStorageService: LocalStorageService,
-        private afs: AngularFirestore) {
+        private afs: AngularFirestore,
+    ) {
         this.localidades$ = new Subject();
         this.departamentos$ = new Subject();
+        this.tiposArtistas$ = new Subject();
+        this.tiposEventos$ = new Subject();
+        this.tiposLugares$ = new Subject();
+        this.getTiposLugaresFirestore();
+        this.getTiposArtistasFirestore();
+        this.getTiposEventosFirestore();
         this.getDepartamentosFirestore();
+    }
+
+    /** retorna el observable de tipos de artista */
+    getObsTiposArtistas(): Observable<string[]> {
+        return this.tiposArtistas$.asObservable();
+    }
+
+    /** retorna el observable de tipos de eventos */
+    getObsTiposEventos(): Observable<string[]> {
+        return this.tiposEventos$.asObservable();
+    }
+
+    /** retorna el observable de tipos de lugares */
+    getObsTiposLugares(): Observable<string[]> {
+        return this.tiposLugares$.asObservable();
     }
 
     /** retorna el observable de localidades */
@@ -64,6 +168,65 @@ export class ConfigService {
 
     }
 
+    /** 
+    */
+    getTiposArtistasFirestore() {
+        this.tiposArtistasRef.ref.get().then(
+            querySnapshot => {
+                const arrTipos: any[] = [];
+                querySnapshot.forEach(item => {
+                    const data: any = item.data()
+                    arrTipos.push({ id: item.id, ...data });
+                })
+                arrTipos.forEach(item => {
+                    this.tiposArtistas.push(item.nombre);
+                })
+                this.tiposArtistas.sort();
+                this.tiposArtistas.push("Otros");
+            }
+        ).catch(error => {
+            console.error("Error en getTiposArtistasFirestore(). error:" + error);
+        })
+    }
+
+    getTiposLugaresFirestore() {
+        this.tiposLugaresRef.ref.get().then(
+            querySnapshot => {
+                const arrTipos: any[] = [];
+                querySnapshot.forEach(item => {
+                    const data: any = item.data()
+                    arrTipos.push({ id: item.id, ...data });
+                })
+                arrTipos.forEach(item => {
+                    this.tiposLugares.push(item.nombre);
+                })
+                this.tiposLugares.sort();
+                this.tiposLugares.push("Otros");
+            }
+        ).catch(error => {
+            console.error("Error en getTiposLugaresFirestore(). error:" + error);
+        })
+    }
+
+    getTiposEventosFirestore() {
+        this.tiposEventosRef.ref.get().then(
+            querySnapshot => {
+                const arrTipos: any[] = [];
+                querySnapshot.forEach(item => {
+                    const data: any = item.data()
+                    arrTipos.push({ id: item.id, ...data });
+                })
+                arrTipos.forEach(item => {
+                    this.tiposEventos.push(item.nombre);
+                })
+                this.tiposEventos.sort();
+                this.tiposEventos.push("Otros");
+            }
+        ).catch(error => {
+            console.error("Error en getTiposEventosFirestore(). error:" + error);
+        })
+    }
+
     /** cargar el subject localidades$ con las localidades
      * del departamento seleccionado y emite sus valores
      */
@@ -79,6 +242,18 @@ export class ConfigService {
         this.localidades$.next(arrLocalidades);
     }
 
+    emitirTiposLugares(): void {
+        this.tiposLugares$.next(this.tiposLugares);
+    }
+
+    emitirTiposArtistas(): void {
+        this.tiposArtistas$.next(this.tiposArtistas);
+    }
+
+    emitirTiposEventos(): void {
+        this.tiposEventos$.next(this.tiposEventos);
+    }
+
     emitirDepartamentosActivos(): void {
         this.departamentos$.next(this.listDptosActivos);
     }
@@ -87,9 +262,6 @@ export class ConfigService {
         this.localidades$.next(this.listLocalidades);
     }
 
-    //    update(id: string, data: any): Promise<void> {
-    //      return this.afs.collection('departamentos').doc(id).update(data);
-    //}
 
     delete(id: string): Promise<void> {
         return this.afs.collection('departamentos').doc(id).delete();
@@ -834,6 +1006,142 @@ export class ConfigService {
     }
 
     /**
+     * Método para llenar la base de datos con las tipos de artistas.
+     */
+    cargarTiposArtistas() {
+        let tiposArtistas: TipoArtista[] = [
+            { nombre: "Arte circense" },
+            { nombre: "Danza" },
+            { nombre: "Escritura" },
+            { nombre: "Escultura" },
+            { nombre: "Fotografía" },
+            { nombre: "Performance" },
+            { nombre: "Música" },
+            { nombre: "Pintura" },
+            { nombre: "Poesía" },
+            { nombre: "Teatro" },
+        ]
+
+        tiposArtistas.forEach(tipoArtista => {
+            this.tiposArtistasRef.add(tipoArtista);
+        })
+    }
+
+    /**
+     * Método para llenar la base de datos con las tipos de lugares.
+     */
+    cargarTiposLugares() {
+        let tiposLugares: TipoLugar[] = [
+            { nombre: "Almacenes Artesanales" },
+            { nombre: "Bodegas" },
+            { nombre: "Boliches de Campaña" },
+            { nombre: "Circuito Céntrico" },
+            { nombre: "Club del Queso" },
+            { nombre: "Estancias Turísticas" },
+            { nombre: "Posada de Campo" },
+            { nombre: "Ruta Patrimonial" },
+            { nombre: "Turismo Aventura" },
+            { nombre: "Turismo Deportivo" },
+            { nombre: "Turismo de Playa" },
+            { nombre: "Otros" },
+        ];
+
+        tiposLugares.forEach(tipoLugar => {
+            this.tiposLugaresRef.add(tipoLugar);
+        })
+    }
+
+    /**
+     * Método para llenar la base de datos con las tipos de eventos.
+     */
+    cargarTiposEventos() {
+        let tiposEventos: TipoEvento[] = [
+            { nombre: "Teatro" },
+            { nombre: "Música" },
+            { nombre: "Deportes" },
+            { nombre: "Danza" },
+            { nombre: "Otros" },
+        ];
+
+        tiposEventos.forEach(tipoEvento => {
+            this.tiposEventosRef.add(tipoEvento);
+        })
+    }
+
+    /**
+     * Método para llenar la base de datos con los datos de configuración.
+     */
+    cargarConfiguracion() {
+
+        let listaConfig: Config[] = [
+            {
+                nombre: "artistas",
+                nombreMinLength: 2,
+                nombreMaxLength: 50,
+                height: 150,
+                size: 12,
+                width: 150
+            },
+            {
+                descripcionMinLength: 50,
+                descripcionMaxLength: 4000,
+                direccionMaxLength: 50,
+                direccionMinLength: 5,
+                nombre: "eventos",
+                nombreMinLength: 2,
+                nombreMaxLength: 50,
+                height: 450,
+                size: 80,
+                width: 600
+            },
+            {
+                nombre: "lugares",
+                height: 353,
+                size: 150,
+                width: 600
+            },
+            {
+                nombre: "gallery",
+                height: 450,
+                width: 600,
+                size: 150
+            },
+            {
+                nombre: "sliderArtista",
+                height: 500,
+                width: 850,
+                size: 1500
+            },
+            {
+                nombre: "slider",
+                height: 500,
+                width: 850,
+                size: 170
+            },
+            {
+                direccionMaxLength: 50,
+                direccionMinLength: 5,
+                nombre: "dormir",
+                height: 150,
+                width: 150,
+                size: 12
+            },
+            {
+                direccionMaxLength: 50,
+                direccionMinLength: 5,
+                nombre: "comer",
+                height: 150,
+                width: 150,
+                size: 12
+            }
+        ];
+
+        listaConfig.forEach(conf => {
+            this.configRef.add(conf);
+        })
+    }
+
+    /**
      * Ordena el array local todosLosLugares(no se usa porque corregir prioridades ya lo soluciona )
      * Ojo puede servir para ordenar por orden alfabético
      */
@@ -846,12 +1154,14 @@ export class ConfigService {
         if (a < b) {
             return -1;
         }
-        if (a > b) {
+        else if (a > b) {
             return 1;
         }
         // a debe ser igual b
         return 0;
     }
+
+
 
 
 }

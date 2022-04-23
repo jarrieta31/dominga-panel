@@ -28,7 +28,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
     titulo: string = "Nueva Información";
     listInfo: Informacion[] = [];
     page: number = 1;
-    private unsubscribe$ = new Subject<void>();
+    private destroy$ = new Subject<void>();
 
     public infoForm: FormGroup = this.fb.group({
         departamento: ['', Validators.required],
@@ -57,13 +57,13 @@ export class AgregarComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.configService.getObsDepartamentos()
-            .pipe( takeUntil( this.unsubscribe$ ) )
+            .pipe( takeUntil( this.destroy$ ) )
             .subscribe(dptos => this.departamentos = dptos)
         this.configService.getObsLocalidades()
-            .pipe(takeUntil( this.unsubscribe$ ))
+            .pipe(takeUntil( this.destroy$ ))
             .subscribe(locs => this.localidades = locs);
         this.infoService.getObsInformacion$()
-            .pipe(takeUntil( this.unsubscribe$ ))
+            .pipe(takeUntil( this.destroy$ ))
             .subscribe(informacion => this.listInfo = informacion);
         this.configService.emitirDepartamentosActivos();
         this.configService.emitirLocalidades();
@@ -100,8 +100,8 @@ export class AgregarComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.unsubscribe$.next();
-        this.unsubscribe$.complete();
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
     /**

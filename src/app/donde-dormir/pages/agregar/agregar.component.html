@@ -2,7 +2,7 @@
 
     <button mat-button type="button" color="primary" (click)="regresar()">
         <mat-icon>arrow_back_ios</mat-icon>
-        Atras
+        Lista donde dormir
     </button>
     <h1>{{titulo}}</h1>
     <div></div>
@@ -24,13 +24,16 @@
 
                     <mat-form-field fxFlex="50%">
                         <mat-label>Nombre del local de comidas</mat-label>
-                        <input required matInput type="text" formControlName="nombre" (change)="quitarEspacios()">
+                        <input autocomplete="off" required matInput type="text" formControlName="nombre" (change)="clearNombre()">
                         <ng-container *ngIf="!nombre.valid && nombre.touched">
                             <mat-error *ngIf="nombre.errors.required">
                                 El campo nombre del evento es obligatorio.
                             </mat-error>
-                            <mat-error *ngIf="nombre.errors.minlength">
-                                El nombre de tener un mínimo de 2 caracteres.
+                            <mat-error *ngIf="nombre.errors.minlength && !nombre.errors.required">
+                                El nombre de tener un mínimo de {{ nombreMinLength }} caracteres.
+                            </mat-error>
+                            <mat-error *ngIf="nombre.errors.maxlength && !nombre.errors.required">
+                                El nombre de tener un máximo de {{ nombreMaxLength }} caracteres.
                             </mat-error>
                         </ng-container>
                     </mat-form-field>
@@ -44,7 +47,7 @@
 
                     <mat-form-field fxFlex="15%">
                         <mat-label>Carperta Cloud Storage</mat-label>
-                        <input matInput type="text" formControlName="carpeta" [readonly]="true">
+                        <input autocomplete="off" matInput type="text" formControlName="carpeta" [readonly]="true">
                     </mat-form-field>
                 </div>
             </div>
@@ -85,17 +88,17 @@
                     <div fxFlex="80%">
                         <mat-form-field class="direccion">
                             <mat-label>Dirección</mat-label>
-                            <input type="text" matInput placeholder="18 de Julio 123" formControlName="direccion"
-                                required class="input">
+                            <input autocomplete="off" type="text" matInput placeholder="18 de Julio 123" formControlName="direccion"
+                                (change)="clearDireccion()" required class="input">
                             <ng-container *ngIf="!direccion.valid && direccion.touched">
                                 <mat-error *ngIf="direccion.errors.required">
                                     La direccion es obligatoria.
                                 </mat-error>
-                                <mat-error *ngIf="direccion.errors.minlength">
-                                    La direccion de tener un mínimo de 3 caracteres.
+                                <mat-error *ngIf="direccion.errors.minlength && !direccion.errors.required">
+                                    La direccion de tener un mínimo de {{direccionMinLength}} caracteres.
                                 </mat-error>
-                                <mat-error *ngIf="direccion.errors.maxlength">
-                                    La direccion de tener un máximo de 50 caracteres.
+                                <mat-error *ngIf="direccion.errors.maxlength && !direccion.errors.required">
+                                    La direccion de tener un máximo de {{direccionMaxLength}} caracteres.
                                 </mat-error>
                             </ng-container>
                         </mat-form-field>
@@ -107,7 +110,7 @@
             <!-- =================================== Fin Dirección ================================ -->
             <!-- ============================== Mapa ==================================== -->
             <div fxFlex="50%" fxLayout="column" fxLayoutAlign="space-evenly center" class="container">
-                <h2>Ubicación del Evento *</h2>
+                <h2>Ubicación del hotel *</h2>
                 <div fxLayout="row" class="acciones">
                     <div fxLayout="column" fxLayoutAlign="space-around center" fxLayoutGap="10px">
                         <div fxLayout="row" fxLayoutAlign="start start" class="filaMapa">
@@ -131,7 +134,7 @@
                                 fxLayoutGap="10px">
                                 <mat-form-field fxFlex="19rem">
                                     <mat-label>Latitud, Longitud</mat-label>
-                                    <input type="text" matInput placeholder="-34.33741708147928, -56.71104671476904"
+                                    <input autocomplete="off" type="text" matInput placeholder="-34.33741708147928, -56.71104671476904"
                                         [formControl]="ubicacionManual" autocomplete="off" required class="input">
                                     <ng-container *ngIf="!ubicacionManual.valid && ubicacionManual.touched">
                                         <mat-error>
@@ -173,7 +176,7 @@
                     <div *ngFor="let telefono of telefonos.controls; let i=index" [formGroupName]="i"
                         style="width: 100%;" fxLayout="row" fxLayoutAling="space-between center" fxLayoutGap="20px">
                         <mat-form-field style="width: 50%;">
-                            <input matInput type="tel" formControlName="numero"
+                            <input autocomplete="off" matInput type="tel" formControlName="numero" (change)="clearTelefono(i)"
                                 placeholder="43401234 o 43401234-36 o 099123456" style="width: 100%;">
                             <mat-icon matSuffix>phone</mat-icon>
                             <mat-label>Inserte el teléfono {{ i + 1}}</mat-label>
@@ -209,7 +212,7 @@
                 <div fxLayout="column" fxLayoutAlign="space-evenly" fxLayoutGap="30px">
                     <mat-form-field class="whatsapp">
                         <mat-label>Whatsapp</mat-label>
-                        <input type="text" matInput autocomplete="of" [formControl]="nroWhatsapp"
+                        <input autocomplete="off" type="text" matInput [formControl]="nroWhatsapp" (change)="clearWhatsapp()"
                             (input)="setLinkWhatsapp()" placeholder="099123456">
                         <mat-icon matSuffix>phone</mat-icon>
                         <ng-container *ngIf="!nroWhatsapp.valid && nroWhatsapp.touched">
@@ -220,7 +223,8 @@
                     </mat-form-field>
                     <mat-form-field>
                         <mat-label>Instagram</mat-label>
-                        <input type="url" matInput formControlName="instagram" placeholder="http://www.instagram.com/">
+                        <input autocomplete="off" type="url" matInput formControlName="instagram"
+                            (change)="clearInstagram()" placeholder="http://www.instagram.com/">
                         <mat-icon matSuffix>insert_link</mat-icon>
                         <ng-container *ngIf="!instagram.valid && instagram.touched">
                             <mat-error>URL no válida! Ejemplo: http://www.instagram.com/mi-perfil</mat-error>
@@ -247,12 +251,12 @@
                                 </button>
                             </mat-card-actions>
                         </mat-card>
-                        <p>Tamaño de imágen: {{widthAllowedEvento}} x {{heightAllowedEvento}} px</p>
+                        <p>Tamaño de imágen: {{widthDormir}} x {{heightDormir}} px</p>
                     </div>
                     <div fxFlex="50%" class="home">
                         <app-upload-files [DirectorioPadre]="directorioPadre" [Directorio]="directorio"
-                            [widthAllowed]="widthAllowedEvento" [heightAllowed]="heightAllowedEvento"
-                            [allowedSize]="allowedSizeGallery" (imagenSubidaUploader)="setImagenRestaurante($event)">
+                            [widthAllowed]="widthDormir" [heightAllowed]="heightDormir"
+                            [allowedSize]="sizeDormir" (imagenSubidaUploader)="setImagenRestaurante($event)">
                         </app-upload-files>
                     </div>
                 </div>
@@ -274,3 +278,10 @@
     <br><br>
 
 </form>
+<!-- 
+
+<pre>Formulario valido {{this.hotelForm.valid}}</pre>
+<pre>
+    {{ this.hotelForm.value | json }}
+</pre>
+-->

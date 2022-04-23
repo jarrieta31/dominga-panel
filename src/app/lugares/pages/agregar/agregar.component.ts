@@ -15,7 +15,9 @@ import { LugaresService } from '../../services/lugares.service';
 import { AngularEditorConfig } from '@kolkov/angular-editor';
 import { ValidatorService } from '../../../shared/services/validator.service';
 import { DialogPublicarComponent } from '../../components/dialog-publicar/dialog-publicar.component';
-
+import { Accesibilidad } from '../../../shared/interfaces/accesibilidad.interface';
+import { MatCheckboxChange } from '@angular/material/checkbox';
+import { Telefono } from '../../../shared/interfaces/telefono.interface';
 
 
 @Component({
@@ -25,18 +27,25 @@ import { DialogPublicarComponent } from '../../components/dialog-publicar/dialog
 })
 export class AgregarComponent implements OnInit, OnDestroy {
 
-    allowedSizeGallery: number = 150; //kilo bytes
-    allowedSizeHome: number = 150; //kilo bytes
+    sizeLugar: number;
+    sizeHome: number;
+    nombreMaxLength: number;
+    nombreMinLength: number;
+    descripcionMaxLength: number;
+    descripcionMinLength: number;
+    heightLugar: number;
+    heightHome: number;
+    widthLugar: number;
+    widthHome: number;
+    accesibilidadDefault: Accesibilidad = { "banio": false, "rampa": false };
     cambiosConfirmados: boolean = false;
     departamentos: string[] = [];
     directorio: string = ''; //subcarpeta con el nombre del lugar
     directorioPadre: string = 'lugares'; //carpeta raíz donde se almacenan los lugares
-    heightAllowedGallery: number = 450;
-    heightAllowedHome: number = 353;
     idLugar: string;
     idNuevoLugar: string = "";
     localidades: string[] = [];
-    lugaresTipo = [{ tipo: "Urbano" }, { tipo: "Rural" }];
+    tiposLugares: string[] = [];
     mapaTouched: boolean = false;
     opsPatrimonial = [{ texto: "Sí", valor: true }, { texto: "No", valor: false }];
     prioridadAnterior: number;
@@ -45,10 +54,8 @@ export class AgregarComponent implements OnInit, OnDestroy {
     titulo: string = "Nuevo Lugar";
     tituloUploaderGaleria: string = "Subir imágenes a la galería";
     tituloUploaderHome: string = "Selecciona la imágen del Home";
-    widthAllowedGallery: number = 600;
-    widthAllowedHome: number = 600;
     public prioridades$: Observable<number[]>;
-    private unsubscribe$ = new Subject<void>();
+    private destroy$ = new Subject<void>();
     prioridades: number[] = [];
     private imagenHomeDefault = { "name": "imagen-default", "url": "assets/default-home.jpg" };
     private imagenPrincipalDefault = { "name": "imagen-default", "url": "assets/default-lugar-galeria.jpg" };
@@ -56,41 +63,16 @@ export class AgregarComponent implements OnInit, OnDestroy {
     galeria: Imagen[] = [];
     galeriaAgregar: Imagen[] = []; //solo guarda las imagenes que se agregan a la galeria
     imagenesBorradas: string[] = []; // solo guarda las imagenes que se eliminaron y no se guardo el formulario
-    nroWhatsapp: FormControl = this.fb.control(null, [this.vs.valididarNumeroWhatsapp]);
-    public lugarForm: FormGroup = this.fb.group({
-        accesibilidad: [null],
-        auto: [false],
-        bicicleta: [false],
-        caminar: [false],
-        carpeta: [null],
-        departamento: ['', Validators.required],
-        descripcion: ['', [Validators.minLength(60), Validators.maxLength(4900)]],
-        facebook: [null, [this.vs.validarFacebook]],
-        imagenHome: [this.imagenHomeDefault],
-        imagenPrincipal: [this.imagenPrincipalDefault],
-        imagenes: [[]],
-        instagram: [null, [this.vs.validarInstagram]],
-        localidad: ['', Validators.required],
-        nombre: ['', [Validators.required, Validators.minLength(2)]],
-        patrimonial: [false],
-        prioridad: [1, [Validators.required]],
-        publicado: [false, Validators.required],
-        tipo: [''],
-        telefonos: this.fb.array([
-            this.fb.group({
-                numero: ['', [this.vs.validarTelefono]]
-            })
-        ]),
-        ubicacion: [null, [this.vs.validarUbicacion, Validators.required]],
-        web: [null, [this.vs.validarWeb]],
-        whatsapp: [null, [this.vs.valididarWhatsapp]],
-        videos: this.fb.array([
-            this.fb.group({
-                url: ['', [this.vs.validarVideoYoutube]]
-            })
-        ])
-    });
 
+    nroWhatsapp: FormControl = this.fb.control(null, [this.vs.valididarNumeroWhatsapp]);
+    ubicacionManual: FormControl = this.fb.control(null, [this.vs.validarCoordenadas]);
+    banios: FormControl = this.fb.control(false, []);
+    rampas: FormControl = this.fb.control(false, []);
+
+    baniosChecked: boolean = false;
+    rampasChecked: boolean = false;
+
+    public lugarForm: FormGroup;
     editorConfig: AngularEditorConfig = {
         editable: true,
         spellcheck: true,
@@ -147,10 +129,57 @@ export class AgregarComponent implements OnInit, OnDestroy {
         private configService: ConfigService,
         private _snackBar: MatSnackBar,
     ) {
+
+        this.sizeLugar = this.configService.sizeLugar;
+        this.heightLugar = this.configService.heightLugar;
+        this.widthLugar = this.configService.widthLugar;
+        this.sizeHome = this.configService.sizeHome;
+        this.heightHome = this.configService.heightHome;
+        this.widthHome = this.configService.widthHome;
+        this.nombreMaxLength = this.configService.nombreMaxLength;
+        this.nombreMinLength = this.configService.nombreMinLength;
+        this.descripcionMaxLength = this.configService.lugarDescripcionMaxLength;
+        this.descripcionMinLength = this.configService.lugarDescripcionMinLength;
+
+        this.lugarForm = this.fb.group({
+            accesibilidad: [this.accesibilidadDefault],
+            auto: [false],
+            bicicleta: [false],
+            caminar: [false],
+            carpeta: [null],
+            departamento: ['', Validators.required],
+            descripcion: ['', [Validators.minLength(this.descripcionMinLength), Validators.maxLength(this.descripcionMaxLength)]],
+            facebook: [null, [this.vs.validarFacebook]],
+            imagenHome: [this.imagenHomeDefault],
+            imagenPrincipal: [this.imagenPrincipalDefault],
+            imagenes: [[]],
+            instagram: [null, [this.vs.validarInstagram]],
+            localidad: ['', Validators.required],
+            nombre: ['', [Validators.required, Validators.minLength(this.nombreMinLength), Validators.maxLength(this.nombreMaxLength)]],
+            patrimonial: [false],
+            prioridad: [1, [Validators.required]],
+            publicado: [false, Validators.required],
+            tipo: [''],
+            telefonos: this.fb.array([
+                this.fb.group({
+                    numero: [null, [this.vs.validarTelefono]]
+                })
+            ]),
+            ubicacion: [null, [this.vs.validarUbicacion, Validators.required]],
+            web: [null, [this.vs.validarWeb]],
+            whatsapp: [null, [this.vs.valididarWhatsapp]],
+            videos: this.fb.array([
+                this.fb.group({
+                    url: [null, [this.vs.validarVideoYoutube]]
+                })
+            ])
+        });
+
+
         /** Observable que se dispara al cambiar el valor del minimapa.
         *  Los datos del formulario cambian en funcion del valor del mimimapa
         */
-        this.mapaService.getObsMiniMapa().pipe(takeUntil(this.unsubscribe$))
+        this.mapaService.getObsMiniMapa().pipe(takeUntil(this.destroy$))
             .subscribe(res => {
                 //si los datos del minimapa son validos y tiene marcado en true
                 if (res !== undefined && res.marcador === true) {
@@ -160,33 +189,26 @@ export class AgregarComponent implements OnInit, OnDestroy {
                     this.ubicacion.setValue(null);
                 }
             });
-
     }
 
     ngOnInit(): void {
         const lugarGuardado = localStorage.getItem('lugar');
-        //this.lugaresService.cargarLugares()
-        //si lugarGuardado no esta vacio lo asigna al formulario
-        if (lugarGuardado) {
-            //descomentar cuando este enviando bien los datos
-            //    this.lugarForm.setValue(JSON.parse(lugarGuardado));
-        }
-
         // cargando los datos de lugares, departamentos y localidades
-        this.configService.getObsDepartamentos().pipe(takeUntil(this.unsubscribe$)).subscribe(dptos => this.departamentos = dptos);
+        this.configService.getObsDepartamentos().pipe(takeUntil(this.destroy$)).subscribe(dptos => this.departamentos = dptos);
         this.configService.emitirDepartamentosActivos();
-        this.configService.getObsLocalidades().pipe(takeUntil(this.unsubscribe$)).subscribe(locs => this.localidades = locs);
+        this.configService.getObsLocalidades().pipe(takeUntil(this.destroy$)).subscribe(locs => this.localidades = locs);
+        this.configService.getObsTiposLugares().pipe(takeUntil(this.destroy$)).subscribe(tiposLugares => this.tiposLugares = tiposLugares);
+        this.configService.emitirTiposLugares();
         //this.prioridades$ = this.lugaresService.getObsPrioridades$();
-        this.lugaresService.getObsPrioridades$().pipe(takeUntil(this.unsubscribe$)).subscribe(prioridades => this.prioridades = prioridades);
+        this.lugaresService.getObsPrioridades$().pipe(takeUntil(this.destroy$)).subscribe(prioridades => this.prioridades = prioridades);
         this.lugaresService.updateListaPrioridadesLocal(true);
 
         /**
         * A partir de la ruta y el id recibido obtiene el lugar para mostrar 
         */
         this.activatedRoute.params.pipe(
-            takeUntil(this.unsubscribe$),
             switchMap(({ id }) => this.lugaresService.getLugarId(id)),
-            //    tap(res => console.log(res))
+            takeUntil(this.destroy$),
         ).subscribe(lugar => {
             let lugarActual: Lugar = JSON.parse(JSON.stringify(lugar));
             if (lugarActual.id !== undefined) {//Si estamos editando un lugar
@@ -194,11 +216,18 @@ export class AgregarComponent implements OnInit, OnDestroy {
                 let prio = lugarActual.prioridad;
                 this.prioridadAnterior = prio
                 delete lugarActual.id //para setear el formulario es necesario quitar el tatributo id
+                for (let i = 0; i < lugarActual.telefonos.length; i++) {
+                    if (i > 0) {
+                        this.agregarNuevoTelefonoAlFormulario()
+                    }
+                }
                 this.lugarForm.reset(lugarActual);
                 this.setNroWhatsapp(lugarActual.whatsapp);
                 this.titulo = `Editando ${this.lugarForm.controls['nombre'].value}`;
                 this.home = lugarActual.imagenHome;
                 this.galeria = JSON.parse(JSON.stringify(lugarActual.imagenes));
+                this.baniosChecked = lugarActual.accesibilidad.banio;
+                this.rampasChecked = lugarActual.accesibilidad.rampa;
                 this.directorio = this.carpeta.value;
                 this.configService.getLocadidadesDepartamento(lugarActual.departamento);
                 this.mapaService.dMiniMapa = { centro: lugarActual.ubicacion, zoom: 15, marcador: true };
@@ -214,14 +243,6 @@ export class AgregarComponent implements OnInit, OnDestroy {
             this.carpeta.setValue(this.directorio);
         }
 
-        /**Si el formuario es válido lo guarda en el storage local */
-        zip(this.lugarForm.statusChanges, this.lugarForm.valueChanges).pipe(
-            filter(([stado, valor]) => stado == 'VALID'), //pasa solo los validos
-            map(([stado, valor]) => valor),//descarta el estado y solo toma el valor
-            //tap(data => console.log(data))//solo es para ver
-        ).subscribe(formValue => {
-            // localStorage.setItem('lugar', JSON.stringify(formValue));
-        })
     }
 
     ngAfterViewInit(): void {
@@ -230,8 +251,8 @@ export class AgregarComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.unsubscribe$.next();
-        this.unsubscribe$.complete();
+        this.destroy$.next();
+        this.destroy$.complete();
 
         this.lugarForm.reset({
             imagenHome: this.imagenHomeDefault,
@@ -241,20 +262,8 @@ export class AgregarComponent implements OnInit, OnDestroy {
         //limpia el mapa y el mini-mapa
         this.mapaService.resetDataMapa();
         this.mapaService.resetDataMiniMapa();
-        //Limpia el minimapa y el mapa
-//        this.mapaService.emitirMiniMapa();
-//        this.mapaService.resetDataMapa();
     }
 
-    /**
-     * Función para quitar los espacios en blanco del campo nombre. Al salir del campo
-     * toma el nombre y quita los espacios de los extremos. 
-     */
-    quitarEspacios() {
-        let _nombre: string = this.nombre.value;
-        _nombre = _nombre.trim();
-        this.nombre.setValue(_nombre);
-    }
 
     /**
      * Esta función transforma el link de youtube ingresado en un link para embeber en un sitio web o app.
@@ -262,17 +271,17 @@ export class AgregarComponent implements OnInit, OnDestroy {
      * Por ultimo sustitye el valor en el control del formulario.
      * @param i Es el indice que ocupa el FormControl que quiero modificar en el FormArray de videos.
      */
-    parseLinkYoutube(i) {
+    parseLinkYoutube(i: number) {
         let controls = this.videos as FormArray;
         let control = controls.at(i);
         let link: string = control.value.url;
+        link = link.trim()
         link = link.replace(/\s/g, "");
         link = link.replace('watch?v=', 'embed/');
         let fin = link.indexOf('&');
         if (fin !== -1) {
             link = link.slice(0, fin);// si hay una lista al final la quita
         }
-        console.log(link)
         control.setValue({ url: link })
     }
 
@@ -296,6 +305,23 @@ export class AgregarComponent implements OnInit, OnDestroy {
         this.lugarForm.controls['imagenes'].setValue(this.galeria);
     }
 
+    /**
+     * Captura el estado del checkbox de Baño accesibilidad y guarda su estado.
+     * @param onBanios 
+     */
+    setAccesibilidadBanios(onBanios: MatCheckboxChange) {
+        this.accesibilidadDefault.banio = onBanios.checked;
+        this.accesibilidad.setValue(this.accesibilidadDefault);
+    }
+
+    /**
+     * Captura el estado del checkbox de Rampa accesibilidad y guarda su estado.
+     * @param onRampas 
+     */
+    setAccesibilidadRampas(onRampas: MatCheckboxChange) {
+        this.accesibilidadDefault.rampa = onRampas.checked;
+        this.accesibilidad.setValue(this.accesibilidadDefault);
+    }
 
     /** No se está usando ahora
      * Función para mostrar un mensaje corto al usuario 
@@ -315,7 +341,6 @@ export class AgregarComponent implements OnInit, OnDestroy {
      */
     eliminarImagenGaleria($event: string) {
         this.imagenesBorradas.push($event)
-        console.log($event)
         this.galeria = this.galeria.filter((item) => {
             return item.name !== $event;
         })
@@ -323,9 +348,6 @@ export class AgregarComponent implements OnInit, OnDestroy {
         if (principal.name === $event) {
             this.lugarForm.controls['imagenPrincipal'].setValue(this.imagenPrincipalDefault);
         }
-
-        /** Utilizando el servicio del FirebaseStorage local se borra la imagen */
-        //       this.fbStorage.borrarArchivoStorage(`${this.directorioPadre}/${this.directorio}`, $event);
     }
 
     /**
@@ -339,12 +361,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
         this.fbStorage.listarArchvios(`${this.directorioPadre}/${this.directorio}`)
             .then(res => {
                 res.items.forEach(item => {
-                    //const existe = (element: Slider) => element.imagen.name === item.name;
-                    //if (!this.sliders.some(existe)) {
-                    //    this.fbStorage.borrarArchivoStorage(`${this.directorioPadre}/${this.directorio}`, item.name);
                     console.log("se elimino : " + item.name)
-                    //}
-                    console.log(this.imagenes.length)
                 })
             })
             .catch(error => console.log(`Error al intentar borrar la imagen residual. ${error}`))
@@ -357,7 +374,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
         const telefonosControl = this.lugarForm.get('telefonos') as FormArray;
         telefonosControl.push(
             this.fb.group({
-                numero: ['', [this.vs.validarTelefono]]
+                numero: [null, [this.vs.validarTelefono]]
             })
         )
     }
@@ -382,6 +399,22 @@ export class AgregarComponent implements OnInit, OnDestroy {
     eliminarVideoDelFormulario(i: number) {
         const videosControl = this.lugarForm.get('videos') as FormArray;
         videosControl.removeAt(i);
+    }
+
+
+    /** Función que toma las coordenadas ingresadas en formato google Maps las transforma
+     * y crea el marcador en el miniMapa y guarda la ubicación para el formulario.
+     */
+    setUbicacionManual() {
+        if (this.ubicacionManual.valid) {
+            let coordsStr: string = this.ubicacionManual.value;
+            let arrCoords = coordsStr.split(',');
+            let latitud = Number(arrCoords[0].trim());
+            let longitud = Number(arrCoords[1].trim());
+            this.ubicacion.setValue({ "lng": longitud, "lat": latitud });
+            this.mapaService.dMiniMapa = { centro: { lng: longitud, lat: latitud }, zoom: 15, marcador: true };
+            this.mapaService.emitirMiniMapa();
+        }
     }
 
     /**
@@ -452,7 +485,6 @@ export class AgregarComponent implements OnInit, OnDestroy {
 
     /** Se dispara al seleccionar la imagen Principal desde la galeria, pero por ahora no hace nada */
     setImagenPrincipal() {
-        console.log("estas en setImagenPrincipal ")
     }
 
     /**
@@ -489,7 +521,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * Abre el dialog con para el mapa
+     * Abre el dialog para el mapa
      */
     abrirMapa() {
         this.mapaTouched = true;
@@ -497,8 +529,6 @@ export class AgregarComponent implements OnInit, OnDestroy {
         dialogConfig.disableClose = false;
         dialogConfig.autoFocus = true;
         dialogConfig.minHeight = "565px";
-        //dialogConfig.minHeight = "450px";
-        //dialogConfig.minWidth = "900px";
         dialogConfig.minWidth = "1400px";
         dialogConfig.id = "dialogMapa";
         dialogConfig.data = 0;
@@ -578,6 +608,70 @@ export class AgregarComponent implements OnInit, OnDestroy {
         this.router.navigate(['/lugares/listado']);
     }
 
+    /**
+     * Función para quitar los espacios en blanco del campo nombre. 
+     */
+    clearNombre() {
+        let _nombre: string = this.nombre.value;
+        _nombre = _nombre.trim();
+        this.nombre.setValue(_nombre);
+        console.log(_nombre)
+    }
+
+
+    /**
+     * Función para quitar los espacios en blanco del campo web.  
+     */
+    clearWeb() {
+        let _link: string = this.web.value;
+        _link = _link.trim();
+        this.web.setValue(_link);
+        console.log(_link)
+    }
+
+    /**
+     * Función para quitar los espacios en blanco del campo facebook.  
+     */
+    clearFacebook() {
+        let _link: string = this.facebook.value;
+        _link = _link.trim();
+        this.facebook.setValue(_link);
+        console.log(_link)
+    }
+
+    /**
+     * Función para quitar los espacios en blanco del campo whatsapp.  
+     */
+    clearWhatsapp() {
+        let _link: string = this.nroWhatsapp.value;
+        _link = _link.trim();
+        this.nroWhatsapp.setValue(_link);
+        console.log(_link)
+    }
+
+    /**
+     * Función para quitar los espacios en blanco del campo instagram.  
+     */
+    clearInstagram() {
+        let _link: string = this.instagram.value;
+        _link = _link.trim();
+        this.instagram.setValue(_link);
+        console.log(_link)
+    }
+
+    /**
+     * Función para quitar los espacios en blanco del campo teléfono.  
+     */
+    clearTelefono(i: number) {
+        let controls = this.telefonos as FormArray;
+        let control = controls.at(i);
+        let telefono: Telefono = control.value;
+        let numero: string = telefono.numero;
+        numero = numero.trim();
+        telefono.numero = numero
+        control.setValue(telefono);
+    }
+
     /** Getter que retorna el FormArray de imagenes */
     get imagenes() { return this.lugarForm.get('imagenes') as FormArray; }
     get telefonos() { return this.lugarForm.get('telefonos') as FormArray; }
@@ -590,6 +684,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
     get whatsapp() { return this.lugarForm.get('whatsapp'); }
     get instagram() { return this.lugarForm.get('instagram'); }
     get facebook() { return this.lugarForm.get('facebook'); }
+    get accesibilidad() { return this.lugarForm.get('accesibilidad'); }
     get imagenPrincipal() { return this.lugarForm.get('imagenPrincipal'); }
     get prioridad() { return this.lugarForm.get('prioridad'); }
     get descripcion() { return this.lugarForm.get('descripcion'); }
