@@ -91,10 +91,10 @@ export class LugaresService {
     }
 
     /**
-     * Cambia la posición u prioridad de un lugar, para que se muestre antes o despues en el array de lugares.
-     * En definitiva actualiza la información y mueve el lugar a una posición en el array, forzando al resto de elementos a moverse.
-     * @param {Lugar} lugar Recibe el lugar al que le vamos a cambiar la prioridad, el valor de la prioridad ya viene en el lugar.
-     */
+    * Cambia la posición u prioridad de un lugar, para que se muestre antes o despues en el array de lugares.
+    * En definitiva actualiza la información y mueve el lugar a una posición en el array, forzando al resto de elementos a moverse.
+    * @param {Lugar} lugar Recibe el lugar al que le vamos a cambiar la prioridad, el valor de la prioridad ya viene en el lugar.
+    */
     modificarPrioridadDeLugar(lugar: Lugar) {
         let index1 = this.lugares.findIndex(item => lugar.id === item.id);
         this.lugares.splice(index1, 1);//Elimina el lugar de su posición anterior
@@ -144,7 +144,7 @@ export class LugaresService {
      * @returns
      */
     updateLugarFirestore(lugar: Lugar, id: string): Promise<any> {
-        return this.afs.doc<Lugar>(`lugares/${id}`).set(lugar); //en ves de pasar el lugar completo se puede poner campo por campo
+        return this.afs.doc<Lugar>(`lugares/${id}`).set(lugar); //en vez de pasar el lugar completo se puede poner campo por campo
     }
 
     /**
@@ -175,7 +175,7 @@ export class LugaresService {
      * no estar consultando la base y minimizar el traficio.
      */
     getLugaresFirestore(dpto: string) {
-        if (!this.mapCache.has(dpto)) {
+        // if (!this.mapCache.has(dpto)) {
             this.afs.collection('lugares').ref.where('departamento', "==", dpto).where('prioridad', ">", -1).orderBy('prioridad').get().then(
                 //this.afs.collection('lugares').ref.where('prioridad', ">", -1).orderBy('prioridad').get().then(
                 querySnapshot => {
@@ -195,13 +195,13 @@ export class LugaresService {
             ).catch(error => {
                 console.error("Error en getLugaresFirestore(). error:" + error);
             });
-        }else{
-            console.log("get lugares "+dpto + " desde la cache de lugares")
-            this.lugares = this.mapCache.get(dpto);
-            this.updateListaPrioridadesLocal(false);
-    //            this.lugares$.next(this.lugares);
-            this.getLugaresFiltrados();
-        }
+    //     }else{
+    //         console.log("get lugares "+dpto + " desde la cache de lugares")
+    //         this.lugares = this.mapCache.get(dpto);
+    //         this.updateListaPrioridadesLocal(false);
+    // //            this.lugares$.next(this.lugares);
+    //         this.getLugaresFiltrados();
+    //     }
     }
 
     /**
@@ -258,11 +258,7 @@ export class LugaresService {
     /** Obtiene el lugar a partir del id que recibe y */
     getLugarId(id: string): Observable<Lugar> {
         const lugarEncontrado = this.lugares.filter(item => item.id == id);
-        return from(
-            //this.afs.doc(`lugares/${id}`).snapshotChanges() //funciona ok no se usa
-            //this.afs.doc(id).get()                          //funciona ok no se usa
-            lugarEncontrado
-        );
+        return from( lugarEncontrado );
     }
 
     /** Elimina correctamente el lugar */

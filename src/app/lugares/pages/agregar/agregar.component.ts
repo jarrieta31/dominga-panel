@@ -361,7 +361,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
         this.fbStorage.listarArchvios(`${this.directorioPadre}/${this.directorio}`)
             .then(res => {
                 res.items.forEach(item => {
-                    console.log("se elimino : " + item.name)
+                    console.log("se encontro : " + item.name)
                 })
             })
             .catch(error => console.log(`Error al intentar borrar la imagen residual. ${error}`))
@@ -551,42 +551,43 @@ export class AgregarComponent implements OnInit, OnDestroy {
                 //this.lugaresService.updateLugar(this.lugarForm.value, this.idLugar);
                 const lugar: Lugar = this.lugarForm.value;
                 lugar.id = this.idLugar;
+
                 if (this.prioridadAnterior !== lugar.prioridad) {//Sí la prioridad cambio
-                    this.lugaresService.updateLugarFirestore(this.lugarForm.value, this.idLugar)
-                        .then(res => {
-                            this.lugaresService.modificarPrioridadDeLugar(lugar);
-                            this.openSnackBarSubmit('¡El lugar se ha actualizado correctamente!');
-                        })
-                        .catch(error => {
-                            this.openSnackBarSubmit('¡Error, no se ha podido actualizar el lugar en Firestore!');
-                            console.error('¡Error, no se ha podido actualizar el lugar en Firestore!. Error: ' + error);
-                        });
-                    this.lugaresService.corregirPrioridadesFirestore(lugar.id, 'edit');
-                    this.regresar();
+                    try {
+                        const updateFirestore = await this.lugaresService.updateLugarFirestore(this.lugarForm.value, this.idLugar);
+                        this.lugaresService.modificarPrioridadDeLugar(lugar);
+                        this.openSnackBarSubmit('¡El lugar se ha actualizado correctamente!');
+                        this.lugaresService.corregirPrioridadesFirestore(lugar.id, 'edit');
+                        this.regresar();
+                    }
+                    catch (error) {
+                        this.openSnackBarSubmit('¡Error, no se ha podido actualizar el lugar en Firestore!');
+                        console.error('¡Error, no se ha podido actualizar el lugar en Firestore!. Error: ' + error);
+                    };
                 } else { //Sí la prioridad no cambio
                     this.lugaresService.updateLugarLocal(lugar);
-                    this.lugaresService.updateLugarFirestore(this.lugarForm.value, this.idLugar)
-                        .then(res => {
-                            this.openSnackBarSubmit('¡El lugar se ha actualizado correctamente!');
-                        })
-                        .catch(error => {
-                            this.openSnackBarSubmit('¡Error, no se ha podido actualizar el lugar en Firestore!');
-                            console.error('¡Error, no se ha podido actualizar el lugar en Firestore!. Error: ' + error);
-                        });
-                    this.regresar();
+                    try {
+                        const updateFirestore = await this.lugaresService.updateLugarFirestore(this.lugarForm.value, this.idLugar);
+                        this.openSnackBarSubmit('¡El lugar se ha actualizado correctamente!');
+                        this.regresar();
+                    }
+                    catch (error) {
+                        this.openSnackBarSubmit('¡Error, no se ha podido actualizar el lugar en Firestore!');
+                        console.error('¡Error, no se ha podido actualizar el lugar en Firestore!. Error: ' + error);
+                    };
                 }
             } else { //Si el lugar es nuevo
-                let nuevoId: string;
-                this.lugaresService.addLugar(this.lugarForm.value).then(id => {
-                    nuevoId = id
+                try {
+                    let nuevoId: string = await this.lugaresService.addLugar(this.lugarForm.value)
                     if (nuevoId !== '' && nuevoId !== undefined) {
                         this.openSnackBarSubmit('¡El nuevo lugar se ha guardado correctamente con el ID: ' + nuevoId);
                         this.lugaresService.corregirPrioridadesFirestore(nuevoId, 'add');
                     }
-                }).catch(error => {
+                }
+                catch(error) {
                     console.log(error);
                     this.openSnackBarSubmit('¡Por algún motivo el nuevo lugar no se pudo gardar!');
-                })
+                }
                 //limpia el formulario y setea los valores inicales con el metodo reset
                 this.lugarForm.reset({
                     imagenHome: this.imagenHomeDefault,

@@ -51,15 +51,9 @@ export class ListadoComponent implements OnInit, OnDestroy {
         this.configService.emitirDepartamentosActivos();
         this.configService.getObsLocalidades().pipe(takeUntil(this.destroy$)).subscribe(locs => this.localidades = locs);
         this.configService.emitirLocalidades();
-        this.lugaresService.getObsLugares$().pipe(takeUntil(this.destroy$)).subscribe(lugares => this.lugares = lugares);
-
-        //this.configService.cargarTiposArtistas();
-        //this.configService.cargarTiposEventos();
-        //this.configService.cargarTiposLugares();
-        //this.configService.cargarConfiguracion();
-        if (!this.lugaresService.checkCache(this.departamento.value)) {
             this.lugaresService.getLugaresFirestore(this.departamento.value);
-        }
+        this.lugaresService.getObsLugares$().pipe(takeUntil(this.destroy$)).subscribe(lugares => this.lugares = lugares);
+        this.lugaresService.emitirLugares()
     }
 
     ngAfterViewInit(): void {

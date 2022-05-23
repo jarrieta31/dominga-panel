@@ -67,7 +67,7 @@
     <div id="lista" fxLayout="row" fxLayoutAlign="center start" class="main">
         <div fxLayout="row" fxFlex="95%" fxLayoutAlign="center">
             <div fxLayout="row wrap" fxLayoutAlign="start start" fxLayoutGap="1.25rem">
-                <div *ngFor="let lugar of lugares  | paginate: { itemsPerPage: 12, currentPage: page }" class="lista" >
+                <div *ngFor="let lugar of lugares  | paginate: { itemsPerPage: 15, currentPage: page }" class="lista" >
                     <app-lugar-tarjeta [lugar]="lugar"></app-lugar-tarjeta>
                 </div>
             </div>
