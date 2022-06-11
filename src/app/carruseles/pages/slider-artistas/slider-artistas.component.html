@@ -60,7 +60,24 @@
                     </div>
                 </div>
             </div>
-            <br><br>
+            <br>
+            <!-- ================================= Departamento ================================= -->
+            <div fxLayout="column" fxLayoutAlign="space-between start" fxLayoutAlign.xs="space-around end" fxLayoutGap="10px">
+                <div fxLayout="row">
+                    <h2>Departamento *</h2>
+                </div>
+                <div fxLayout="row">
+                    <mat-form-field fxFlex.gt-sm="15rem" fxFlex.xs="60%" class="inputDepartamento">
+                        <mat-label>Selecciona el Departamento</mat-label>
+                        <mat-select formControlName="departamento" required (selectionChange)="activarBtnGuardar()">
+                            <mat-option *ngFor="let dpto of departamentos" [value]="dpto">
+                                {{ dpto }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </div>
+            <!-- ================================= Fin Departamento ================================= -->
             <!-- ============================== Links ==================================== -->
             <div fxLayout="column" fxLayoutAlign="start start" class="container-links-header">
                 <div fxLayout="row" fxLayoutAlign="start end">
@@ -97,8 +114,8 @@
                     <ng-container *ngIf="linkSeleccionado === 'whatsapp'">
                         <mat-form-field class="whatsapp">
                             <mat-label>Whatsapp</mat-label>
-                            <input autocomplete="off" type="text" matInput [formControl]="whatsapp" (input)="setLinkWhatsapp()"
-                                placeholder="099123456">
+                            <input autocomplete="off" type="text" matInput [formControl]="whatsapp"
+                                (input)="setLinkWhatsapp()" placeholder="099123456">
                             <mat-icon matSuffix>phone</mat-icon>
                             <ng-container *ngIf="!whatsapp.valid && whatsapp.touched">
                                 <mat-error>
@@ -110,8 +127,8 @@
                     <ng-container *ngIf="linkSeleccionado === 'facebook'">
                         <mat-form-field class="facebook">
                             <mat-label>Facebook</mat-label>
-                            <input autocomplete="off" type="url" matInput [formControl]="facebook" (input)="setLinkFacebook()"
-                                placeholder="https://m.facebook.com/mi-perfil/">
+                            <input autocomplete="off" type="url" matInput [formControl]="facebook"
+                                (input)="setLinkFacebook()" placeholder="https://m.facebook.com/mi-perfil/">
                             <mat-icon matSuffix>insert_link</mat-icon>
                             <ng-container *ngIf="!facebook.valid && facebook.touched">
                                 <mat-error>URL no válida! Ejemplo: https://www.facebook.com/mi-perfil </mat-error>
@@ -122,8 +139,8 @@
                     <ng-container *ngIf="linkSeleccionado === 'instagram'">
                         <mat-form-field class="instagram">
                             <mat-label>Instagram</mat-label>
-                            <input autocomplete="off" type="url" matInput [formControl]="instagram" (input)="setLinkInstagram()"
-                                placeholder="http://www.instagram.com/">
+                            <input autocomplete="off" type="url" matInput [formControl]="instagram"
+                                (input)="setLinkInstagram()" placeholder="http://www.instagram.com/">
                             <mat-icon matSuffix>insert_link</mat-icon>
                             <ng-container *ngIf="!instagram.valid && instagram.touched">
                                 <mat-error>URL no válida! Ejemplo: http://www.instagram.com/mi-perfil</mat-error>
@@ -135,9 +152,11 @@
             </div>
             <!-- ============================== Fin Links ==================================== -->
 
+
+
             <div fxLayout="row" fxLayoutAlign="center start" fxLayoutGap="30px" class="rowSubmit">
                 <button mat-raised-button color="primary" type="button" (click)="resetFormulario()">
-                   Cancelar
+                    Cancelar
                 </button>
                 <button mat-raised-button color="accent" type="submit" [disabled]="datosInvalidos">
                     Guardar
@@ -163,7 +182,7 @@
         <div></div>
     </div>
     <div fxLayout='row' fxLayoutAlign="center center">
-        <div class="galeria" >
+        <div class="galeria">
             <div *ngIf="sliders.length < 1">
                 <div fxLayout="row" fxLayoutAlign="center center">
                     <br>

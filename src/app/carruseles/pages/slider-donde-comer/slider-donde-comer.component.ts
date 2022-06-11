@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
-import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
+import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { CarruselesService } from '../../services/carruseles.service';
 import { Slider } from '../../interfaces/slider.interface';
 import { takeUntil } from 'rxjs/operators';
@@ -10,6 +10,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { DialogPublicarComponent } from '../../components/dialog-publicar/dialog-publicar.component';
 import { MatDialog } from '@angular/material/dialog';
 import { StorageService } from '../../../shared/services/storage.service';
+import { ConfigService } from 'src/app/shared/services/config.service';
 
 @Component({
     selector: 'app-slider-donde-comer',
@@ -34,13 +35,15 @@ export class SliderDondeComerComponent implements OnInit {
     sliders: Slider[] = [];
     titulo: string = 'Carrusel Donde Comer'
     widthAllowedEvento: number = 850;
+    departamentos: string[] = [];
 
     public sliderForm: FormGroup = this.fb.group({
         imagen: [this.imagenSlider],
         link: [null],
         linkTipo: [null],
         pantalla: [this.directorio],
-        publicado: [false]
+        publicado: [false],
+        departamento: [null, [Validators.required]]
     })
 
     links: string[] = [
@@ -63,6 +66,7 @@ export class SliderDondeComerComponent implements OnInit {
         public dialog: MatDialog,
         private vs: ValidatorService,
         private storageService: StorageService,
+        private configService: ConfigService,
     ) { }
 
     ngOnInit() {
@@ -71,6 +75,8 @@ export class SliderDondeComerComponent implements OnInit {
             .subscribe(sliders => this.sliders = sliders)
         this.pantalla.setValue(this.directorio);
         this.slidersService.getSliderFirestore(this.directorio);
+        this.configService.getObsDepartamentos().pipe(takeUntil(this.destroy$)).subscribe(dptos => { this.departamentos = dptos });
+        this.configService.emitirDepartamentosActivos();
     }
 
     ngOnDestroy(): void {
@@ -83,18 +89,22 @@ export class SliderDondeComerComponent implements OnInit {
      * Función que busca en Cloud Storage si quedaron imágenes que no están en el array de Sliders. 
      * Si encuentra imágnes residuales las borra.
      */
-    limpiarImagenesResiduales(){
+    limpiarImagenesResiduales() {
         this.storageService.listarArchvios(`${this.directorioPadre}/${this.directorio}`)
             .then(res => {
                 res.items.forEach(item => {
                     const existe = (element: Slider) => element.imagen.name === item.name;
                     if (!this.sliders.some(existe)) {
                         this.storageService.borrarArchivoStorage(`${this.directorioPadre}/${this.directorio}`, item.name);
-                        console.log("se elimino la imagen: "+item.name)
+                        console.log("se elimino la imagen: " + item.name)
                     }
                 })
             })
             .catch(error => console.log(`Error al intentar borrar la imagen residual. ${error}`))
+    }
+
+    setDepartamento(){
+
     }
 
     setLinkWhatsapp() {
@@ -117,7 +127,7 @@ export class SliderDondeComerComponent implements OnInit {
             this.link.setValue(this.instagram.value);
             this.linkTipo.setValue(this.linkSeleccionado);
             this.activarBtnGuardar()
-        }else{
+        } else {
             this.link.setValue(null);
             this.linkTipo.setValue(null);
             this.activarBtnGuardar()
@@ -129,7 +139,7 @@ export class SliderDondeComerComponent implements OnInit {
             this.link.setValue(this.facebook.value);
             this.linkTipo.setValue(this.linkSeleccionado);
             this.activarBtnGuardar()
-        }else{
+        } else {
             this.link.setValue(null);
             this.linkTipo.setValue(null);
             this.activarBtnGuardar()
@@ -141,7 +151,7 @@ export class SliderDondeComerComponent implements OnInit {
             this.link.setValue(this.web.value);
             this.linkTipo.setValue(this.linkSeleccionado);
             this.activarBtnGuardar()
-        }else{
+        } else {
             this.link.setValue(null);
             this.linkTipo.setValue(null);
             this.activarBtnGuardar()
@@ -152,6 +162,7 @@ export class SliderDondeComerComponent implements OnInit {
         this.radioButtonLinks.setValue(null);
         this.link.setValue(null);
         this.linkSeleccionado = null;
+        this.linkTipo.setValue(null)
     }
 
     changeTipoLink() {
@@ -175,7 +186,9 @@ export class SliderDondeComerComponent implements OnInit {
         if (this.linkSeleccionado === 'facebook') { this.facebook.setValue(sliderActual.link) }
         if (this.linkSeleccionado === 'whatsapp') {
             let enlace: string = sliderActual.link
-            enlace = "0" + enlace.slice(39)
+            if ( enlace !== null && enlace.length > 38 ) {
+                enlace = "0" + enlace.slice(39)
+            }
             this.whatsapp.setValue(enlace)
         }
         this.activarBtnGuardar()
@@ -188,6 +201,7 @@ export class SliderDondeComerComponent implements OnInit {
             link: null,
             linkTipo: null,
             pantalla: this.directorio,
+            departamento: null
         });
         this.borrarLink();
         this.imagenSlider = this.imagenDefault;
@@ -197,8 +211,10 @@ export class SliderDondeComerComponent implements OnInit {
     activarBtnGuardar() {
         if (this.imagenSlider.name !== "imagen-default" && this.sliderForm.valid && this.whatsapp.valid && this.instagram.valid && this.facebook.valid && this.web.valid) {
             this.datosInvalidos = false;
+            console.log("false")
         } else {
             this.datosInvalidos = true;
+            console.log("true")
         }
     }
 
@@ -344,6 +360,7 @@ export class SliderDondeComerComponent implements OnInit {
     get imagen() { return this.sliderForm.get('imagen'); }
     get pantalla() { return this.sliderForm.get('pantalla'); }
     get publicado() { return this.sliderForm.get('publicado'); }
+    get departamento() { return this.sliderForm.get('departamento'); }
 }
 
 

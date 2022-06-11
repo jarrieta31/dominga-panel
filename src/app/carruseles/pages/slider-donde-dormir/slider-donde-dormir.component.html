@@ -60,7 +60,24 @@
                     </div>
                 </div>
             </div>
-            <br><br>
+            <br>
+            <!-- ================================= Departamento ================================= -->
+            <div fxLayout="column" fxLayoutAlign="space-between start" fxLayoutAlign.xs="space-around end" fxLayoutGap="10px">
+                <div fxLayout="row">
+                    <h2>Departamento *</h2>
+                </div>
+                <div fxLayout="row">
+                    <mat-form-field fxFlex.gt-sm="15rem" fxFlex.xs="60%" class="inputDepartamento">
+                        <mat-label>Selecciona el Departamento</mat-label>
+                        <mat-select formControlName="departamento" required (selectionChange)="activarBtnGuardar()">
+                            <mat-option *ngFor="let dpto of departamentos" [value]="dpto">
+                                {{ dpto }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </div>
+            <!-- ================================= Fin Departamento ================================= -->
             <!-- ============================== Links ==================================== -->
             <div fxLayout="column" fxLayoutAlign="start start" class="container-links-header">
                 <div fxLayout="row" fxLayoutAlign="start end">

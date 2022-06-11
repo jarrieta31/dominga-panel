@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
-import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
+import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { CarruselesService } from '../../services/carruseles.service';
 import { Slider } from '../../interfaces/slider.interface';
 import { takeUntil } from 'rxjs/operators';
@@ -10,6 +10,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { DialogPublicarComponent } from '../../components/dialog-publicar/dialog-publicar.component';
 import { MatDialog } from '@angular/material/dialog';
 import { StorageService } from '../../../shared/services/storage.service';
+import { ConfigService } from 'src/app/shared/services/config.service';
 
 @Component({
   selector: 'app-slider-donde-dormir',
@@ -34,13 +35,15 @@ export class SliderDondeDormirComponent implements OnInit {
     sliders: Slider[] = [];
     titulo: string = 'Carrusel Donde Dormir'
     widthAllowedEvento: number = 850;
+    departamentos: string[] = [];
 
     public sliderForm: FormGroup = this.fb.group({
         imagen: [this.imagenSlider],
         link: [null],
         linkTipo: [null],
         pantalla: [this.directorio],
-        publicado: [false]
+        publicado: [false],
+        departamento: [null, [ Validators.required ]]
     })
 
     links: string[] = [
@@ -63,6 +66,7 @@ export class SliderDondeDormirComponent implements OnInit {
         public dialog: MatDialog,
         private vs: ValidatorService,
         private storageService: StorageService,
+        private configService: ConfigService,
     ) { }
 
     ngOnInit() {
@@ -71,6 +75,8 @@ export class SliderDondeDormirComponent implements OnInit {
             .subscribe(sliders => this.sliders = sliders)
         this.pantalla.setValue(this.directorio);
         this.slidersService.getSliderFirestore(this.directorio);
+        this.configService.getObsDepartamentos().pipe(takeUntil(this.destroy$)).subscribe(dptos => { this.departamentos = dptos });
+        this.configService.emitirDepartamentosActivos();
     }
 
     ngOnDestroy(): void {
@@ -152,6 +158,7 @@ export class SliderDondeDormirComponent implements OnInit {
         this.radioButtonLinks.setValue(null);
         this.link.setValue(null);
         this.linkSeleccionado = null;
+        this.linkTipo.setValue(null)
     }
 
     changeTipoLink() {
@@ -175,7 +182,9 @@ export class SliderDondeDormirComponent implements OnInit {
         if (this.linkSeleccionado === 'facebook') { this.facebook.setValue(sliderActual.link) }
         if (this.linkSeleccionado === 'whatsapp') {
             let enlace: string = sliderActual.link
-            enlace = "0" + enlace.slice(39)
+            if ( enlace !== null && enlace.length > 38 ) {
+                enlace = "0" + enlace.slice(39)
+            }
             this.whatsapp.setValue(enlace)
         }
         this.activarBtnGuardar()
@@ -344,7 +353,7 @@ export class SliderDondeDormirComponent implements OnInit {
     get imagen() { return this.sliderForm.get('imagen'); }
     get pantalla() { return this.sliderForm.get('pantalla'); }
     get publicado() { return this.sliderForm.get('publicado'); }
-
+    get departamento() { return this.sliderForm.get('departamento'); }
 }
 
 

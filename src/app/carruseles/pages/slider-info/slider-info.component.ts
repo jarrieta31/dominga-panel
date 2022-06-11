@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
-import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
+import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { CarruselesService } from '../../services/carruseles.service';
 import { Slider } from '../../interfaces/slider.interface';
 import { takeUntil } from 'rxjs/operators';
@@ -10,6 +10,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { DialogPublicarComponent } from '../../components/dialog-publicar/dialog-publicar.component';
 import { MatDialog } from '@angular/material/dialog';
 import { StorageService } from '../../../shared/services/storage.service';
+import { ConfigService } from 'src/app/shared/services/config.service';
 
 @Component({
   selector: 'app-slider-info',
@@ -34,13 +35,15 @@ export class SliderInfoComponent implements OnInit {
     sliders: Slider[] = [];
     titulo: string = 'Carrusel Información'
     widthAllowedEvento: number = 850;
+    departamentos: string[] = [];
 
     public sliderForm: FormGroup = this.fb.group({
         imagen: [this.imagenSlider],
         link: [null],
         linkTipo: [null],
         pantalla: [this.directorio],
-        publicado: [false]
+        publicado: [false],
+        departamento: [ null, [ Validators.required ]]
     })
 
     links: string[] = [
@@ -63,6 +66,7 @@ export class SliderInfoComponent implements OnInit {
         public dialog: MatDialog,
         private vs: ValidatorService,
         private storageService: StorageService,
+        private configService: ConfigService,
     ) { }
 
     ngOnInit() {
@@ -71,6 +75,8 @@ export class SliderInfoComponent implements OnInit {
             .subscribe(sliders => this.sliders = sliders)
         this.pantalla.setValue(this.directorio);
         this.slidersService.getSliderFirestore(this.directorio);
+        this.configService.getObsDepartamentos().pipe(takeUntil(this.destroy$)).subscribe(dptos => { this.departamentos = dptos });
+        this.configService.emitirDepartamentosActivos();
     }
 
     ngOnDestroy(): void {

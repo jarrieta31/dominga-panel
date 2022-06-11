@@ -8,4 +8,5 @@ export interface Slider{
     imagen: Imagen
     pantalla: string;
     publicado: boolean;
+    departamento?: string;
 }
