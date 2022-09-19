@@ -144,8 +144,8 @@ export class AgregarComponent implements OnInit, AfterViewInit, OnDestroy {
             descripcion: ['', [Validators.minLength(this.descripcionMinLength), Validators.maxLength(this.descripcionMaxLength)]],
             direccion: ['', [Validators.minLength(this.direccionMinLength), Validators.maxLength(this.direccionMaxLength)]],
             facebook: [null, [this.vs.validarFacebook]],
-            fechaFin: [null],
-            fechaInicio: [null],
+            fechaFin: [null, [Validators.required]],
+            fechaInicio: [null, [Validators.required]],
             imagen: [this.imagenDefault],
             instagram: [null, [this.vs.validarInstagram]],
             localidad: ['', [Validators.required]],
@@ -282,14 +282,17 @@ export class AgregarComponent implements OnInit, AfterViewInit, OnDestroy {
      * También habilita el input de la hora y el datepicker de fecha final
      */
     setFechaStart() {
-        if (this.pickerFechEnd.value === null || this.pickerFechEnd.value < this.pickerFechIni.value) {
-            this.startDateEnd = this.pickerFechIni.value; //fecha inicial del picker pickerFechEnd
-            this.pickerFechEnd.setValue(this.pickerFechIni.value);
-        }
         if (this.pickerFechIni.value !== null) {
             const fechaHoraStart: Moment = this.pickerFechIni.value;
             const fechaStr: string = `${fechaHoraStart.format('YYYY-MM-DD HH:mm:ss')} UTC${fechaHoraStart.format('Z')}`;
             this.fechaInicio.setValue(Timestamp.fromDate(new Date(fechaStr)));
+            if (this.pickerFechEnd.value === null || this.pickerFechEnd.value < this.pickerFechIni.value) {
+                this.startDateEnd = this.pickerFechIni.value; //fecha inicial del picker pickerFechEnd
+                this.pickerFechEnd.setValue(this.pickerFechIni.value);
+                let fechaHoraEnd: Moment = this.pickerFechEnd.value.clone();
+                let fechaStr: string = `${fechaHoraEnd.format('YYYY-MM-DD HH:mm:ss')} UTC${fechaHoraEnd.format('Z')}`;
+                this.fechaFin.setValue(Timestamp.fromDate(new Date(fechaStr)));
+            }
         }
         this.minDateFin = this.pickerFechIni.value.clone(); //fecha mínima del picker pickerFechEnd
         this.pickerFechEnd.enable();

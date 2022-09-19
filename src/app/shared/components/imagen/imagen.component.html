@@ -1,6 +1,7 @@
     <mat-card class="card-imagen">
         <mat-card-header>
-            <mat-card-title>{{ imagen.name }}</mat-card-title>
+            <mat-card-subtitle>{{ imagen.name }}</mat-card-subtitle>
+        
         </mat-card-header>
             <img  [style.display]="viewImage == true ? 'block': 'none'" mat-card-image [src]="imagen.url"  (load)="mostrarImagen()">
             <img [style.display]="viewImage == true ? 'none': 'block'" src="../../../../assets/loading.gif" >
