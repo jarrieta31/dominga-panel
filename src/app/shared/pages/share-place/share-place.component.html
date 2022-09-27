@@ -1,0 +1,36 @@
+<div *ngIf="lugar$ | async as lugar">
+
+    <div fxLayout="column" fxLayoutAlign="start center" fxLayoutGap="10">
+        <div flexLayout="row" flexLayoutAlign="center center">
+            <h1>Descargar ahora!</h1>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="center center">
+            <h3>Y forma parte de la comunidad que apoya turismo cultural local.</h3>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="center center">
+            <img src="../../../../assets/domingo-logo-300x86.png" alt="logo-domingo" class="logo">
+        </div>
+        <div fxLayout="row" fxLayoutAlign="center center">
+            <button mat-button mat-stroked-button [routerLink]="['/lugares/editar', lugar.id]">
+                Apple Store
+            </button>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="center center">
+            <button mat-button mat-stroked-button>
+                <span class="material-icons">android</span>
+                Play Store
+            </button>
+        </div>
+        <div >
+            <h1>{{ lugar.nombre }}</h1>
+        </div>
+        <div fxLaout="row" fxLayoutAlign="center center">
+            <img src="{{lugar.imagenHome.url}}" alt="">
+        </div>
+        <div fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="20" class="descripcion">
+            <div [innerHTML]="lugar.descripcion"></div>
+        </div>
+
+    </div>
+
+</div>

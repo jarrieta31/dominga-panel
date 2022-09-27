@@ -13,9 +13,11 @@ export class LugarComponent implements OnInit {
 
     lugar!: Lugar;
 
-    constructor(private activatedRoute: ActivatedRoute,
+    constructor(
+        private activatedRoute: ActivatedRoute,
         private lugaresService: LugaresService,
-        private router: Router) { }
+        private router: Router
+    ){}
 
     ngOnInit(): void {
         //A partir de la ruta y el id recibido obtento el lugar para mostrar

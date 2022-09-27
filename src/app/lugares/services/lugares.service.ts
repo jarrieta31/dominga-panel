@@ -138,7 +138,7 @@ export class LugaresService {
 
 
     /**
-     * Actuliza la información de lugar en la nube de Firestore, utilizando el método destructivo "set" (borra todo lo que este y
+     * Actualiza la información de lugar en la nube de Firestore, utilizando el método destructivo "set" (borra todo lo que este y
      * guarda solo los valores actuales).
      * @param lugar Contiene todos los datos del lugar menos el ID.
      * @returns
@@ -195,13 +195,10 @@ export class LugaresService {
             ).catch(error => {
                 console.error("Error en getLugaresFirestore(). error:" + error);
             });
-    //     }else{
-    //         console.log("get lugares "+dpto + " desde la cache de lugares")
-    //         this.lugares = this.mapCache.get(dpto);
-    //         this.updateListaPrioridadesLocal(false);
-    // //            this.lugares$.next(this.lugares);
-    //         this.getLugaresFiltrados();
-    //     }
+    }
+
+    getLugarFirestore(id:string) {
+        return this.afs.collection<Lugar[]>('lugares').doc<Lugar>(`${id}`).get();
     }
 
     /**
@@ -255,7 +252,7 @@ export class LugaresService {
         this.lugares$.next(this.lugares);
     }
 
-    /** Obtiene el lugar a partir del id que recibe y */
+    /** A partir del ID obtiene un lugar de la lista local de lugares*/
     getLugarId(id: string): Observable<Lugar> {
         const lugarEncontrado = this.lugares.filter(item => item.id == id);
         return from( lugarEncontrado );

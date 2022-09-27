@@ -14,8 +14,7 @@ export const environment = {
     messagingSenderId: "161489449929",
     appId: "1:161489449929:web:a584e4bf4a1cd913faae18",
     measurementId: "G-PBWG8WJHQ8"
-  },
-  baseUrl: 'https://firebasestorage.googleapis.com/v0/b/appdominga.appspot.com/o/'
+  }
 }
 
 /*

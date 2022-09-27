@@ -16,6 +16,7 @@ import { RecortarTituloPipe } from './pipes/recortar-titulo.pipe';
 import { LoadingImageComponent } from './components/loading-image/loading-image.component';
 import { SubirUnaImagenComponent } from './components/subir-una-imagen/subir-una-imagen.component';
 import { SubirMultiplesImagensComponent } from './components/subir-multiples-imagens/subir-multiples-imagens.component';
+import { SharePlaceComponent } from './pages/share-place/share-place.component';
 
 
 
@@ -34,6 +35,7 @@ import { SubirMultiplesImagensComponent } from './components/subir-multiples-ima
         LoadingImageComponent,
         SubirUnaImagenComponent,
         SubirMultiplesImagensComponent,
+        SharePlaceComponent,
     ],
     exports: [
         ErrorPageComponent,
@@ -43,6 +45,7 @@ import { SubirMultiplesImagensComponent } from './components/subir-multiples-ima
         RecortarParrafoPipe,
         RecortarTituloPipe,
         UploadFilesComponent,
+        SharePlaceComponent,
     ],
     imports: [
         CommonModule,
