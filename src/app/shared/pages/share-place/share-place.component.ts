@@ -5,6 +5,7 @@ import { Subject } from 'rxjs';
 import { switchMap, tap, takeUntil } from 'rxjs/operators';
 import { Lugar } from 'src/app/lugares/interfaces/lugar.interface';
 import { LugaresService } from '../../../lugares/services/lugares.service';
+import { AngularFireAnalytics } from '@angular/fire/compat/analytics';
 
 @Component({
   selector: 'app-share-place',
@@ -20,14 +21,15 @@ export class SharePlaceComponent implements OnInit {
   constructor(
     private activatedRoute: ActivatedRoute,
     private lugaresService: LugaresService,
-    private router: Router
+    private router: Router,
+    private analitytics: AngularFireAnalytics
   ) { }
 
   ngOnInit(): void {
     //A partir de la ruta y el id recibido obtento el lugar para mostrar
     this.activatedRoute.params.pipe(
       switchMap(({ id }) => this.lugaresService.getLugarFirestore(id)),
-      //takeUntil(this.destroy$)
+      takeUntil(this.destroy$)
     ).subscribe(docSnapshot => {
       if (docSnapshot.data() !== undefined) {
         this.lugar$.next(docSnapshot.data());
@@ -36,6 +38,15 @@ export class SharePlaceComponent implements OnInit {
         this.router.navigate(['/404'])
       }
     });
+  }
+
+  navigatePlayStore(){
+        //this.router.navigateByUrl("https://www.google.com");
+    window.location.href="https://play.google.com/store/apps/details?id=io.ionic.domingo";
+  }
+
+  navigateAppleStore(){
+    window.location.href="https://apps.apple.com/pa/app/domingo/id1533544868";
   }
 
   ngOnDestroy(): void {

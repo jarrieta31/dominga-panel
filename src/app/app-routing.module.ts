@@ -76,7 +76,8 @@ const routes: Routes = [
     },
     {
         path: 'share-place/:id',
-        component: SharePlaceComponent
+        component: SharePlaceComponent,
+        data: { title: 'App Domingo | Lugar'}
     },
     {
         path: '404',

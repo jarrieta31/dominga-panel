@@ -13,6 +13,7 @@ import { environment } from '../environments/environment';
 //Módulos Propios
 import { SharedModule } from './shared/shared.module';
 import { MaterialModule } from './material/material.module';
+import { AngularFireAnalyticsModule } from "@angular/fire/compat/analytics";
 
 //Componentes
 import { AppComponent } from './app.component';
@@ -32,6 +33,7 @@ import { AppComponent } from './app.component';
         MaterialModule,
         AngularFireModule.initializeApp(environment.firebase),
         AngularFirestoreModule.enablePersistence(),
+        AngularFireAnalyticsModule,
         AngularFireStorageModule,
         AngularFireAuthModule,
         AngularFireAuthGuardModule,

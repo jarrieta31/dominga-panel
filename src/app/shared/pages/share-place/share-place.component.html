@@ -11,13 +11,15 @@
             <img src="../../../../assets/domingo-logo-300x86.png" alt="logo-domingo" class="logo">
         </div>
         <div fxLayout="row" fxLayoutAlign="center center">
-            <button mat-button mat-stroked-button [routerLink]="['/lugares/editar', lugar.id]">
+
+            <button mat-button mat-stroked-button (click)="navigateAppleStore()" >
+                <i class="fa-brands fa-apple"></i>
                 Apple Store
             </button>
         </div>
         <div fxLayout="row" fxLayoutAlign="center center">
-            <button mat-button mat-stroked-button>
-                <span class="material-icons">android</span>
+            <button mat-button mat-stroked-button (click)="navigatePlayStore()">
+                <i class="fa-brands fa-android"></i>
                 Play Store
             </button>
         </div>
