@@ -7,6 +7,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { LocalStorageService } from '../../../shared/services/local-storage.service';
 import { ConfigService } from '../../../shared/services/config.service';
 import { takeUntil } from 'rxjs/operators';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-listado',
@@ -42,7 +43,10 @@ export class ListadoComponent implements OnInit, OnDestroy{
         private cdRef: ChangeDetectorRef,
         private fb: FormBuilder,
         private router: Router,
-    ) { }
+        private title : Title
+    ) { 
+        this.title.setTitle("Lista Donde Dormir");
+    }
 
 
     ngOnInit(): void {

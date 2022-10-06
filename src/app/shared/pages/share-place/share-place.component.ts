@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { doc } from 'firebase/firestore';
 import { Subject } from 'rxjs';
 import { switchMap, tap, takeUntil } from 'rxjs/operators';
 import { Lugar } from 'src/app/lugares/interfaces/lugar.interface';
 import { LugaresService } from '../../../lugares/services/lugares.service';
 import { AngularFireAnalytics } from '@angular/fire/compat/analytics';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-share-place',
@@ -22,8 +22,11 @@ export class SharePlaceComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private lugaresService: LugaresService,
     private router: Router,
-    private analitytics: AngularFireAnalytics
-  ) { }
+    private analitytics: AngularFireAnalytics,
+    private title: Title,
+  ) { 
+    
+  }
 
   ngOnInit(): void {
     //A partir de la ruta y el id recibido obtento el lugar para mostrar
@@ -34,6 +37,9 @@ export class SharePlaceComponent implements OnInit {
       if (docSnapshot.data() !== undefined) {
         this.lugar$.next(docSnapshot.data());
         this.lugar = docSnapshot.data(); 
+
+        this.analitytics.logEvent( 'place_seen', {"place_name": this.lugar.nombre} )
+        this.title.setTitle(`Compartiendo ${this.lugar.nombre}`)
       } else {
         this.router.navigate(['/404'])
       }

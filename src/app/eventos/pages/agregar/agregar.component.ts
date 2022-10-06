@@ -18,6 +18,7 @@ import { DialogPublicarComponent } from '../../components/dialog-publicar/dialog
 import { Timestamp } from "firebase/firestore";
 import { Moment } from 'moment';
 import * as moment from 'moment';
+import { Title } from '@angular/platform-browser'
 //import 'moment/locale/es';
 
 @Component({
@@ -126,8 +127,10 @@ export class AgregarComponent implements OnInit, AfterViewInit, OnDestroy {
         private configService: ConfigService,
         private eventosService: EventosService,
         private _adapter: DateAdapter<Moment>,
+        private title: Title,
     ) {
 
+        this.title.setTitle("Agregar Evento")
         this.heightEvento = this.configService.heightEvento;
         this.widthEvento = this.configService.widthEvento;
         this.sizeEvento = this.configService.sizeEvento;
@@ -194,6 +197,7 @@ export class AgregarComponent implements OnInit, AfterViewInit, OnDestroy {
             //    tap(res => console.log(res))
             takeUntil(this.destroy$),
         ).subscribe(evento => {
+            this.title.setTitle("Editar Evento")
             let eventoActual: Evento = JSON.parse(JSON.stringify(evento));
             if (eventoActual.id !== undefined) {//Si estamos editando un lugar
                 if (evento.fechaInicio !== null && evento.fechaInicio !== undefined) {

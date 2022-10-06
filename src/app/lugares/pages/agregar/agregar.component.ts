@@ -18,6 +18,7 @@ import { DialogPublicarComponent } from '../../components/dialog-publicar/dialog
 import { Accesibilidad } from '../../../shared/interfaces/accesibilidad.interface';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { Telefono } from '../../../shared/interfaces/telefono.interface';
+import { Title } from '@angular/platform-browser';
 
 
 @Component({
@@ -128,8 +129,9 @@ export class AgregarComponent implements OnInit, OnDestroy {
         private mapaService: MapaService,
         private configService: ConfigService,
         private _snackBar: MatSnackBar,
+        private title: Title,
     ) {
-
+        this.title.setTitle("Agregar Lugar")
         this.sizeLugar = this.configService.sizeLugar;
         this.heightLugar = this.configService.heightLugar;
         this.widthLugar = this.configService.widthLugar;
@@ -210,6 +212,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
             switchMap(({ id }) => this.lugaresService.getLugarId(id)),
             takeUntil(this.destroy$),
         ).subscribe(lugar => {
+            this.title.setTitle("Editar Lugar")
             let lugarActual: Lugar = JSON.parse(JSON.stringify(lugar));
             if (lugarActual.id !== undefined) {//Si estamos editando un lugar
                 this.idLugar = lugarActual.id;
@@ -233,7 +236,6 @@ export class AgregarComponent implements OnInit, OnDestroy {
                 this.mapaService.dMiniMapa = { centro: lugarActual.ubicacion, zoom: 15, marcador: true };
                 this.mapaService.emitirMiniMapa();
                 this.lugaresService.updateListaPrioridadesLocal(false);
-            } else {
             }
         });
 
@@ -584,7 +586,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
                         this.lugaresService.corregirPrioridadesFirestore(nuevoId, 'add');
                     }
                 }
-                catch(error) {
+                catch (error) {
                     console.log(error);
                     this.openSnackBarSubmit('¡Por algún motivo el nuevo lugar no se pudo gardar!');
                 }

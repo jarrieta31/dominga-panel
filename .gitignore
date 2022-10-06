@@ -48,3 +48,6 @@ testem.log
 .DS_Store
 Thumbs.db
 .angular/cache/13.2.4/angular-webpack/cf8261723e0eb225953ad6b3fec5254e46946000/0.pack
+
+# Información de los entornos de configurión
+#src/environments/*

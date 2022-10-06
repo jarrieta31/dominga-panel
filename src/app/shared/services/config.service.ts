@@ -227,7 +227,7 @@ export class ConfigService {
         })
     }
 
-    /** cargar el subject localidades$ con las localidades
+    /** Cargar el subject localidades$ con las localidades
      * del departamento seleccionado y emite sus valores
      */
     getLocadidadesDepartamento(departamento: string) {
@@ -236,6 +236,7 @@ export class ConfigService {
             if (dep.nombre === departamento) {
                 let dpto = JSON.parse(JSON.stringify(dep));
                 arrLocalidades = dpto.localidades
+                arrLocalidades.sort();
             }
         });
         this.listLocalidades = arrLocalidades;
@@ -867,10 +868,9 @@ export class ConfigService {
                     "Carreta Quemada",
                     "Cañada Grande",
                     "Ceramicas Del Sur",
-                    "Cololo Tinosa",
+                    "Ciudad del Plata",
                     "Colonia Delta",
                     "Costas De Pereira",
-                    "Delta Del Tigre Y Villas",
                     "Ecilda Paullier",
                     "Gonzalez",
                     "Ituzaingo",
@@ -889,7 +889,6 @@ export class ConfigService {
                     "Raigón",
                     "Rincón Del Pino",
                     "Rodríguez",
-                    "Safici (Parque Postel)",
                     "San Gregorio",
                     "San José De Mayo",
                     "Santa Mónica",

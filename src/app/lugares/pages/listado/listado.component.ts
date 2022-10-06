@@ -6,6 +6,7 @@ import { tap, takeUntil } from 'rxjs/operators';
 import { ConfigService } from '../../../shared/services/config.service';
 import { LocalStorageService } from '../../../shared/services/local-storage.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { Title } from '@angular/platform-browser';
 
 
 @Component({
@@ -43,7 +44,9 @@ export class ListadoComponent implements OnInit, OnDestroy {
         private fb: FormBuilder,
         private lugaresService: LugaresService,
         private configService: ConfigService,
-        private ls: LocalStorageService) {
+        private ls: LocalStorageService,
+        private title: Title) {
+            this.title.setTitle("Lista de Lugares")
     }
 
     ngOnInit(): void {

@@ -1,9 +1,7 @@
-import { ComponentFactoryResolver, Injectable, OnInit } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Lugar } from '../interfaces/lugar.interface';
-import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument, DocumentReference } from '@angular/fire/compat/firestore';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { from, Observable, BehaviorSubject } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { LugarComponent } from '../pages/lugar/lugar.component';
 import { LocalStorageService } from '../../shared/services/local-storage.service';
 
 
@@ -16,7 +14,6 @@ export class LugaresService {
     private lugares$: BehaviorSubject<Lugar[]>;
     private prioridades$: BehaviorSubject<number[]>;
     private lugares: Lugar[] = []; //copia local de todos los lugares para trabajar con ella
-    private lugaresOriginal: Lugar[] = [];
     private idNuevoLugar: string = '';
     departamento: string = "San José";
     private mapCache = new Map();
@@ -86,7 +83,6 @@ export class LugaresService {
                 listPrioridades[i] = i + 1;
             }
         }
-        //console.log("update prioridades: "+ listPrioridades)
         this.prioridades$.next(listPrioridades);
     }
 
@@ -155,7 +151,6 @@ export class LugaresService {
         let i = this.lugares.findIndex(lugar => lugar.id === data.id);
         this.lugares[i] = JSON.parse(JSON.stringify(data));
         this.mapCache.set(data.departamento, this.lugares);
-        //this.lugares$.next(this.lugares);
     }
 
     /**
@@ -175,9 +170,7 @@ export class LugaresService {
      * no estar consultando la base y minimizar el traficio.
      */
     getLugaresFirestore(dpto: string) {
-        // if (!this.mapCache.has(dpto)) {
             this.afs.collection('lugares').ref.where('departamento', "==", dpto).where('prioridad', ">", -1).orderBy('prioridad').get().then(
-                //this.afs.collection('lugares').ref.where('prioridad', ">", -1).orderBy('prioridad').get().then(
                 querySnapshot => {
                     const arrLugares: any[] = [];
                     querySnapshot.forEach(item => {
@@ -186,10 +179,7 @@ export class LugaresService {
                     })
                     this.mapCache.set(dpto, arrLugares.slice());
                     this.lugares = arrLugares.slice();
-                    //this.lugaresOriginal = arrLugares.slice();
-                    // this.corregirPrioridades(); //actualiza cada prioridad segun el inidice
                     this.updateListaPrioridadesLocal(false);//
-                    //this.lugares$.next(this.lugares); //el subject lugares$ emite los lugares
                     this.getLugaresFiltrados()
                 }
             ).catch(error => {

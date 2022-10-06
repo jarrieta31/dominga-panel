@@ -7,6 +7,7 @@ import { ConfigService } from '../../../shared/services/config.service';
 import { LocalStorageService } from '../../../shared/services/local-storage.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Title } from '@angular/platform-browser'
 
 @Component({
     selector: 'app-listado',
@@ -40,8 +41,11 @@ export class ListadoComponent implements OnInit {
         private cdRef: ChangeDetectorRef,
         private fb: FormBuilder,
         private configService: ConfigService,
-        private ls: LocalStorageService 
-    ) { }
+        private ls: LocalStorageService ,
+        private title: Title,
+    ) { 
+        this.title.setTitle("Lista de Eventos")
+    }
 
 
     ngOnInit(): void {

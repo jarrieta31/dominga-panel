@@ -15,6 +15,7 @@ import { MapaService } from '../../../shared/services/mapa.service';
 import { DialogMapaComponent } from '../../../shared/components/dialog-mapa/dialog-mapa.component';
 import { MatGridTileHeaderCssMatStyler } from '@angular/material/grid-list';
 import { Telefono } from '../../../shared/interfaces/telefono.interface';
+import { Title } from '@angular/platform-browser';
 
 @Component({
     selector: 'app-agregar',
@@ -62,8 +63,9 @@ export class AgregarComponent implements OnInit, OnDestroy {
         private configService: ConfigService,
         private dormirService: DondeDormirService,
         private mapaService: MapaService,
+        private title: Title,
     ) {
-
+        this.title.setTitle("Agregar Hotel");
         this.heightDormir = this.configService.heightDormir;
         this.widthDormir = this.configService.widthDormir;
         this.sizeDormir = this.configService.sizeDormir;
@@ -125,6 +127,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
         ).subscribe(hotel => {
             let hotelActual: Hotel = JSON.parse(JSON.stringify(hotel));
             if (hotelActual.id !== undefined) {//Si estamos editando un lugar
+                this.title.setTitle("Editar Hotel")
                 this.idHotel = hotelActual.id;
                 delete hotelActual.id //para setear el formulario es necesario quitar el tatributo id
                 for (let i = 0; i < hotelActual.telefonos.length; i++) {
