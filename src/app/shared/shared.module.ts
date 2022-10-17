@@ -17,6 +17,7 @@ import { LoadingImageComponent } from './components/loading-image/loading-image.
 import { SubirUnaImagenComponent } from './components/subir-una-imagen/subir-una-imagen.component';
 import { SubirMultiplesImagensComponent } from './components/subir-multiples-imagens/subir-multiples-imagens.component';
 import { SharePlaceComponent } from './pages/share-place/share-place.component';
+import { ShareEventComponent } from './pages/share-event/share-event.component';
 
 
 
@@ -36,6 +37,7 @@ import { SharePlaceComponent } from './pages/share-place/share-place.component';
         SubirUnaImagenComponent,
         SubirMultiplesImagensComponent,
         SharePlaceComponent,
+        ShareEventComponent,
     ],
     exports: [
         ErrorPageComponent,

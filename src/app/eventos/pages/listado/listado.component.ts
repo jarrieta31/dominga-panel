@@ -44,7 +44,7 @@ export class ListadoComponent implements OnInit {
         private ls: LocalStorageService ,
         private title: Title,
     ) { 
-        this.title.setTitle("Lista de Eventos")
+        this.title.setTitle(this.titulo)
     }
 
 

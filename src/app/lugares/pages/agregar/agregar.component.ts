@@ -131,7 +131,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
         private _snackBar: MatSnackBar,
         private title: Title,
     ) {
-        this.title.setTitle("Agregar Lugar")
+        this.title.setTitle("Agregar lugar")
         this.sizeLugar = this.configService.sizeLugar;
         this.heightLugar = this.configService.heightLugar;
         this.widthLugar = this.configService.widthLugar;
@@ -212,9 +212,9 @@ export class AgregarComponent implements OnInit, OnDestroy {
             switchMap(({ id }) => this.lugaresService.getLugarId(id)),
             takeUntil(this.destroy$),
         ).subscribe(lugar => {
-            this.title.setTitle("Editar Lugar")
             let lugarActual: Lugar = JSON.parse(JSON.stringify(lugar));
             if (lugarActual.id !== undefined) {//Si estamos editando un lugar
+                this.title.setTitle("Editar lugar")
                 this.idLugar = lugarActual.id;
                 let prio = lugarActual.prioridad;
                 this.prioridadAnterior = prio

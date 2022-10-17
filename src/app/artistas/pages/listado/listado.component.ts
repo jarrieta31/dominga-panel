@@ -7,6 +7,7 @@ import { ConfigService } from '../../../shared/services/config.service';
 import { LocalStorageService } from '../../../shared/services/local-storage.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Title } from '@angular/platform-browser';
 
 @Component({
     selector: 'app-listado',
@@ -15,7 +16,7 @@ import { Router } from '@angular/router';
 })
 export class ListadoComponent implements OnInit {
 
-    titulo: string = "Lista Artistas";
+    titulo: string = "Lista artistas";
     artistas: Artista[];
     publicadoSelec: boolean;
     page: number = 1;
@@ -36,8 +37,11 @@ export class ListadoComponent implements OnInit {
         private cdRef: ChangeDetectorRef,
         private fb: FormBuilder,
         private configService: ConfigService,
-        private ls: LocalStorageService
-    ) { }
+        private ls: LocalStorageService,
+        private title: Title,
+    ) { 
+        this.title.setTitle(this.titulo)
+    }
 
 
     ngOnInit(): void {

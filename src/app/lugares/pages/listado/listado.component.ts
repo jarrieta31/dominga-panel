@@ -46,7 +46,7 @@ export class ListadoComponent implements OnInit, OnDestroy {
         private configService: ConfigService,
         private ls: LocalStorageService,
         private title: Title) {
-            this.title.setTitle("Lista de Lugares")
+            this.title.setTitle(this.titulo)
     }
 
     ngOnInit(): void {

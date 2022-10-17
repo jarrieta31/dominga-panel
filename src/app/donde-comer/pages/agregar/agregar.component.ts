@@ -14,6 +14,7 @@ import { DondeComerService } from '../../services/donde-comer.service';
 import { MapaService } from '../../../shared/services/mapa.service';
 import { DialogMapaComponent } from 'src/app/shared/components/dialog-mapa/dialog-mapa.component';
 import { Telefono } from '../../../shared/interfaces/telefono.interface';
+import { Title } from '@angular/platform-browser';
 
 @Component({
     selector: 'app-agregar',
@@ -36,7 +37,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
     heightAllowedEvento: number = 150;
     idRestoran: string;
     localidades: string[] = [];
-    titulo: string = "Nuevo Restaurante";
+    titulo: string = "Nuevo restaurante";
     mapaTouched: boolean = false;
     widthAllowedEvento: number = 150;
     restaurantes: Restoran[] = [];
@@ -63,8 +64,9 @@ export class AgregarComponent implements OnInit, OnDestroy {
         private configService: ConfigService,
         private comerService: DondeComerService,
         private mapaService: MapaService,
+        private title: Title,
     ) {
-
+        this.title.setTitle(this.titulo);
         this.heightComer = this.configService.heightComer;
         this.widthComer = this.configService.widthComer;
         this.sizeComer = this.configService.sizeComer;
@@ -127,6 +129,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
         ).subscribe(restoran => {
             let restoranActual: Restoran = JSON.parse(JSON.stringify(restoran));
             if (restoranActual.id !== undefined) {//Si estamos editando un lugar
+                this.title.setTitle("Editar hotel")
                 this.idRestoran = restoranActual.id;
                 delete restoranActual.id //para setear el formulario es necesario quitar el tatributo id
                 for (let i = 0; i < restoranActual.telefonos.length; i++) {

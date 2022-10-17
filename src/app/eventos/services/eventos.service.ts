@@ -138,8 +138,16 @@ export class EventosService {
         }
     }
 
+    /**
+     * Función para otener un evento especificio desde la base de datos firestore.
+     * @param id Es el ID del evento a buscar
+     * @returns Retorna un observable con un evento
+     */
+    getEventoFirestore(id: string){
+       return this.afs.collection<Evento[]>('eventos').doc<Evento>(`${id}`).get(); 
+    }
 
-    /** Obtiene el evento a partir del id que recibe y */
+    /** Obtiene el evento desde el array local a partir del id que recibe y */
     getEventoId(id: string): Observable<Evento> {
         const eventoEncontrado = this.eventos.filter(item => item.id == id);
         return from(

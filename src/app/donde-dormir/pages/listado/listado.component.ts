@@ -45,7 +45,7 @@ export class ListadoComponent implements OnInit, OnDestroy{
         private router: Router,
         private title : Title
     ) { 
-        this.title.setTitle("Lista Donde Dormir");
+        this.title.setTitle(this.titulo);
     }
 
 

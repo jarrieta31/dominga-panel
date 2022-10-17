@@ -81,6 +81,7 @@ export class AgregarComponent implements OnInit, AfterViewInit, OnDestroy {
         placeholder: 'Ingresa una descripción del evento...',
         translate: 'no',
         defaultParagraphSeparator: 'p',
+        width: '100%',
         toolbarHiddenButtons: [
             [
                 'subscript',
@@ -130,7 +131,7 @@ export class AgregarComponent implements OnInit, AfterViewInit, OnDestroy {
         private title: Title,
     ) {
 
-        this.title.setTitle("Agregar Evento")
+        this.title.setTitle(this.titulo)
         this.heightEvento = this.configService.heightEvento;
         this.widthEvento = this.configService.widthEvento;
         this.sizeEvento = this.configService.sizeEvento;
@@ -197,7 +198,7 @@ export class AgregarComponent implements OnInit, AfterViewInit, OnDestroy {
             //    tap(res => console.log(res))
             takeUntil(this.destroy$),
         ).subscribe(evento => {
-            this.title.setTitle("Editar Evento")
+            this.title.setTitle("Editar evento")
             let eventoActual: Evento = JSON.parse(JSON.stringify(evento));
             if (eventoActual.id !== undefined) {//Si estamos editando un lugar
                 if (evento.fechaInicio !== null && evento.fechaInicio !== undefined) {
@@ -243,9 +244,7 @@ export class AgregarComponent implements OnInit, AfterViewInit, OnDestroy {
             this.setFechaStart();
             this.setFechaEnd();
         }
-        //es para que no se vea el error de cambio
         this.cdRef.detectChanges();
-
     }
 
     /** Función que toma las coordenadas ingresadas en formato google Maps las transforma
@@ -393,8 +392,6 @@ export class AgregarComponent implements OnInit, AfterViewInit, OnDestroy {
         dialogConfig.disableClose = false;
         dialogConfig.autoFocus = true;
         dialogConfig.minHeight = "565px";
-        //dialogConfig.minHeight = "450px";
-        //dialogConfig.minWidth = "900px";
         dialogConfig.minWidth = "1400px";
         dialogConfig.id = "dialogMapa";
         dialogConfig.data = 0;

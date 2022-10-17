@@ -11,6 +11,7 @@ import { ArtistasService } from '../../services/artistas.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { switchMap, takeUntil, tap, filter } from 'rxjs/operators';
 import { DialogPublicarComponent } from '../../components/dialog-publicar/dialog-publicar.component';
+import { Title } from '@angular/platform-browser';
 
 @Component({
     selector: 'app-agregar',
@@ -33,7 +34,7 @@ export class AgregarComponent implements OnInit, OnDestroy, AfterViewInit {
     heightAllowedArtista: number = 150;
     idArtista: string;
     localidades: string[] = [];
-    titulo: string = "Nuevo Artista";
+    titulo: string = "Nuevo artista";
     prioridades: number[] = [];
     private imagenDefault = { "name": "imagen-default", "url": "assets/default-lugar-galeria.jpg" };
     imagenArtista: Imagen = this.imagenDefault;
@@ -50,12 +51,14 @@ export class AgregarComponent implements OnInit, OnDestroy, AfterViewInit {
         public dialog: MatDialog,
         private configService: ConfigService,
         private artistasService: ArtistasService,
+        private title: Title,
     ) {
         this.nombreMaxLength = this.configService.nombreMaxLength;
         this.nombreMinLength = this.configService.nombreMinLength;
         this.sizeArtista = this.configService.sizeArtista;
         this.heightArtista = this.configService.heightArtista;
         this.widthArtista = this.configService.widthArtista;
+        this.title.setTitle(this.titulo)
 
         this.artistaForm = this.fb.group({
             carpeta: [null],
@@ -88,6 +91,7 @@ export class AgregarComponent implements OnInit, OnDestroy, AfterViewInit {
         ).subscribe(artista => {
             let artistaActual: Artista = JSON.parse(JSON.stringify(artista));
             if (artistaActual.id !== undefined) {//Si estamos editando un artista
+                this.title.setTitle("Editar artista")
                 this.idArtista = artistaActual.id;
                 delete artistaActual.id //para setear el formulario es necesario quitar el tatributo id
                 this.artistaForm.reset(artistaActual);

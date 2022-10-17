@@ -11,6 +11,7 @@ import { DialogPublicarComponent } from '../../components/dialog-publicar/dialog
 import { MatDialog } from '@angular/material/dialog';
 import { StorageService } from '../../../shared/services/storage.service';
 import { ConfigService } from 'src/app/shared/services/config.service';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-slider-info',
@@ -33,7 +34,7 @@ export class SliderInfoComponent implements OnInit {
     linkSeleccionado: string;
     page: number = 1;
     sliders: Slider[] = [];
-    titulo: string = 'Carrusel Información'
+    titulo: string = 'Carrusel información'
     widthAllowedEvento: number = 850;
     departamentos: string[] = [];
 
@@ -67,7 +68,10 @@ export class SliderInfoComponent implements OnInit {
         private vs: ValidatorService,
         private storageService: StorageService,
         private configService: ConfigService,
-    ) { }
+        private title: Title,
+    ) { 
+        this.title.setTitle(this.titulo);
+    }
 
     ngOnInit() {
         this.slidersService.getObsSliders$()

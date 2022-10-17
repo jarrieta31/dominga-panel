@@ -37,7 +37,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
     directorioPadre: string = 'donde_dormir'; //carpeta raíz donde se almacenan los lugares
     idHotel: string;
     localidades: string[] = [];
-    titulo: string = "Nuevo Hotel";
+    titulo: string = "Nuevo hotel";
     hoteles: Hotel[] = [];
     nroWhatsapp: FormControl = this.fb.control(null, [this.vs.valididarNumeroWhatsapp]);
     prioridades: number[] = [];
@@ -65,7 +65,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
         private mapaService: MapaService,
         private title: Title,
     ) {
-        this.title.setTitle("Agregar Hotel");
+        this.title.setTitle(this.titulo);
         this.heightDormir = this.configService.heightDormir;
         this.widthDormir = this.configService.widthDormir;
         this.sizeDormir = this.configService.sizeDormir;
@@ -127,7 +127,7 @@ export class AgregarComponent implements OnInit, OnDestroy {
         ).subscribe(hotel => {
             let hotelActual: Hotel = JSON.parse(JSON.stringify(hotel));
             if (hotelActual.id !== undefined) {//Si estamos editando un lugar
-                this.title.setTitle("Editar Hotel")
+                this.title.setTitle("Editar hotel")
                 this.idHotel = hotelActual.id;
                 delete hotelActual.id //para setear el formulario es necesario quitar el tatributo id
                 for (let i = 0; i < hotelActual.telefonos.length; i++) {

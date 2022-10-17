@@ -2,6 +2,9 @@ mat-divider{
     margin-bottom: 40px;
 }
 
+.main-column {
+    margin: 10px;
+}
 
 .imagen-home {
     height: 217px;
@@ -16,7 +19,6 @@ mat-divider{
 }
 
 .container {
-    padding: 10px;
     margin-bottom: 2px;
 }
 
@@ -39,4 +41,13 @@ mat-divider{
 
 .whatsapp{
     width: 30%;
+}
+
+#descripcion {
+    width: 100%;
+}
+
+/*Area el cuadro del editor*/
+.area {
+    width: 100%;
 }

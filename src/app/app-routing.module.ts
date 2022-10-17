@@ -4,6 +4,7 @@ import { ErrorPageComponent } from './shared/error-page/error-page.component';
 import { AuthGuard } from './auth/guards/auth.guard';
 import { AngularFireAuthGuard, hasCustomClaim, redirectUnauthorizedTo, redirectLoggedInTo, loggedIn  } from '@angular/fire/compat/auth-guard';
 import { SharePlaceComponent } from './shared/pages/share-place/share-place.component';
+import { ShareEventComponent } from './shared/pages/share-event/share-event.component';
 
 //const adminOnly = () => hasCustomClaim('admin');
 const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['/auth/login']);
@@ -77,6 +78,10 @@ const routes: Routes = [
     {
         path: 'share-place/:id',
         component: SharePlaceComponent,
+    },
+    {
+        path: 'share-event/:id',
+        component: ShareEventComponent,
     },
     {
         path: '404',
